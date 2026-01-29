@@ -1,0 +1,229 @@
+<div class="job-applications-page">
+  <div class="page-header">
+    <button class="back-btn" (click)="goBack()">
+      <i class="fas fa-arrow-left"></i>
+      <span>{{ back() }}</span>
+    </button>
+    <h1 class="page-title">
+      <i class="fas fa-briefcase"></i>
+      <span>{{ title() }}</span>
+    </h1>
+  </div>
+
+  @if (isLoading()) {
+    <div class="loading-container">
+      <div class="spinner"></div>
+      <p>{{ isArabic() ? 'جاري التحميل...' : 'Loading...' }}</p>
+    </div>
+  } @else if (applications().length === 0) {
+    <div class="empty-state">
+      <i class="fas fa-inbox"></i>
+      <p>{{ noApplications() }}</p>
+    </div>
+  } @else {
+    <div class="applications-container">
+      @for (application of applications(); track application._id) {
+        <div class="application-card" [class]="getStatusClass(application.status)">
+          <div class="application-header">
+            <div class="application-user-section">
+              @if (application.userId.profileImageUrl) {
+                <img
+                  [src]="application.userId.profileImageUrl | assetUrl"
+                  [alt]="application.userId.email"
+                  class="application-user-avatar"
+                />
+              } @else {
+                <div class="application-user-avatar-placeholder">
+                  <i class="fas fa-user"></i>
+                </div>
+              }
+              <div class="application-user-info">
+                <div class="user-name">
+                  @if (application.userId.firstName && application.userId.lastName) {
+                    {{ application.userId.firstName }} {{ application.userId.middleName || '' }}
+                    {{ application.userId.lastName }}
+                  } @else {
+                    {{ application.userId.email || 'N/A' }}
+                  }
+                </div>
+                <div class="user-email">
+                  <i class="fas fa-envelope"></i>
+                  <span>{{ application.userId.email || 'N/A' }}</span>
+                </div>
+                @if (application.userId.phone) {
+                  <div class="user-phone">
+                    <i class="fas fa-phone"></i>
+                    <span>{{ application.userId.phone }}</span>
+                  </div>
+                }
+              </div>
+            </div>
+            <div class="application-status">
+              <span class="status-badge" [class]="getStatusClass(application.status)">
+                {{ getStatusText(application.status) }}
+              </span>
+            </div>
+          </div>
+
+          <div class="application-info-section">
+            <div class="info-item">
+              <i class="fas fa-briefcase"></i>
+              <span
+                ><strong>{{ category() }}:</strong>
+                {{ getCategoryLabel(application.category) }}</span
+              >
+            </div>
+            <div class="info-item">
+              <i class="fas fa-envelope"></i>
+              <span
+                ><strong>{{ backupEmail() }}:</strong> {{ application.backupEmail }}</span
+              >
+            </div>
+            <div class="info-item">
+              <i class="fas fa-phone"></i>
+              <span
+                ><strong>{{ whatsappPhone() }}:</strong> {{ application.whatsappPhone }}</span
+              >
+            </div>
+            <div class="info-item">
+              <i class="fas fa-calendar"></i>
+              <span
+                ><strong>{{ createdAt() }}:</strong>
+                {{ application.createdAt | date: 'short' }}</span
+              >
+            </div>
+          </div>
+
+          <div class="application-body">
+            @if (application.linkedinUrl) {
+              <div class="link-item">
+                <i class="fab fa-linkedin"></i>
+                <a [href]="application.linkedinUrl" target="_blank">{{
+                  application.linkedinUrl
+                }}</a>
+              </div>
+            }
+            @if (application.githubUrl) {
+              <div class="link-item">
+                <i class="fab fa-github"></i>
+                <a [href]="application.githubUrl" target="_blank">{{ application.githubUrl }}</a>
+              </div>
+            }
+            @if (application.facebookUrl) {
+              <div class="link-item">
+                <i class="fab fa-facebook"></i>
+                <a [href]="application.facebookUrl" target="_blank">{{
+                  application.facebookUrl
+                }}</a>
+              </div>
+            }
+
+            <div class="cv-section">
+              <button class="btn-view-cv" (click)="viewCv(application)">
+                <i class="fas fa-file-pdf"></i>
+                <span>{{ cvFile() }}</span>
+              </button>
+            </div>
+
+            <div class="experience-section">
+              <label>{{ experience() }}</label>
+              <div class="experience-content">
+                {{ application.experience }}
+              </div>
+            </div>
+
+            @if (application.adminNote) {
+              <div class="admin-note-section">
+                <label>{{ adminNote() }}</label>
+                <div class="note-content">
+                  {{ application.adminNote }}
+                </div>
+                @if (application.reviewedAt) {
+                  <div class="note-date">
+                    <i class="fas fa-clock"></i>
+                    <span>{{ application.reviewedAt | date: 'short' }}</span>
+                  </div>
+                }
+              </div>
+            }
+
+            @if (application.status === 'pending') {
+              <div class="application-actions">
+                <button class="btn-accept" (click)="openResponseModal(application, 'accepted')">
+                  <i class="fas fa-check"></i>
+                  <span>{{ accept() }}</span>
+                </button>
+                <button class="btn-reject" (click)="openResponseModal(application, 'rejected')">
+                  <i class="fas fa-times"></i>
+                  <span>{{ reject() }}</span>
+                </button>
+              </div>
+            } @else if (application.status === 'accepted' || application.status === 'rejected') {
+              <div class="application-actions">
+                <button class="btn-delete" (click)="deleteApplication(application)">
+                  <i class="fas fa-trash"></i>
+                  <span>{{ delete() }}</span>
+                </button>
+              </div>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Response Modal -->
+  @if (showResponseModal() && selectedApplication()) {
+    <div class="response-modal-overlay" (click)="closeResponseModal()">
+      <div class="response-modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h2>{{ respond() }}</h2>
+          <button class="modal-close" (click)="closeResponseModal()">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="status-selection">
+            <label>{{ status() }}:</label>
+            <div class="status-buttons">
+              <button
+                class="status-btn"
+                [class.active]="responseStatus === 'accepted'"
+                (click)="responseStatus = 'accepted'"
+              >
+                <i class="fas fa-check"></i>
+                <span>{{ accept() }}</span>
+              </button>
+              <button
+                class="status-btn"
+                [class.active]="responseStatus === 'rejected'"
+                (click)="responseStatus = 'rejected'"
+              >
+                <i class="fas fa-times"></i>
+                <span>{{ reject() }}</span>
+              </button>
+            </div>
+          </div>
+          <div class="note-input">
+            <label>{{ adminNote() }}</label>
+            <textarea
+              [(ngModel)]="adminNoteInput"
+              rows="6"
+              [placeholder]="isArabic() ? 'اكتب ملاحظتك هنا...' : 'Write your note here...'"
+            ></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-cancel" (click)="closeResponseModal()">
+            <i class="fas fa-times"></i>
+            <span>{{ cancel() }}</span>
+          </button>
+          <button class="btn-submit" (click)="submitResponse()" [disabled]="!adminNoteInput.trim()">
+            <i class="fas fa-paper-plane"></i>
+            <span>{{ submit() }}</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+</div>

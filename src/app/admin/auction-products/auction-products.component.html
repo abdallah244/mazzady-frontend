@@ -1,0 +1,188 @@
+<div class="auction-products-page">
+  <div class="page-header">
+    <button class="back-btn" (click)="goBack()">
+      <i class="fas fa-arrow-left"></i>
+      <span>{{ back() }}</span>
+    </button>
+    <h1 class="page-title">
+      <i class="fas fa-gavel"></i>
+      <span>{{ title() }}</span>
+    </h1>
+  </div>
+
+  @if (isLoading()) {
+    <div class="loading-container">
+      <div class="spinner"></div>
+      <p>{{ isArabic() ? 'جاري التحميل...' : 'Loading...' }}</p>
+    </div>
+  } @else if (products().length === 0) {
+    <div class="empty-state">
+      <i class="fas fa-inbox"></i>
+      <p>{{ noProducts() }}</p>
+    </div>
+  } @else {
+    <div class="products-container">
+      @for (product of products(); track product._id) {
+        <div class="product-card" [class]="getStatusClass(product.status)">
+          <div class="product-header">
+            <div class="product-user-section">
+              @if (product.userId.profileImageUrl) {
+                <img
+                  [src]="product.userId.profileImageUrl | assetUrl"
+                  [alt]="product.userId.email"
+                  class="product-user-avatar"
+                />
+              } @else {
+                <div class="product-user-avatar-placeholder">
+                  <i class="fas fa-user"></i>
+                </div>
+              }
+              <div class="product-user-info">
+                <div class="user-name">
+                  @if (product.userId.firstName && product.userId.lastName) {
+                    {{ product.userId.firstName }} {{ product.userId.middleName || '' }}
+                    {{ product.userId.lastName }}
+                  } @else {
+                    {{ product.userId.email || 'N/A' }}
+                  }
+                </div>
+                <div class="user-email">
+                  <i class="fas fa-envelope"></i>
+                  <span>{{ product.userId.email || 'N/A' }}</span>
+                </div>
+                @if (product.userId.phone) {
+                  <div class="user-phone">
+                    <i class="fas fa-phone"></i>
+                    <span>{{ product.userId.phone }}</span>
+                  </div>
+                }
+              </div>
+            </div>
+            <div class="product-status">
+              <span class="status-badge" [class]="getStatusClass(product.status)">
+                {{ getStatusText(product.status) }}
+              </span>
+            </div>
+          </div>
+
+          <div class="product-info-section">
+            <div class="info-item">
+              <i class="fas fa-dollar-sign"></i>
+              <span
+                ><strong>{{ startingPrice() }}:</strong>
+                {{ product.startingPrice | number: '1.2-2' }}</span
+              >
+            </div>
+            <div class="info-item">
+              <i class="fas fa-calendar"></i>
+              <span
+                ><strong>{{ createdAt() }}:</strong> {{ product.createdAt | date: 'short' }}</span
+              >
+            </div>
+          </div>
+
+          <div class="product-images-section">
+            <div class="main-image-section">
+              <label>{{ mainImage() }}:</label>
+              <div class="image-container">
+                <img
+                  [src]="product.mainImageUrl | assetUrl"
+                  [alt]="'Main product image'"
+                  class="product-image"
+                />
+              </div>
+            </div>
+
+            @if (product.additionalImagesUrl && product.additionalImagesUrl.length > 0) {
+              <div class="additional-images-section">
+                <label>{{ additionalImages() }}:</label>
+                <div class="images-grid">
+                  @for (imageUrl of product.additionalImagesUrl; track $index) {
+                    <div class="image-container">
+                      <img
+                        [src]="imageUrl | assetUrl"
+                        [alt]="'Additional image ' + ($index + 1)"
+                        class="product-image"
+                      />
+                    </div>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+
+          @if (product.adminNote) {
+            <div class="admin-note-section">
+              <label>{{ adminNote() }}:</label>
+              <div class="note-content">
+                {{ product.adminNote }}
+              </div>
+              @if (product.reviewedAt) {
+                <div class="note-date">
+                  <i class="fas fa-clock"></i>
+                  <span>{{ product.reviewedAt | date: 'short' }}</span>
+                </div>
+              }
+            </div>
+          }
+
+          @if (product.status === 'pending') {
+            <div class="product-actions">
+              <button class="btn-approve" (click)="approveProduct(product)">
+                <i class="fas fa-check"></i>
+                <span>{{ approve() }}</span>
+              </button>
+              <button class="btn-reject" (click)="openRejectModal(product)">
+                <i class="fas fa-times"></i>
+                <span>{{ reject() }}</span>
+              </button>
+            </div>
+          } @else if (product.status === 'approved' || product.status === 'rejected') {
+            <div class="product-actions-delete">
+              <button class="btn-delete" (click)="deleteProduct(product)">
+                <i class="fas fa-trash"></i>
+                <span>{{ delete() }}</span>
+              </button>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Reject Modal -->
+  @if (showRejectModal() && selectedProduct()) {
+    <div class="reject-modal-overlay" (click)="closeRejectModal()">
+      <div class="reject-modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h2>{{ reject() }}</h2>
+          <button class="modal-close" (click)="closeRejectModal()">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label>{{ adminNote() }} <span class="required">*</span></label>
+            <textarea
+              [(ngModel)]="adminNoteInput"
+              class="form-textarea"
+              rows="5"
+              placeholder="{{ isArabic() ? 'أدخل سبب الرفض...' : 'Enter rejection reason...' }}"
+              required
+            ></textarea>
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button class="btn-submit" (click)="rejectProduct()" [disabled]="!adminNoteInput.trim()">
+            <i class="fas fa-paper-plane"></i>
+            <span>{{ sendResponse() }}</span>
+          </button>
+          <button class="btn-cancel" (click)="closeRejectModal()">
+            <i class="fas fa-times"></i>
+            <span>{{ cancel() }}</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+</div>

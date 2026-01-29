@@ -1,0 +1,612 @@
+<div class="cart-page">
+  <div class="cart-header">
+    <h1 class="cart-title">
+      <i class="fas fa-shopping-cart"></i>
+      <span>{{ isArabic() ? 'الكارت' : 'Cart' }}</span>
+    </h1>
+  </div>
+
+  <div class="cart-content">
+    @if (isLoading()) {
+      <div class="loading-container">
+        <i class="fas fa-spinner fa-spin"></i>
+        <p>{{ isArabic() ? 'جاري التحميل...' : 'Loading...' }}</p>
+      </div>
+    } @else if (error()) {
+      <div class="error-container">
+        <i class="fas fa-exclamation-circle"></i>
+        <p>{{ error() }}</p>
+      </div>
+    } @else if (cartItems().length === 0) {
+      <div class="empty-cart">
+        <i class="fas fa-shopping-cart"></i>
+        <p>{{ isArabic() ? 'الكارت فارغ' : 'Cart is empty' }}</p>
+      </div>
+    } @else {
+      <div class="cart-layout">
+        <div class="cart-items-section">
+          @for (item of cartItems(); track item._id) {
+            <div class="cart-item-card">
+              <div class="item-image">
+                <img
+                  [src]="item.productId.imageUrl | assetUrl"
+                  [alt]="item.productId.productName"
+                />
+              </div>
+              <div class="item-details">
+                <h3 class="item-name">{{ item.productId.productName }}</h3>
+                <p class="item-price">{{ formatPrice(item.productId.price) }}</p>
+                <p class="item-seller">
+                  {{ isArabic() ? 'البائع:' : 'Seller:' }} {{ item.productId.userId.nickname }}
+                </p>
+
+                <div class="item-options">
+                  <div class="shipping-option">
+                    <div class="shipping-header">
+                      <label>{{ isArabic() ? 'طريقة الشحن:' : 'Shipping Method:' }}</label>
+                      <button
+                        type="button"
+                        class="hint-btn"
+                        (click)="toggleShippingHint()"
+                        [title]="isArabic() ? 'معلومات عن التوصيل' : 'Shipping Information'"
+                      >
+                        <i class="fas fa-question-circle"></i>
+                        <span>{{ isArabic() ? 'معلومات' : 'Info' }}</span>
+                      </button>
+                    </div>
+                    @if (showShippingHint()) {
+                      <div class="shipping-hint">
+                        <i class="fas fa-info-circle"></i>
+                        <p>
+                          {{
+                            isArabic()
+                              ? 'تكلفة التوصيل تُحسب بناءً على موقع التوصيل فقط. اختيار طريقة الشحن (بري/جوي) لا يؤثر على السعر.'
+                              : 'Shipping cost is calculated based on delivery location only. Shipping method selection (ground/air) does not affect the price.'
+                          }}
+                        </p>
+                      </div>
+                    }
+                    <div class="shipping-buttons">
+                      <button
+                        class="shipping-btn"
+                        [class.active]="item.shippingMethod === 'ground'"
+                        (click)="updateShippingMethod(item._id, 'ground')"
+                      >
+                        {{ isArabic() ? 'بري' : 'Ground' }}
+                      </button>
+                      <button
+                        class="shipping-btn"
+                        [class.active]="item.shippingMethod === 'air'"
+                        (click)="updateShippingMethod(item._id, 'air')"
+                      >
+                        {{ isArabic() ? 'جوي' : 'Air' }}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="insurance-option">
+                    <label class="checkbox-label">
+                      <input
+                        type="checkbox"
+                        [checked]="item.insurance"
+                        (change)="updateInsurance(item._id, $any($event.target).checked)"
+                      />
+                      <span>{{ isArabic() ? 'تأمين' : 'Insurance' }}</span>
+                      <i
+                        class="fas fa-info-circle insurance-info-icon"
+                        [title]="
+                          isArabic()
+                            ? 'في حالة تعرض المنتج لأي خلل أثناء التوصيل يتم التعويض بدفع ضعف ثمن المنتج'
+                            : 'In case of any damage during delivery, compensation will be double the product price'
+                        "
+                      ></i>
+                    </label>
+                    <p class="insurance-info">
+                      {{
+                        isArabic()
+                          ? 'في حالة تعرض المنتج لأي خلل أثناء التوصيل يتم التعويض بدفع ضعف ثمن المنتج'
+                          : 'In case of any damage during delivery, compensation will be double the product price'
+                      }}
+                    </p>
+                  </div>
+                </div>
+
+                <div class="item-actions">
+                  <button
+                    class="purchase-btn"
+                    appLoadingButton
+                    [loading]="isPurchasing()"
+                    (click)="openAddressModal(item)"
+                  >
+                    <i class="fas fa-shopping-bag"></i>
+                    <span>{{ isArabic() ? 'شراء' : 'Purchase' }}</span>
+                  </button>
+                </div>
+
+                @if (shouldShowLegalWarning(item.addedAt)) {
+                  <div class="legal-warning">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span>
+                      {{ isArabic() ? 'تحذير: متبقي' : 'Warning: ' }}
+                      {{ getDaysUntilLegalAction(item.addedAt) }}
+                      {{
+                        isArabic()
+                          ? 'يوم للدفع. في حالة عدم الدفع خلال 14 يوم سيتم تعرضك للمسائل القانونية.'
+                          : ' days to pay. If payment is not made within 14 days, you will be subject to legal action.'
+                      }}
+                    </span>
+                  </div>
+                }
+              </div>
+            </div>
+          }
+        </div>
+
+        <div class="cart-sidebar">
+          <div class="sidebar-card">
+            <h3 class="sidebar-title">
+              <i class="fas fa-calculator"></i>
+              <span>{{ isArabic() ? 'الملخص' : 'Summary' }}</span>
+            </h3>
+            @if (cartTotal()) {
+              <div class="summary-items">
+                @for (summaryItem of cartTotal()!.items; track summaryItem.cartItem._id) {
+                  <div class="summary-item">
+                    <span class="summary-item-name">{{ summaryItem.product.productName }}</span>
+                    <span class="summary-item-price">{{ formatPrice(summaryItem.itemTotal) }}</span>
+                  </div>
+                }
+              </div>
+              <div class="summary-total">
+                <span class="total-label">{{ isArabic() ? 'الإجمالي:' : 'Total:' }}</span>
+                <span class="total-amount">{{ formatPrice(cartTotal()!.total) }}</span>
+              </div>
+            }
+
+            <div class="legal-notice">
+              <i class="fas fa-info-circle"></i>
+              <p>
+                {{
+                  isArabic()
+                    ? 'تنبيه: في حالة عدم الدفع خلال 14 يوم من إضافة المنتج للكارت، سيتم تعرض المشتري للمسائل القانونية.'
+                    : 'Notice: If payment is not made within 14 days of adding the product to cart, the buyer will be subject to legal action.'
+                }}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- Address Modal -->
+  @if (showAddressModal()) {
+    <div class="modal-overlay" (click)="closeAddressModal()">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h2>{{ isArabic() ? 'أدخل عنوان الشحن' : 'Enter Shipping Address' }}</h2>
+          <button class="close-btn" (click)="closeAddressModal()">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form (ngSubmit)="completePurchase()" #addressForm="ngForm">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="country"
+                  >{{ isArabic() ? 'الدولة:' : 'Country:' }} <span class="required">*</span></label
+                >
+                <input
+                  type="text"
+                  id="country"
+                  name="country"
+                  [(ngModel)]="shippingForm.country"
+                  required
+                  placeholder="{{ isArabic() ? 'مثال: مصر' : 'e.g., Egypt' }}"
+                  class="form-input"
+                />
+              </div>
+              <div class="form-group">
+                <label for="governorate"
+                  >{{ isArabic() ? 'المحافظة:' : 'Governorate:' }}
+                  <span class="required">*</span></label
+                >
+                <input
+                  type="text"
+                  id="governorate"
+                  name="governorate"
+                  [(ngModel)]="shippingForm.governorate"
+                  required
+                  placeholder="{{ isArabic() ? 'مثال: القاهرة' : 'e.g., Cairo' }}"
+                  class="form-input"
+                />
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="address"
+                >{{ isArabic() ? 'عنوان السكن:' : 'Address:' }}
+                <span class="required">*</span></label
+              >
+              <textarea
+                id="address"
+                name="address"
+                [(ngModel)]="shippingForm.address"
+                required
+                minlength="10"
+                rows="3"
+                placeholder="{{
+                  isArabic() ? 'أدخل عنوان السكن الكامل...' : 'Enter your full address...'
+                }}"
+                class="form-textarea"
+              ></textarea>
+              @if (addressForm.submitted && addressForm.controls['address']?.invalid) {
+                <div class="error-message">
+                  <i class="fas fa-exclamation-circle"></i>
+                  <span>{{
+                    isArabic()
+                      ? 'الرجاء إدخال عنوان صحيح (10 أحرف على الأقل)'
+                      : 'Please enter a valid address (at least 10 characters)'
+                  }}</span>
+                </div>
+              }
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="contactPhone"
+                  >{{ isArabic() ? 'رقم التواصل:' : 'Contact Phone:' }}
+                  <span class="required">*</span></label
+                >
+                <input
+                  type="tel"
+                  id="contactPhone"
+                  name="contactPhone"
+                  [(ngModel)]="shippingForm.contactPhone"
+                  required
+                  pattern="^(\+20|0)?1[0-9]{9}$"
+                  placeholder="{{ isArabic() ? 'مثال: 01142402039' : 'e.g., 01142402039' }}"
+                  class="form-input"
+                />
+                @if (addressForm.submitted && addressForm.controls['contactPhone']?.invalid) {
+                  <div class="error-message">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span>{{
+                      isArabic()
+                        ? 'الرجاء إدخال رقم هاتف مصري صحيح'
+                        : 'Please enter a valid Egyptian phone number'
+                    }}</span>
+                  </div>
+                }
+              </div>
+              <div class="form-group">
+                <label for="deliveryLocation"
+                  >{{ isArabic() ? 'مكان التوصيل:' : 'Delivery Location:' }}
+                  <span class="required">*</span></label
+                >
+                <input
+                  type="text"
+                  id="deliveryLocation"
+                  name="deliveryLocation"
+                  [(ngModel)]="shippingForm.deliveryLocation"
+                  required
+                  placeholder="{{
+                    isArabic() ? 'مثال: المنزل، المكتب، إلخ' : 'e.g., Home, Office, etc.'
+                  }}"
+                  class="form-input"
+                />
+              </div>
+            </div>
+            @if (purchaseError()) {
+              <div class="error-message">
+                <i class="fas fa-exclamation-circle"></i>
+                <span>{{ purchaseError() }}</span>
+              </div>
+            }
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="close-modal-btn" (click)="closeAddressModal()">
+            <span>{{ isArabic() ? 'إلغاء' : 'Cancel' }}</span>
+          </button>
+          <button
+            type="button"
+            class="complete-purchase-btn"
+            appLoadingButton
+            [loading]="isPurchasing()"
+            (click)="completePurchase()"
+            [disabled]="
+              !shippingForm.country ||
+              !shippingForm.governorate ||
+              !shippingForm.address ||
+              !shippingForm.contactPhone ||
+              !shippingForm.deliveryLocation ||
+              shippingForm.address.length < 10
+            "
+          >
+            <i class="fas fa-check"></i>
+            <span>{{ isArabic() ? 'إكمال الشراء' : 'Complete Purchase' }}</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Invoice Modal -->
+  @if (showInvoiceModal() && selectedInvoice()) {
+    <div class="modal-overlay" (click)="closeInvoiceModal()">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h2>{{ isArabic() ? 'فاتورة الشراء' : 'Purchase Invoice' }}</h2>
+          <button class="close-btn" (click)="closeInvoiceModal()">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          @if (purchaseError() || selectedInvoice()?.success === false) {
+            <div class="purchase-status failed">
+              <i class="fas fa-times-circle"></i>
+              <h3>{{ isArabic() ? 'فشلت العملية' : 'Purchase Failed' }}</h3>
+              <p>
+                {{
+                  purchaseError() ||
+                    selectedInvoice()?.message ||
+                    (isArabic()
+                      ? 'حدث خطأ أثناء معالجة طلب الشراء'
+                      : 'An error occurred while processing your purchase')
+                }}
+              </p>
+            </div>
+            @if (selectedInvoice() && selectedInvoice()!.totalAmount > 0) {
+              <div class="invoice-details">
+                <h4 class="invoice-section-title">
+                  {{ isArabic() ? 'تفاصيل الطلب:' : 'Order Details:' }}
+                </h4>
+                <div class="invoice-row">
+                  <span class="invoice-label">{{
+                    isArabic() ? 'اسم المنتج:' : 'Product Name:'
+                  }}</span>
+                  <span class="invoice-value">{{ selectedInvoice()!.productName }}</span>
+                </div>
+                <div class="invoice-row">
+                  <span class="invoice-label">{{
+                    isArabic() ? 'سعر المنتج:' : 'Product Price:'
+                  }}</span>
+                  <span class="invoice-value">{{
+                    formatPrice(selectedInvoice()!.productPrice)
+                  }}</span>
+                </div>
+                <div class="invoice-row">
+                  <span class="invoice-label">{{
+                    isArabic() ? 'طريقة الشحن:' : 'Shipping Method:'
+                  }}</span>
+                  <span class="invoice-value">
+                    {{
+                      selectedInvoice()!.shippingMethod === 'air'
+                        ? isArabic()
+                          ? 'جوي'
+                          : 'Air'
+                        : isArabic()
+                          ? 'بري'
+                          : 'Ground'
+                    }}
+                  </span>
+                </div>
+                <div class="invoice-row">
+                  <span class="invoice-label">{{
+                    isArabic() ? 'تكلفة الشحن:' : 'Shipping Cost:'
+                  }}</span>
+                  <span class="invoice-value">{{
+                    formatPrice(selectedInvoice()!.shippingCost)
+                  }}</span>
+                </div>
+                <div class="invoice-row">
+                  <span class="invoice-label">{{ isArabic() ? 'التأمين:' : 'Insurance:' }}</span>
+                  <span class="invoice-value">
+                    {{
+                      selectedInvoice()!.insurance
+                        ? isArabic()
+                          ? 'نعم'
+                          : 'Yes'
+                        : isArabic()
+                          ? 'لا'
+                          : 'No'
+                    }}
+                  </span>
+                </div>
+                @if (selectedInvoice()!.insurance) {
+                  <div class="invoice-row">
+                    <span class="invoice-label">{{
+                      isArabic() ? 'تكلفة التأمين:' : 'Insurance Cost:'
+                    }}</span>
+                    <span class="invoice-value">{{
+                      formatPrice(selectedInvoice()!.insuranceCost)
+                    }}</span>
+                  </div>
+                }
+                <div class="invoice-total-row">
+                  <span class="invoice-label">{{
+                    isArabic() ? 'المبلغ الإجمالي:' : 'Total Amount:'
+                  }}</span>
+                  <span class="invoice-total-value">{{
+                    formatPrice(selectedInvoice()!.totalAmount)
+                  }}</span>
+                </div>
+                <div class="invoice-row">
+                  <span class="invoice-label">{{
+                    isArabic() ? 'اسم المنتج:' : 'Product Name:'
+                  }}</span>
+                  <span class="invoice-value">{{ selectedInvoice()!.productName }}</span>
+                </div>
+                <div class="invoice-row">
+                  <span class="invoice-label">{{
+                    isArabic() ? 'سعر المنتج:' : 'Product Price:'
+                  }}</span>
+                  <span class="invoice-value">{{
+                    formatPrice(selectedInvoice()!.productPrice)
+                  }}</span>
+                </div>
+                <div class="invoice-row">
+                  <span class="invoice-label">{{
+                    isArabic() ? 'المبلغ الإجمالي:' : 'Total Amount:'
+                  }}</span>
+                  <span class="invoice-value">{{
+                    formatPrice(selectedInvoice()!.totalAmount)
+                  }}</span>
+                </div>
+              </div>
+            }
+          } @else {
+            <div class="purchase-status success">
+              <i class="fas fa-check-circle"></i>
+              <h3>{{ isArabic() ? 'تم الشراء بنجاح!' : 'Purchase Successful!' }}</h3>
+              <p>
+                {{
+                  isArabic()
+                    ? 'تم خصم المبلغ من رصيد المحفظة بنجاح'
+                    : 'Amount has been deducted from your wallet successfully'
+                }}
+              </p>
+            </div>
+            <div class="invoice-details">
+              <div class="invoice-row">
+                <span class="invoice-label">{{
+                  isArabic() ? 'اسم المنتج:' : 'Product Name:'
+                }}</span>
+                <span class="invoice-value">{{ selectedInvoice()!.productName }}</span>
+              </div>
+              <div class="invoice-row">
+                <span class="invoice-label">{{
+                  isArabic() ? 'سعر المنتج:' : 'Product Price:'
+                }}</span>
+                <span class="invoice-value">{{
+                  formatPrice(selectedInvoice()!.productPrice)
+                }}</span>
+              </div>
+              <div class="invoice-row">
+                <span class="invoice-label">{{
+                  isArabic() ? 'طريقة الشحن:' : 'Shipping Method:'
+                }}</span>
+                <span class="invoice-value">
+                  {{
+                    selectedInvoice()!.shippingMethod === 'air'
+                      ? isArabic()
+                        ? 'جوي'
+                        : 'Air'
+                      : isArabic()
+                        ? 'بري'
+                        : 'Ground'
+                  }}
+                </span>
+              </div>
+              <div class="invoice-row">
+                <span class="invoice-label">{{
+                  isArabic() ? 'تكلفة الشحن:' : 'Shipping Cost:'
+                }}</span>
+                <span class="invoice-value">
+                  {{
+                    selectedInvoice()!.shippingCost === 0
+                      ? isArabic()
+                        ? 'تُحسب حسب الموقع'
+                        : 'Calculated by location'
+                      : formatPrice(selectedInvoice()!.shippingCost)
+                  }}
+                </span>
+              </div>
+              <div class="invoice-row">
+                <span class="invoice-label">{{ isArabic() ? 'التأمين:' : 'Insurance:' }}</span>
+                <span class="invoice-value">
+                  {{
+                    selectedInvoice()!.insurance
+                      ? isArabic()
+                        ? 'نعم'
+                        : 'Yes'
+                      : isArabic()
+                        ? 'لا'
+                        : 'No'
+                  }}
+                </span>
+              </div>
+              @if (selectedInvoice()!.insurance) {
+                <div class="invoice-row">
+                  <span class="invoice-label">{{
+                    isArabic() ? 'تكلفة التأمين (10%):' : 'Insurance Cost (10%):'
+                  }}</span>
+                  <span class="invoice-value">{{
+                    formatPrice(selectedInvoice()!.insuranceCost)
+                  }}</span>
+                </div>
+              }
+              <div class="invoice-total-row">
+                <span class="invoice-label">{{
+                  isArabic() ? 'المبلغ الإجمالي:' : 'Total Amount:'
+                }}</span>
+                <span class="invoice-total-value">{{
+                  formatPrice(selectedInvoice()!.totalAmount)
+                }}</span>
+              </div>
+              <div class="invoice-section">
+                <h4 class="invoice-section-title">
+                  {{ isArabic() ? 'معلومات الشحن:' : 'Shipping Information:' }}
+                </h4>
+                <div class="invoice-row">
+                  <span class="invoice-label">{{ isArabic() ? 'الدولة:' : 'Country:' }}</span>
+                  <span class="invoice-value">{{
+                    selectedInvoice()!.country || (isArabic() ? 'غير محدد' : 'Not specified')
+                  }}</span>
+                </div>
+                <div class="invoice-row">
+                  <span class="invoice-label">{{ isArabic() ? 'المحافظة:' : 'Governorate:' }}</span>
+                  <span class="invoice-value">{{
+                    selectedInvoice()!.governorate || (isArabic() ? 'غير محدد' : 'Not specified')
+                  }}</span>
+                </div>
+                <div class="invoice-row">
+                  <span class="invoice-label">{{ isArabic() ? 'عنوان السكن:' : 'Address:' }}</span>
+                  <span class="invoice-value">{{
+                    selectedInvoice()!.shippingAddress ||
+                      (isArabic() ? 'غير محدد' : 'Not specified')
+                  }}</span>
+                </div>
+                <div class="invoice-row">
+                  <span class="invoice-label">{{
+                    isArabic() ? 'رقم التواصل:' : 'Contact Phone:'
+                  }}</span>
+                  <span class="invoice-value">{{
+                    selectedInvoice()!.contactPhone || (isArabic() ? 'غير محدد' : 'Not specified')
+                  }}</span>
+                </div>
+                <div class="invoice-row">
+                  <span class="invoice-label">{{
+                    isArabic() ? 'مكان التوصيل:' : 'Delivery Location:'
+                  }}</span>
+                  <span class="invoice-value">{{
+                    selectedInvoice()!.deliveryLocation ||
+                      (isArabic() ? 'غير محدد' : 'Not specified')
+                  }}</span>
+                </div>
+              </div>
+              <div class="invoice-row">
+                <span class="invoice-label">{{
+                  isArabic() ? 'تاريخ الإصدار:' : 'Issue Date:'
+                }}</span>
+                <span class="invoice-value">
+                  {{ formatDate(selectedInvoice()!.issuedAt) }}
+                </span>
+              </div>
+            </div>
+          }
+        </div>
+        <div class="modal-footer">
+          @if (!purchaseError()) {
+            <button class="download-btn" (click)="downloadInvoice()">
+              <i class="fas fa-download"></i>
+              <span>{{ isArabic() ? 'تحميل الفاتورة' : 'Download Invoice' }}</span>
+            </button>
+          }
+          <button class="close-modal-btn" (click)="closeInvoiceModal()">
+            <span>{{ isArabic() ? 'إغلاق' : 'Close' }}</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+</div>

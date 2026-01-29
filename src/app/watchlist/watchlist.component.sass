@@ -1,0 +1,85 @@
+.watchlist-page
+  min-height: 100vh
+  padding: 2rem 1rem
+
+  .container
+    max-width: 1200px
+    margin: 0 auto
+
+  .page-header
+    margin-bottom: 2rem
+
+    h1
+      font-size: 2rem
+      color: var(--text-primary)
+
+  .loading, .empty-state
+    text-align: center
+    padding: 4rem 2rem
+    color: var(--text-secondary)
+
+    i
+      font-size: 3rem
+      margin-bottom: 1rem
+
+  .watchlist-grid
+    display: grid
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr))
+    gap: 1.5rem
+
+    .watchlist-card
+      background: var(--bg-secondary)
+      border: 1px solid var(--border-color)
+      border-radius: 8px
+      overflow: hidden
+      transition: transform 0.3s
+
+      &:hover
+        transform: translateY(-5px)
+
+      img
+        width: 100%
+        height: 200px
+        object-fit: cover
+        cursor: pointer
+
+      .card-content
+        padding: 1rem
+
+        h3
+          margin: 0 0 0.5rem 0
+          color: var(--text-primary)
+          cursor: pointer
+
+          &:hover
+            color: var(--gold)
+
+        .auction-info
+          display: flex
+          justify-content: space-between
+          margin-bottom: 1rem
+
+          .price
+            color: var(--gold)
+            font-weight: bold
+
+          .time
+            color: var(--text-secondary)
+            font-size: 0.9rem
+
+        .remove-btn
+          width: 100%
+          padding: 0.5rem
+          background: transparent
+          border: 1px solid var(--border-color)
+          border-radius: 4px
+          color: var(--text-secondary)
+          cursor: pointer
+          display: flex
+          align-items: center
+          justify-content: center
+          gap: 0.5rem
+
+          &:hover
+            background: var(--bg-tertiary)
+            color: var(--gold)

@@ -1,0 +1,220 @@
+<div class="admin-panel">
+  <div class="admin-header">
+    <div class="admin-header-content">
+      <h1 class="admin-panel-title">
+        <i class="fas fa-user-shield"></i>
+        <span>{{ isArabic() ? 'لوحة تحكم الأدمن' : 'Admin Panel' }}</span>
+      </h1>
+      <button class="admin-logout-btn" (click)="logout()">
+        <i class="fas fa-sign-out-alt"></i>
+        <span>{{ isArabic() ? 'تسجيل الخروج' : 'Logout' }}</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="admin-content">
+    @if (isLoading()) {
+      <div class="loading-container">
+        <i class="fas fa-spinner fa-spin"></i>
+        <p>{{ isArabic() ? 'جاري التحميل...' : 'Loading...' }}</p>
+      </div>
+    } @else {
+      <div class="admin-boxes">
+        <!-- Box 1: Users & Home Page -->
+        <div class="admin-box">
+          <div class="admin-rectangle" (click)="goToUsersManagement()">
+            <div class="rectangle-header">
+              <div class="rectangle-icon">
+                <i class="fas fa-users"></i>
+              </div>
+              <h3>{{ isArabic() ? 'إدارة المستخدمين' : 'Users Management' }}</h3>
+            </div>
+            <p>{{ isArabic() ? 'عرض وإدارة المستخدمين وحساباتهم' : 'View and manage users and their accounts' }}</p>
+            @if (stats()) {
+              <div class="rectangle-chart">
+                <div class="chart-bars">
+                  <div class="chart-bar" [style.height.%]="100">
+                    <div class="bar-fill" [style.height.%]="100"></div>
+                    <span class="bar-label">{{ isArabic() ? 'إجمالي' : 'Total' }}</span>
+                    <span class="bar-value">{{ stats()!.users.total }}</span>
+                  </div>
+                  <div class="chart-bar" [style.height.%]="stats()!.users.total > 0 ? (stats()!.users.online / stats()!.users.total) * 100 : 0">
+                    <div class="bar-fill online" [style.height.%]="stats()!.users.total > 0 ? (stats()!.users.online / stats()!.users.total) * 100 : 0"></div>
+                    <span class="bar-label">{{ isArabic() ? 'أونلاين' : 'Online' }}</span>
+                    <span class="bar-value">{{ stats()!.users.online }}</span>
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+          <div class="admin-rectangle" (click)="goToEditHomePage()">
+            <div class="rectangle-header">
+              <div class="rectangle-icon">
+                <i class="fas fa-edit"></i>
+              </div>
+              <h3>{{ isArabic() ? 'تعديل الصفحة الرئيسية' : 'Edit Home Page' }}</h3>
+            </div>
+            <p>{{ isArabic() ? 'إدارة صور Hero Section و How It Works' : 'Manage Hero Section and How It Works images' }}</p>
+            <div class="rectangle-chart">
+              <div class="simple-chart">
+                <div class="chart-circle">
+                  <svg viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="40" fill="none" stroke="var(--border-primary)" stroke-width="8"/>
+                    <circle cx="50" cy="50" r="40" fill="none" stroke="var(--gold-primary)" stroke-width="8" stroke-dasharray="251" stroke-dashoffset="50" transform="rotate(-90 50 50)"/>
+                  </svg>
+                  <span class="chart-percentage">80%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Box 2: Money Requests & Customer Feedback -->
+        <div class="admin-box">
+          <div class="admin-rectangle" (click)="goToMoneyRequests()">
+            <div class="rectangle-header">
+              <div class="rectangle-icon">
+                <i class="fas fa-money-bill-wave"></i>
+              </div>
+              <h3>{{ isArabic() ? 'طلبات الإيداع' : 'Money Requests' }}</h3>
+            </div>
+            <p>{{ isArabic() ? 'مراجعة وموافقة أو رفض طلبات إضافة الرصيد' : 'Review and approve or reject deposit requests' }}</p>
+            @if (stats()) {
+              <div class="rectangle-chart">
+                <div class="chart-progress">
+                  <div class="progress-bar">
+                    <div class="progress-fill pending" [style.width.%]="stats()!.moneyRequests.pending > 0 ? Math.min((stats()!.moneyRequests.pending / 10) * 100, 100) : 0"></div>
+                  </div>
+                  <div class="progress-info">
+                    <span class="progress-label">{{ isArabic() ? 'في الانتظار' : 'Pending' }}</span>
+                    <span class="progress-value pending">{{ stats()!.moneyRequests.pending }}</span>
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+          <div class="admin-rectangle" (click)="goToCustomerFeedback()">
+            <div class="rectangle-header">
+              <div class="rectangle-icon">
+                <i class="fas fa-comments"></i>
+              </div>
+              <h3>{{ isArabic() ? 'آراء العملاء' : 'Customer Feedback' }}</h3>
+            </div>
+            <p>{{ isArabic() ? 'عرض والرد على رسائل خدمة العملاء' : 'View and respond to customer service messages' }}</p>
+            @if (stats()) {
+              <div class="rectangle-chart">
+                <div class="chart-progress">
+                  <div class="progress-bar">
+                    <div class="progress-fill pending" [style.width.%]="stats()!.customerSupport.pending > 0 ? Math.min((stats()!.customerSupport.pending / 10) * 100, 100) : 0"></div>
+                  </div>
+                  <div class="progress-info">
+                    <span class="progress-label">{{ isArabic() ? 'في الانتظار' : 'Pending' }}</span>
+                    <span class="progress-value pending">{{ stats()!.customerSupport.pending }}</span>
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+
+        <!-- Box 3: Job Applications & Auction Products -->
+        <div class="admin-box">
+          <div class="admin-rectangle" (click)="goToJobApplications()">
+            <div class="rectangle-header">
+              <div class="rectangle-icon">
+                <i class="fas fa-briefcase"></i>
+              </div>
+              <h3>{{ isArabic() ? 'طلبات التوظيف' : 'Job Applications' }}</h3>
+            </div>
+            <p>{{ isArabic() ? 'مراجعة والرد على طلبات التوظيف' : 'Review and respond to job applications' }}</p>
+            @if (stats()) {
+              <div class="rectangle-chart">
+                <div class="chart-progress">
+                  <div class="progress-bar">
+                    <div class="progress-fill pending" [style.width.%]="stats()!.jobApplications.pending > 0 ? Math.min((stats()!.jobApplications.pending / 10) * 100, 100) : 0"></div>
+                  </div>
+                  <div class="progress-info">
+                    <span class="progress-label">{{ isArabic() ? 'في الانتظار' : 'Pending' }}</span>
+                    <span class="progress-value pending">{{ stats()!.jobApplications.pending }}</span>
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+          <div class="admin-rectangle" (click)="goToAuctionProducts()">
+            <div class="rectangle-header">
+              <div class="rectangle-icon">
+                <i class="fas fa-gavel"></i>
+              </div>
+              <h3>{{ isArabic() ? 'منتجات المزاد' : 'Auction Products' }}</h3>
+            </div>
+            <p>{{ isArabic() ? 'مراجعة وموافقة أو رفض منتجات المزاد' : 'Review and approve or reject auction products' }}</p>
+            @if (stats()) {
+              <div class="rectangle-chart">
+                <div class="chart-progress">
+                  <div class="progress-bar">
+                    <div class="progress-fill pending" [style.width.%]="stats()!.auctionProducts.pending > 0 ? Math.min((stats()!.auctionProducts.pending / 10) * 100, 100) : 0"></div>
+                  </div>
+                  <div class="progress-info">
+                    <span class="progress-label">{{ isArabic() ? 'في الانتظار' : 'Pending' }}</span>
+                    <span class="progress-value pending">{{ stats()!.auctionProducts.pending }}</span>
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+
+        <!-- Box 4: Auctions & Send Messages -->
+        <div class="admin-box">
+          <div class="admin-rectangle" (click)="goToAuctionsManagement()">
+            <div class="rectangle-header">
+              <div class="rectangle-icon">
+                <i class="fas fa-hammer"></i>
+              </div>
+              <h3>{{ isArabic() ? 'إدارة المزادات' : 'Auctions Management' }}</h3>
+            </div>
+            <p>{{ isArabic() ? 'إضافة وإدارة المزادات' : 'Add and manage auctions' }}</p>
+            @if (stats()) {
+              <div class="rectangle-chart">
+                <div class="chart-bars">
+                  <div class="chart-bar" [style.height.%]="100">
+                    <div class="bar-fill" [style.height.%]="100"></div>
+                    <span class="bar-label">{{ isArabic() ? 'إجمالي' : 'Total' }}</span>
+                    <span class="bar-value">{{ stats()!.auctions.total }}</span>
+                  </div>
+                  <div class="chart-bar" [style.height.%]="stats()!.auctions.total > 0 ? (stats()!.auctions.active / stats()!.auctions.total) * 100 : 0">
+                    <div class="bar-fill active" [style.height.%]="stats()!.auctions.total > 0 ? (stats()!.auctions.active / stats()!.auctions.total) * 100 : 0"></div>
+                    <span class="bar-label">{{ isArabic() ? 'نشطة' : 'Active' }}</span>
+                    <span class="bar-value">{{ stats()!.auctions.active }}</span>
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+          <div class="admin-rectangle" (click)="goToSendMessages()">
+            <div class="rectangle-header">
+              <div class="rectangle-icon">
+                <i class="fas fa-envelope"></i>
+              </div>
+              <h3>{{ isArabic() ? 'إرسال الرسائل وإدارة المبيعات' : 'Send Messages & Sales' }}</h3>
+            </div>
+            <p>{{ isArabic() ? 'إرسال رسائل للمستخدمين وإدارة المنتجات' : 'Send messages to users and manage products' }}</p>
+            <div class="rectangle-chart">
+              <div class="simple-chart">
+                <div class="chart-circle">
+                  <svg viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="40" fill="none" stroke="var(--border-primary)" stroke-width="8"/>
+                    <circle cx="50" cy="50" r="40" fill="none" stroke="var(--gold-primary)" stroke-width="8" stroke-dasharray="251" stroke-dashoffset="125" transform="rotate(-90 50 50)"/>
+                  </svg>
+                  <span class="chart-percentage">50%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+</div>
+

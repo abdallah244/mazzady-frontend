@@ -1,0 +1,277 @@
+<div class="auctions-page" [attr.data-theme]="currentTheme()">
+  <div class="container">
+    <!-- Header -->
+    <header class="page-header">
+      <h1 class="page-title">{{ title() }}</h1>
+    </header>
+
+    <!-- Search and Category Bar -->
+    <div class="search-category-bar">
+      <!-- Search Input -->
+      <div class="search-box">
+        <i class="fas fa-search"></i>
+        <input
+          type="text"
+          [placeholder]="searchPlaceholder()"
+          [(ngModel)]="searchQueryValue"
+          class="search-input"
+        />
+      </div>
+
+      <!-- Category Dropdown -->
+      <div class="category-dropdown">
+        <select [(ngModel)]="selectedCategoryValue" class="category-select">
+          @for (category of categories(); track category) {
+            <option [value]="category">
+              {{ getCategoryName(category) }}
+            </option>
+          }
+        </select>
+        <i class="fas fa-chevron-down"></i>
+      </div>
+
+      <!-- Sellers Button -->
+      <button class="sellers-button" (click)="openSellersModal()">
+        <i class="fas fa-users"></i>
+        <span>{{ sellersButton() }}</span>
+      </button>
+
+      <!-- Filters Toggle Button (Mobile) -->
+      <button class="filters-toggle" (click)="toggleFilters()">
+        <i class="fas fa-filter"></i>
+        <span>{{ filters() }}</span>
+      </button>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <!-- Sidebar Filters -->
+      <aside class="filters-sidebar" [class.open]="showFilters()">
+        <div class="sidebar-header">
+          <h2>{{ filters() }}</h2>
+          <button class="close-filters" (click)="toggleFilters()">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+
+        <div class="filters-content">
+          <!-- Price Range -->
+          <div class="filter-section">
+            <label class="filter-label">{{ priceRangeLabel() }}</label>
+            <div class="price-range-inputs">
+              <input
+                type="number"
+                [(ngModel)]="priceRangeMinValue"
+                [placeholder]="isArabic() ? 'من' : 'Min'"
+                class="price-input"
+              />
+              <span class="price-separator">-</span>
+              <input
+                type="number"
+                [(ngModel)]="priceRangeMaxValue"
+                [placeholder]="isArabic() ? 'إلى' : 'Max'"
+                class="price-input"
+              />
+            </div>
+          </div>
+
+          <!-- Sort By -->
+          <div class="filter-section">
+            <label class="filter-label">{{ sortByLabel() }}</label>
+            <select [(ngModel)]="sortByValue" class="sort-select">
+              <option value="newest">{{ newest() }}</option>
+              <option value="oldest">{{ oldest() }}</option>
+              <option value="price-low">{{ priceLowToHigh() }}</option>
+              <option value="price-high">{{ priceHighToLow() }}</option>
+            </select>
+          </div>
+
+          <!-- Filter Actions -->
+          <div class="filter-actions">
+            <button class="clear-filters-btn" (click)="clearAllFilters()">
+              {{ clearFilters() }}
+            </button>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Products Grid -->
+      <div class="products-section">
+        @if (loading()) {
+          <div class="loading-state">
+            <div class="spinner"></div>
+            <p>{{ loadingText() }}</p>
+          </div>
+        } @else if (filteredProducts().length === 0) {
+          <div class="empty-state">
+            <i class="fas fa-box-open"></i>
+            <p>{{ noProducts() }}</p>
+          </div>
+        } @else {
+          <div class="products-grid">
+            @for (product of filteredProducts(); track product._id) {
+              <div class="product-card" (click)="onProductClick(product)">
+                <!-- Product Image -->
+                <div class="product-image">
+                  <img [src]="getImageUrl(product)" [alt]="'Product ' + product._id" />
+                  <div class="product-overlay">
+                    <button class="view-details-btn">{{ viewDetails() }}</button>
+                  </div>
+                </div>
+
+                <!-- Product Info -->
+                <div class="product-info">
+                  <!-- Seller Info -->
+                  <div class="seller-info">
+                    @if (product.userId.profileImageUrl) {
+                      <img
+                        [src]="product.userId.profileImageUrl | assetUrl"
+                        [alt]="product.userId.firstName"
+                        class="seller-avatar"
+                      />
+                    } @else {
+                      <div class="seller-avatar-placeholder">
+                        <i class="fas fa-user"></i>
+                      </div>
+                    }
+                    <div class="seller-details">
+                      <span class="seller-name">
+                        {{ product.userId.firstName }} {{ product.userId.lastName }}
+                      </span>
+                      @if (product.sellerLikesCount !== undefined && product.sellerLikesCount > 0) {
+                        <div class="seller-likes">
+                          <i class="fas fa-heart"></i>
+                          <span>{{ product.sellerLikesCount }}</span>
+                        </div>
+                      }
+                    </div>
+                  </div>
+
+                  <!-- Price Info -->
+                  <div class="price-info">
+                    @if (product.currentBid) {
+                      <div class="current-bid">
+                        <span class="price-label">{{ currentBidLabel() }}:</span>
+                        <span class="price-value">{{ formatPrice(product.currentBid) }}</span>
+                      </div>
+                    } @else {
+                      <div class="starting-price">
+                        <span class="price-label">{{ startingPriceLabel() }}:</span>
+                        <span class="price-value">{{ formatPrice(product.startingPrice) }}</span>
+                      </div>
+                    }
+                  </div>
+
+                  <!-- Category Badge -->
+                  @if (product.category) {
+                    <div class="category-badge">
+                      {{ getCategoryName(product.category) }}
+                    </div>
+                  }
+
+                  <!-- Timer -->
+                  @if (product.endDate && product.status === 'active') {
+                    <div class="timer-info">
+                      <i class="fas fa-clock"></i>
+                      <span class="timer-value">{{ formatTimeRemaining(product.endDate) }}</span>
+                    </div>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+
+  <!-- Sellers Modal -->
+  @if (showSellersModal()) {
+    <div class="sellers-modal-overlay" (click)="closeSellersModal()">
+      <div class="sellers-modal-container" (click)="$event.stopPropagation()">
+        <div class="sellers-modal-header">
+          <h2>{{ sellersModalTitle() || (isArabic() ? 'جميع البائعين' : 'All Sellers') }}</h2>
+          <button class="close-btn" (click)="closeSellersModal()">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="sellers-modal-content">
+          @if (sellersLoading()) {
+            <div class="loading-state">
+              <div class="spinner"></div>
+              <p>{{ loadingText() || (isArabic() ? 'جاري التحميل...' : 'Loading...') }}</p>
+            </div>
+          } @else if (sellers().length === 0) {
+            <div class="empty-state">
+              <i class="fas fa-users"></i>
+              <p>{{ sellersModalNoSellers() || (isArabic() ? 'لا يوجد بائعين' : 'No sellers') }}</p>
+            </div>
+          } @else {
+            <div class="sellers-list">
+              @for (seller of sellers(); track seller.sellerId) {
+                <div class="seller-card">
+                  <div class="seller-card-header">
+                    @if (seller.profileImageUrl) {
+                      <img
+                        [src]="getSellerImageUrl(seller)"
+                        [alt]="seller.firstName"
+                        class="seller-card-avatar"
+                      />
+                    } @else {
+                      <div class="seller-card-avatar-placeholder">
+                        <i class="fas fa-user"></i>
+                      </div>
+                    }
+                    <div class="seller-card-info">
+                      <h3 class="seller-card-name">
+                        {{ seller.firstName }} {{ seller.middleName }} {{ seller.lastName }}
+                      </h3>
+                      <p class="seller-card-nickname">@{{ seller.nickname }}</p>
+                    </div>
+                    <!-- Like Button -->
+                    <button
+                      class="seller-like-btn"
+                      [class.liked]="isSellerLikedByUser(seller.sellerId)"
+                      [class.loading]="isLikingInProgress(seller.sellerId)"
+                      (click)="toggleSellerLike(seller)"
+                      [disabled]="isLikingInProgress(seller.sellerId)"
+                    >
+                      @if (isLikingInProgress(seller.sellerId)) {
+                        <i class="fas fa-spinner fa-spin"></i>
+                      } @else {
+                        <i
+                          class="fas fa-heart"
+                          [class.far]="!isSellerLikedByUser(seller.sellerId)"
+                        ></i>
+                      }
+                    </button>
+                  </div>
+                  <div class="seller-card-stats">
+                    <div class="stat-item">
+                      <i class="fas fa-gavel"></i>
+                      <span class="stat-label">{{ sellersModalTotalAuctions() }}:</span>
+                      <span class="stat-value">{{ seller.totalAuctions }}</span>
+                    </div>
+                    <div class="stat-item">
+                      <i class="fas fa-heart"></i>
+                      <span class="stat-label">{{ sellersModalLikes() }}:</span>
+                      <span class="stat-value">{{ seller.likesCount }}</span>
+                    </div>
+                    @if (seller.totalRatings > 0) {
+                      <div class="stat-item">
+                        <i class="fas fa-star"></i>
+                        <span class="stat-label">{{ sellersModalRating() }}:</span>
+                        <span class="stat-value">{{ formatRating(seller.averageRating) }}</span>
+                        <span class="stat-subtext">({{ seller.totalRatings }})</span>
+                      </div>
+                    }
+                  </div>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  }
+</div>

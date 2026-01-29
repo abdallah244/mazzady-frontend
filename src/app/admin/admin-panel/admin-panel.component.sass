@@ -1,0 +1,318 @@
+.admin-panel
+  min-height: 100vh
+  background-color: var(--bg-primary)
+  display: flex
+  flex-direction: column
+
+.admin-header
+  background-color: var(--bg-secondary)
+  border-bottom: 2px solid var(--gold-primary)
+  padding: clamp(1rem, 2.5vw, 1.5rem) clamp(1.5rem, 4vw, 2rem)
+  box-shadow: 0 2px 8px var(--shadow-color)
+
+.admin-header-content
+  max-width: 1400px
+  margin: 0 auto
+  display: flex
+  align-items: center
+  justify-content: space-between
+  gap: clamp(1rem, 3vw, 2rem)
+
+.admin-panel-title
+  display: flex
+  align-items: center
+  gap: clamp(0.75rem, 2vw, 1rem)
+  color: var(--gold-primary)
+  font-size: clamp(1.5rem, 4vw, 2rem)
+  font-weight: 700
+  margin: 0
+  letter-spacing: -0.5px
+
+  i
+    font-size: clamp(1.75rem, 4.5vw, 2.25rem)
+
+.admin-logout-btn
+  display: flex
+  align-items: center
+  gap: clamp(0.5rem, 1.5vw, 0.75rem)
+  padding: clamp(0.75rem, 2vw, 1rem) clamp(1.5rem, 4vw, 2rem)
+  border: 2px solid var(--error-color)
+  border-radius: clamp(8px, 2vw, 10px)
+  background-color: var(--bg-tertiary)
+  color: var(--error-color)
+  font-size: clamp(0.9rem, 2.3vw, 1rem)
+  font-weight: 600
+  cursor: pointer
+  transition: background-color 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94)
+
+  i
+    font-size: clamp(1rem, 2.5vw, 1.1rem)
+
+  &:hover
+    background-color: var(--error-bg)
+    border-color: var(--error-color)
+    color: var(--error-color)
+    transform: translateY(-2px)
+    box-shadow: 0 4px 12px var(--shadow-color)
+
+  &:active
+    transform: translateY(0)
+
+.admin-content
+  flex: 1
+  padding: clamp(2rem, 5vw, 4rem) clamp(1.5rem, 4vw, 2rem)
+  max-width: 1400px
+  margin: 0 auto
+  width: 100%
+
+.admin-boxes
+  display: grid
+  grid-template-columns: repeat(2, 1fr)
+  gap: clamp(1.5rem, 3vw, 2rem)
+  width: 100%
+
+.admin-box
+  display: flex
+  flex-direction: column
+  gap: clamp(1rem, 2vw, 1.5rem)
+  background: var(--bg-secondary)
+  border: 2px solid var(--border-primary)
+  border-radius: 20px
+  padding: clamp(1.5rem, 3vw, 2rem)
+  transition: border-color 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94)
+
+  &:hover
+    border-color: var(--gold-primary)
+    box-shadow: 0 4px 16px rgba(212, 175, 55, 0.15)
+
+.admin-rectangle
+  flex: 1
+  padding: clamp(1.5rem, 3vw, 2rem)
+  background: var(--bg-primary)
+  border: 2px solid var(--border-primary)
+  border-radius: 16px
+  cursor: pointer
+  transition: border-color 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94)
+  display: flex
+  flex-direction: column
+  min-height: 280px
+
+  &:hover
+    border-color: var(--gold-primary)
+    transform: translateY(-2px)
+    box-shadow: 0 6px 20px rgba(212, 175, 55, 0.2)
+
+  &:active
+    transform: translateY(0)
+
+.rectangle-header
+  display: flex
+  align-items: center
+  gap: clamp(0.75rem, 2vw, 1rem)
+  margin-bottom: clamp(0.75rem, 2vw, 1rem)
+
+  .rectangle-icon
+    width: clamp(50px, 6vw, 60px)
+    height: clamp(50px, 6vw, 60px)
+    display: flex
+    align-items: center
+    justify-content: center
+    background: linear-gradient(135deg, var(--gold-primary) 0%, #f4d03f 100%)
+    border-radius: 12px
+    color: #161616
+    font-size: clamp(20px, 3vw, 24px)
+    flex-shrink: 0
+
+  h3
+    font-size: clamp(18px, 2.5vw, 22px)
+    font-weight: 600
+    color: var(--text-primary)
+    margin: 0
+    flex: 1
+
+  p
+    font-size: clamp(13px, 1.8vw, 15px)
+    color: var(--text-secondary)
+    margin: 0 0 clamp(1rem, 2vw, 1.5rem) 0
+    line-height: 1.5
+
+.rectangle-chart
+  margin-top: auto
+  padding-top: clamp(1rem, 2vw, 1.5rem)
+
+.chart-bars
+  display: flex
+  align-items: flex-end
+  justify-content: center
+  gap: clamp(1rem, 2vw, 1.5rem)
+  height: 120px
+
+  .chart-bar
+    flex: 1
+    max-width: 80px
+    height: 100%
+    display: flex
+    flex-direction: column
+    align-items: center
+    justify-content: flex-end
+    position: relative
+
+    .bar-fill
+      width: 100%
+      background: linear-gradient(180deg, var(--gold-primary) 0%, #f4d03f 100%)
+      border-radius: 8px 8px 0 0
+      transition: height 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)
+      min-height: 20px
+
+      &.online
+        background: linear-gradient(180deg, #27ae60 0%, #2ecc71 100%)
+
+      &.active
+        background: linear-gradient(180deg, #3498db 0%, #5dade2 100%)
+
+    .bar-label
+      font-size: clamp(11px, 1.5vw, 13px)
+      color: var(--text-secondary)
+      margin-top: 8px
+      text-align: center
+
+    .bar-value
+      font-size: clamp(14px, 2vw, 16px)
+      font-weight: 700
+      color: var(--text-primary)
+      margin-top: 4px
+
+.chart-progress
+  display: flex
+  flex-direction: column
+  gap: 12px
+
+  .progress-bar
+    width: 100%
+    height: 12px
+    background: var(--bg-secondary)
+    border-radius: 6px
+    overflow: hidden
+    border: 1px solid var(--border-primary)
+
+    .progress-fill
+      height: 100%
+      background: linear-gradient(90deg, var(--gold-primary) 0%, #f4d03f 100%)
+      border-radius: 6px
+      transition: width 0.5s ease
+
+      &.pending
+        background: linear-gradient(90deg, #f39c12 0%, #f4a460 100%)
+
+  .progress-info
+    display: flex
+    justify-content: space-between
+    align-items: center
+
+    .progress-label
+      font-size: clamp(13px, 1.8vw, 15px)
+      color: var(--text-secondary)
+      font-weight: 500
+
+    .progress-value
+      font-size: clamp(16px, 2.2vw, 20px)
+      font-weight: 700
+      color: var(--gold-primary)
+
+      &.pending
+        color: #f39c12
+
+.simple-chart
+  display: flex
+  justify-content: center
+  align-items: center
+
+  .chart-circle
+    position: relative
+    width: 120px
+    height: 120px
+
+    svg
+      width: 100%
+      height: 100%
+      transform: rotate(-90deg)
+
+      circle
+        transition: stroke-dashoffset 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)
+
+    .chart-percentage
+      position: absolute
+      top: 50%
+      left: 50%
+      transform: translate(-50%, -50%)
+      font-size: clamp(18px, 2.5vw, 22px)
+      font-weight: 700
+      color: var(--gold-primary)
+
+.loading-container
+  display: flex
+  flex-direction: column
+  align-items: center
+  justify-content: center
+  gap: clamp(1rem, 2.5vw, 1.5rem)
+  padding: clamp(4rem, 10vw, 6rem) 0
+  text-align: center
+
+  i
+    font-size: clamp(2rem, 5vw, 3rem)
+    color: var(--gold-primary)
+
+  p
+    color: var(--text-secondary)
+    font-size: clamp(1rem, 2.5vw, 1.25rem)
+    margin: 0
+
+.admin-placeholder
+  display: flex
+  flex-direction: column
+  align-items: center
+  justify-content: center
+  gap: clamp(1.5rem, 4vw, 2rem)
+  padding: clamp(4rem, 10vw, 6rem) 0
+  text-align: center
+
+  i
+    font-size: clamp(4rem, 10vw, 6rem)
+    color: var(--gold-primary)
+    opacity: 0.5
+
+  p
+    color: var(--text-secondary)
+    font-size: clamp(1.25rem, 3vw, 1.5rem)
+    margin: 0
+
+// Responsive
+@media (max-width: 1024px)
+  .admin-boxes
+    grid-template-columns: 1fr
+
+  .admin-box
+    padding: clamp(1rem, 2.5vw, 1.5rem)
+
+@media (max-width: 768px)
+  .admin-header-content
+    flex-direction: column
+    align-items: flex-start
+
+  .admin-logout-btn
+    width: 100%
+
+  .admin-boxes
+    grid-template-columns: 1fr
+    gap: clamp(1rem, 2.5vw, 1.5rem)
+
+  .admin-rectangle
+    min-height: 240px
+
+  .chart-bars
+    height: 100px
+    gap: clamp(0.75rem, 2vw, 1rem)
+
+  .chart-circle
+    width: 100px !important
+    height: 100px !important

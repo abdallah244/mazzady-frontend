@@ -1,0 +1,998 @@
+.login-container
+  display: flex
+  justify-content: center
+  align-items: center
+  min-height: 100vh
+  padding: clamp(0.5rem, 2vw, 1.5rem)
+  position: relative
+
+.admin-login-btn
+  position: fixed
+  top: clamp(1rem, 3vw, 1.5rem)
+  right: clamp(1rem, 3vw, 1.5rem)
+  width: clamp(44px, 11vw, 56px)
+  height: clamp(44px, 11vw, 56px)
+  border-radius: 50%
+  background-color: var(--bg-tertiary)
+  border: 2px solid var(--gold-primary)
+  color: var(--gold-primary)
+  cursor: pointer
+  display: flex
+  align-items: center
+  justify-content: center
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1)
+  z-index: 100
+  box-shadow: 0 4px 12px var(--shadow-color)
+
+  i
+    font-size: clamp(1.1rem, 2.8vw, 1.4rem)
+
+  &:hover
+    background-color: var(--gold-primary)
+    color: var(--text-quaternary)
+    transform: scale(1.1) rotate(5deg)
+    box-shadow: 0 6px 20px var(--gold-shadow)
+
+  &:active
+    transform: scale(0.95)
+
+.login-box
+  width: 100%
+  max-width: min(600px, 95vw)
+  background-color: var(--bg-primary)
+  border: 2px solid var(--gold-primary)
+  border-radius: clamp(12px, 2vw, 16px)
+  padding: clamp(1.5rem, 5vw, 3rem)
+  box-shadow: 0 8px 32px var(--shadow-color), 0 0 0 1px var(--gold-hover)
+  position: relative
+
+.steps-indicator
+  display: flex
+  justify-content: space-between
+  align-items: center
+  margin-bottom: 3rem
+  position: relative
+  padding: 0 1rem
+
+.step-item
+  display: flex
+  align-items: center
+  flex: 1
+  position: relative
+
+.step-circle
+  width: clamp(32px, 8vw, 44px)
+  height: clamp(32px, 8vw, 44px)
+  min-width: clamp(32px, 8vw, 44px)
+  border-radius: 50%
+  background-color: var(--bg-tertiary)
+  border: 2px solid var(--border-primary)
+  color: var(--text-tertiary)
+  display: flex
+  align-items: center
+  justify-content: center
+  font-weight: 700
+  font-size: clamp(0.85rem, 2vw, 1rem)
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1)
+  z-index: 2
+  position: relative
+
+.step-item.active .step-circle
+  background-color: var(--gold-primary)
+  border-color: var(--gold-primary)
+  color: var(--text-quaternary)
+  box-shadow: 0 4px 16px var(--gold-shadow), 0 0 0 4px var(--gold-hover)
+  transform: scale(1.1)
+
+.step-item.completed .step-circle
+  background-color: var(--success-color)
+  border-color: var(--success-border)
+  color: #fff
+  box-shadow: 0 2px 8px rgba(74, 124, 31, 0.3)
+
+.step-line
+  flex: 1
+  height: 3px
+  background-color: var(--bg-quaternary)
+  margin: 0 10px
+  border-radius: 2px
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1)
+
+.step-line.completed
+  background: linear-gradient(90deg, var(--success-border) 0%, #5a9c2f 100%)
+  box-shadow: 0 0 8px rgba(74, 124, 31, 0.3)
+
+.welcome-title
+  color: var(--gold-primary)
+  font-size: clamp(1.5rem, 4vw, 2.25rem)
+  font-weight: 700
+  text-align: center
+  margin-bottom: clamp(1.5rem, 4vw, 2.5rem)
+  margin-top: 0
+  letter-spacing: -0.5px
+  line-height: 1.2
+
+.login-form
+  display: flex
+  flex-direction: column
+  gap: 2rem
+
+.step-content
+  min-height: 200px
+  opacity: 0
+  transform: translateY(15px)
+  animation: stepFadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards
+
+.step-enter
+  animation: stepFadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards
+
+@keyframes stepFadeIn
+  from
+    opacity: 0
+    transform: translateY(15px)
+  to
+    opacity: 1
+    transform: translateY(0)
+
+.step-title
+  color: var(--gold-primary)
+  font-size: clamp(1.25rem, 3.5vw, 1.75rem)
+  font-weight: 600
+  text-align: center
+  margin-bottom: clamp(1rem, 3vw, 2rem)
+  letter-spacing: -0.3px
+
+.form-group
+  display: flex
+  flex-direction: column
+  gap: clamp(0.5rem, 1.5vw, 0.75rem)
+  width: 100%
+
+  label
+    color: var(--gold-primary)
+    font-weight: 600
+    font-size: clamp(0.9rem, 2.5vw, 1rem)
+    letter-spacing: 0.2px
+    width: 100%
+    margin-bottom: clamp(0.25rem, 0.8vw, 0.5rem)
+    padding: 0 clamp(0.25rem, 0.8vw, 0.5rem)
+    box-sizing: border-box
+
+  input[type="email"],
+  input[type="password"],
+  input[type="text"]
+    padding: clamp(0.75rem, 2vw, 1rem)
+    border: 2px solid var(--border-primary)
+    border-radius: clamp(6px, 1.5vw, 8px)
+    background-color: var(--bg-secondary)
+    color: var(--text-primary)
+    font-size: clamp(0.95rem, 2.5vw, 1.05rem)
+    line-height: 1.5
+    letter-spacing: 0.3px
+    text-align: left
+    font-weight: 400
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1)
+
+    &:focus
+      outline: none
+      border-color: var(--gold-primary)
+      background-color: var(--bg-tertiary)
+      box-shadow: 0 0 0 4px var(--gold-hover), 0 4px 12px var(--shadow-color)
+
+    &::placeholder
+      color: var(--text-tertiary)
+
+    &.error
+      border-color: var(--error-color)
+      background-color: var(--error-bg)
+
+.checkbox-group
+  flex-direction: column
+  align-items: flex-start
+  gap: 1rem
+
+.checkbox-label
+  display: flex
+  align-items: center
+  gap: 0.5rem
+  cursor: pointer
+  color: var(--gold-primary)
+  font-weight: 500
+
+  input[type="checkbox"]
+    width: 18px
+    height: 18px
+    cursor: pointer
+    accent-color: var(--gold-primary)
+
+.remember-me-info
+  background-color: var(--gold-hover)
+  border: 1px solid var(--gold-primary)
+  border-radius: 8px
+  padding: 0.75rem
+  margin-top: 0.5rem
+  width: 100%
+
+  p
+    color: var(--gold-primary)
+    font-size: 0.9rem
+    margin: 0
+    line-height: 1.5
+    display: flex
+    align-items: center
+    gap: 0.5rem
+
+    i
+      color: var(--gold-secondary)
+      font-size: 1rem
+
+    strong
+      color: var(--gold-secondary)
+      font-weight: 600
+
+.error-message
+  color: var(--error-color)
+  font-size: 0.85rem
+  margin-top: 0.25rem
+
+.error-alert
+  background-color: var(--error-bg)
+  border: 1px solid var(--error-color)
+  color: var(--error-color)
+  padding: 0.75rem
+  border-radius: 6px
+  font-size: 0.9rem
+  text-align: center
+  margin-top: 1rem
+
+.form-actions
+  display: flex
+  gap: 1rem
+  margin-top: 2.5rem
+  justify-content: space-between
+
+.prev-button,
+.next-button,
+.submit-button
+  padding: clamp(0.875rem, 2.5vw, 1rem) clamp(1.5rem, 4vw, 2rem)
+  border: none
+  border-radius: clamp(6px, 1.5vw, 8px)
+  font-size: clamp(0.9rem, 2.5vw, 1rem)
+  font-weight: 600
+  cursor: pointer
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1)
+  flex: 1
+  letter-spacing: 0.3px
+  min-height: clamp(44px, 10vw, 48px)
+
+.prev-button
+  background-color: var(--bg-tertiary)
+  color: var(--gold-primary)
+  border: 2px solid var(--border-primary)
+
+  &:hover
+    background-color: var(--bg-hover)
+    border-color: var(--gold-primary)
+    transform: translateY(-2px)
+    box-shadow: 0 4px 12px var(--shadow-color)
+
+.next-button,
+.submit-button
+  background-color: var(--gold-primary)
+  color: var(--text-quaternary)
+  box-shadow: 0 4px 12px var(--gold-shadow)
+
+  &:hover:not(:disabled)
+    background-color: var(--gold-secondary)
+    transform: translateY(-2px)
+    box-shadow: 0 6px 16px var(--gold-shadow-hover)
+
+  &:active:not(:disabled)
+    transform: translateY(0)
+    box-shadow: 0 2px 8px rgba(212, 175, 55, 0.3)
+
+  &:disabled
+    opacity: 0.6
+    cursor: not-allowed
+    transform: none
+
+.register-link
+  margin-top: 1.5rem
+  text-align: center
+
+  p
+    color: var(--text-primary)
+    margin: 0
+
+  a
+    color: var(--gold-primary)
+    text-decoration: none
+    font-weight: 500
+    transition: color 0.3s ease
+
+    &:hover
+      color: var(--gold-secondary)
+      text-decoration: underline
+
+.review-carousel
+  display: flex
+  flex-direction: column
+  gap: 1.5rem
+  margin-top: 1rem
+
+.carousel-container
+  min-height: 200px
+  position: relative
+  overflow: hidden
+
+.carousel-item
+  animation: carouselFadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards
+
+@keyframes carouselFadeIn
+  from
+    opacity: 0
+    transform: translateX(20px)
+  to
+    opacity: 1
+    transform: translateX(0)
+
+.review-card
+  background-color: var(--bg-secondary)
+  border: 2px solid var(--border-primary)
+  border-radius: 12px
+  padding: 2rem
+  text-align: center
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1)
+
+  &:hover
+    border-color: var(--gold-primary)
+    box-shadow: 0 4px 16px var(--gold-shadow)
+
+.review-card-title
+  color: var(--gold-primary)
+  font-size: 1.25rem
+  font-weight: 600
+  margin-bottom: 1rem
+  letter-spacing: 0.3px
+
+.review-card-value
+  color: var(--text-primary)
+  font-size: 1.1rem
+  font-weight: 500
+  margin: 0
+  word-break: break-word
+
+.remember-me-warning
+  margin-top: 1.5rem
+  padding: 1rem
+  background-color: var(--gold-active)
+  border: 1px solid var(--gold-primary)
+  border-radius: 8px
+
+  p
+    color: var(--gold-primary)
+    font-size: 0.95rem
+    margin: 0
+    line-height: 1.6
+    display: flex
+    align-items: center
+    gap: 0.5rem
+
+    i
+      color: var(--gold-secondary)
+      font-size: 1rem
+
+    strong
+      color: var(--gold-secondary)
+      font-weight: 700
+
+.carousel-controls
+  display: flex
+  align-items: center
+  justify-content: space-between
+  gap: 1rem
+  margin-top: 1rem
+
+.carousel-btn
+  padding: 0.75rem 1.5rem
+  border: 2px solid var(--border-primary)
+  border-radius: 8px
+  background-color: var(--bg-tertiary)
+  color: var(--gold-primary)
+  font-size: 0.9rem
+  font-weight: 600
+  cursor: pointer
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1)
+
+  &:hover:not(:disabled)
+    border-color: var(--gold-primary)
+    background-color: var(--bg-hover)
+    transform: translateY(-2px)
+    box-shadow: 0 4px 12px var(--shadow-color)
+
+  &:disabled
+    opacity: 0.4
+    cursor: not-allowed
+    transform: none
+
+.carousel-indicators
+  display: flex
+  gap: 0.5rem
+  align-items: center
+
+.indicator
+  width: 10px
+  height: 10px
+  border-radius: 50%
+  background-color: var(--border-primary)
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1)
+  cursor: pointer
+
+  &.active
+    background-color: var(--gold-primary)
+    width: 12px
+    height: 12px
+    box-shadow: 0 0 8px var(--gold-shadow-hover)
+
+.verification-info
+  color: var(--gold-primary)
+  font-size: 0.9rem
+  margin-bottom: 0.5rem
+  text-align: center
+  padding: 0.5rem
+  background-color: var(--gold-hover)
+  border-radius: 6px
+
+  span
+    display: flex
+    align-items: center
+    justify-content: center
+    gap: 0.5rem
+
+    i
+      color: var(--text-primary)
+      font-size: 1rem
+
+.resend-code-container
+  margin-top: 1rem
+
+.resend-code-btn
+  margin-top: 1rem
+  padding: 0.75rem 1.5rem
+  border: 2px solid var(--border-primary)
+  border-radius: 8px
+  background-color: var(--bg-tertiary)
+  color: var(--gold-primary)
+  font-size: 0.9rem
+  font-weight: 600
+  cursor: pointer
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1)
+  width: 100%
+
+  &:hover
+    border-color: var(--gold-primary)
+    background-color: var(--bg-hover)
+    transform: translateY(-2px)
+    box-shadow: 0 4px 12px var(--shadow-color)
+
+.welcome-back-step
+  display: flex
+  justify-content: center
+  align-items: center
+  min-height: 300px
+
+.welcome-back-card
+  text-align: center
+  padding: 3rem 2rem
+  background-color: var(--bg-secondary)
+  border: 2px solid var(--gold-primary)
+  border-radius: 16px
+  box-shadow: 0 8px 32px var(--gold-shadow)
+  animation: welcomeBackFadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards
+
+@keyframes welcomeBackFadeIn
+  from
+    opacity: 0
+    transform: scale(0.9) translateY(20px)
+  to
+    opacity: 1
+    transform: scale(1) translateY(0)
+
+.welcome-icon
+  width: 80px
+  height: 80px
+  border-radius: 50%
+  background: linear-gradient(135deg, var(--gold-primary) 0%, var(--gold-secondary) 100%)
+  color: var(--text-quaternary)
+  font-size: 2.5rem
+  font-weight: 700
+  display: flex
+  align-items: center
+  justify-content: center
+  margin: 0 auto 1.5rem
+  box-shadow: 0 4px 20px var(--gold-shadow)
+  animation: iconPulse 1s ease-in-out infinite
+
+  i
+    color: var(--text-quaternary)
+
+@keyframes iconPulse
+  0%, 100%
+    transform: scale(1)
+  50%
+    transform: scale(1.05)
+
+.welcome-back-title
+  color: var(--gold-primary)
+  font-size: 2.5rem
+  font-weight: 700
+  margin-bottom: 1rem
+  letter-spacing: -0.5px
+
+.welcome-back-message
+  color: var(--text-primary)
+  font-size: 1.2rem
+  margin-bottom: 2rem
+  font-weight: 400
+
+.redirect-message
+  color: var(--text-tertiary)
+  font-size: 1rem
+  margin-top: 1.5rem
+
+  strong
+    color: var(--gold-primary)
+    font-weight: 700
+    font-size: 1.2rem
+
+.password-input-wrapper
+  position: relative
+  display: flex
+  align-items: center
+  width: 100%
+
+  input
+    width: 100%
+    padding-right: clamp(2.75rem, 7vw, 3rem)
+    padding-top: clamp(0.75rem, 2vw, 1rem)
+    padding-bottom: clamp(0.75rem, 2vw, 1rem)
+    box-sizing: border-box
+    font-size: clamp(0.95rem, 2.5vw, 1.05rem)
+    line-height: 1.5
+    letter-spacing: 0.3px
+    text-align: left
+    font-weight: 400
+    color: var(--text-primary)
+
+.password-toggle
+  position: absolute
+  right: clamp(0.5rem, 1.5vw, 0.75rem)
+  background: none
+  border: none
+  color: var(--gold-primary)
+  cursor: pointer
+  font-size: clamp(1rem, 2.5vw, 1.1rem)
+  padding: clamp(0.4rem, 1.2vw, 0.5rem)
+  display: flex
+  align-items: center
+  justify-content: center
+  transition: all 0.2s ease
+  z-index: 2
+  border-radius: clamp(3px, 0.8vw, 4px)
+
+  i
+    transition: transform 0.2s ease
+
+  &:hover
+    color: var(--gold-secondary)
+    background-color: var(--gold-hover)
+    transform: scale(1.1)
+
+    i
+      transform: scale(1.1)
+
+  &:active
+    transform: scale(0.95)
+
+.oauth-section
+  margin-top: 2rem
+  padding-top: 2rem
+  border-top: 1px solid var(--border-primary)
+
+.oauth-divider
+  text-align: center
+  margin-bottom: 1.5rem
+  position: relative
+
+  &::before,
+  &::after
+    content: ''
+    position: absolute
+    top: 50%
+    width: 40%
+    height: 1px
+    background-color: var(--border-primary)
+
+  &::before
+    left: 0
+
+  &::after
+    right: 0
+
+  span
+    color: var(--text-tertiary)
+    font-size: 0.9rem
+    background-color: var(--bg-primary)
+    padding: 0 1rem
+    position: relative
+    z-index: 1
+
+.oauth-buttons
+  display: flex
+  gap: 1rem
+  justify-content: center
+  flex-wrap: wrap
+
+.oauth-btn
+  display: flex
+  align-items: center
+  gap: 0.75rem
+  padding: 1rem 2rem
+  border: 2px solid var(--border-primary)
+  border-radius: 10px
+  background-color: var(--bg-tertiary)
+  color: var(--text-primary)
+  font-size: 1rem
+  font-weight: 600
+  cursor: pointer
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1)
+  flex: 1
+  min-width: 160px
+  max-width: 220px
+  justify-content: center
+  position: relative
+  overflow: hidden
+
+  &::before
+    content: ''
+    position: absolute
+    top: 0
+    left: -100%
+    width: 100%
+    height: 100%
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent)
+    transition: left 0.5s
+
+  &:hover
+    border-color: var(--gold-primary)
+    background-color: var(--bg-hover)
+    transform: translateY(-3px)
+    box-shadow: 0 6px 20px var(--shadow-light)
+
+    &::before
+      left: 100%
+
+  &:active
+    transform: translateY(-1px)
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3)
+
+  span
+    position: relative
+    z-index: 1
+
+.oauth-icon
+  font-size: 1.3rem
+  position: relative
+  z-index: 1
+  transition: all 0.3s ease
+  color: var(--text-primary) !important
+
+.oauth-btn:hover .oauth-icon
+  transform: scale(1.1)
+
+.google-btn
+  .oauth-icon
+    color: var(--text-primary) !important
+
+  &:hover
+    border-color: #4285f4
+    background-color: rgba(66, 133, 244, 0.15)
+    box-shadow: 0 6px 20px rgba(66, 133, 244, 0.3)
+
+    .oauth-icon
+      color: var(--text-primary) !important
+
+.facebook-btn
+  .oauth-icon
+    color: var(--text-primary) !important
+
+  &:hover
+    border-color: #1877f2
+    background-color: rgba(24, 119, 242, 0.15)
+    box-shadow: 0 6px 20px rgba(24, 119, 242, 0.3)
+
+    .oauth-icon
+      color: var(--text-primary) !important
+
+// Tablet Responsive (768px - 1024px)
+@media (max-width: 1024px) and (min-width: 769px)
+  .login-box
+    max-width: 550px
+    padding: 2.5rem
+
+  .steps-indicator
+    padding: 0 0.75rem
+
+  .step-circle
+    width: 40px
+    height: 40px
+    font-size: 0.95rem
+
+// Mobile Responsive (480px - 768px)
+// Large Desktop (1400px+)
+@media (min-width: 1400px)
+  .login-box
+    max-width: 650px
+    padding: 3.5rem
+
+  .welcome-title
+    font-size: 2.5rem
+
+  .step-title
+    font-size: 2rem
+
+// Desktop (1025px - 1399px)
+@media (min-width: 1025px) and (max-width: 1399px)
+  .login-box
+    max-width: 600px
+    padding: 3rem
+
+// Tablet Responsive (769px - 1024px)
+@media (max-width: 1024px) and (min-width: 769px)
+  .login-box
+    max-width: min(550px, 90vw)
+    padding: clamp(2rem, 4vw, 2.5rem)
+
+  .steps-indicator
+    padding: 0 clamp(0.5rem, 1.5vw, 0.75rem)
+
+  .step-circle
+    width: clamp(36px, 7vw, 40px)
+    height: clamp(36px, 7vw, 40px)
+    font-size: clamp(0.9rem, 2vw, 0.95rem)
+
+@media (max-width: 768px)
+  .login-container
+    padding: clamp(0.5rem, 2vw, 0.75rem)
+    min-height: 100vh
+    align-items: flex-start
+    padding-top: clamp(1rem, 4vw, 2rem)
+
+  .login-box
+    padding: clamp(1rem, 3vw, 1.5rem)
+    border-radius: clamp(10px, 2vw, 12px)
+    max-width: 100%
+    margin: 0 auto
+
+  .steps-indicator
+    margin-bottom: clamp(1.5rem, 4vw, 2rem)
+    padding: 0 clamp(0.25rem, 1vw, 0.5rem)
+    gap: clamp(0.15rem, 0.5vw, 0.25rem)
+
+  .step-circle
+    width: clamp(32px, 7vw, 36px)
+    height: clamp(32px, 7vw, 36px)
+    font-size: clamp(0.85rem, 2vw, 0.9rem)
+    min-width: clamp(32px, 7vw, 36px)
+
+  .step-line
+    margin: 0 clamp(3px, 1vw, 5px)
+    height: 2px
+    min-width: clamp(8px, 2vw, 10px)
+
+  .welcome-title
+    font-size: clamp(1.5rem, 4vw, 1.75rem)
+    margin-bottom: clamp(1rem, 3vw, 1.5rem)
+    line-height: 1.3
+
+  .step-title
+    font-size: clamp(1.25rem, 3.5vw, 1.5rem)
+    margin-bottom: clamp(1rem, 3vw, 1.5rem)
+    line-height: 1.3
+
+  .form-group
+    gap: clamp(0.4rem, 1.5vw, 0.5rem)
+    width: 100%
+
+    label
+      font-size: clamp(0.85rem, 2.5vw, 0.9rem)
+      margin-bottom: clamp(0.2rem, 0.6vw, 0.4rem)
+      padding: 0 clamp(0.2rem, 0.6vw, 0.4rem)
+      width: 100%
+
+    input[type="email"],
+    input[type="password"],
+    input[type="text"]
+      padding: clamp(0.75rem, 2vw, 0.875rem)
+      font-size: clamp(0.9rem, 2.5vw, 0.95rem)
+
+  .form-actions
+    flex-direction: column
+    gap: 0.75rem
+    margin-top: 1.5rem
+
+  .prev-button,
+  .next-button,
+  .submit-button
+    padding: 0.875rem 1.5rem
+    font-size: 0.95rem
+    width: 100%
+
+  .oauth-section
+    margin-top: 1.5rem
+    padding-top: 1.5rem
+
+  .oauth-buttons
+    flex-direction: column
+    gap: 0.75rem
+
+  .oauth-btn
+    min-width: 100%
+    max-width: 100%
+    padding: 0.875rem 1.5rem
+
+  .review-carousel
+    margin-top: 0.5rem
+
+  .review-card
+    padding: 1.5rem
+
+  .carousel-controls
+    flex-wrap: wrap
+    gap: 0.5rem
+
+  .carousel-btn
+    padding: 0.625rem 1rem
+    font-size: 0.85rem
+    flex: 1
+    min-width: auto
+
+  .welcome-back-card
+    padding: 2rem 1.5rem
+
+  .welcome-back-title
+    font-size: 2rem
+
+  .welcome-back-message
+    font-size: 1rem
+
+  .welcome-icon
+    width: 70px
+    height: 70px
+    font-size: 2rem
+
+  .register-link
+    margin-top: 1rem
+
+    p
+      font-size: 0.9rem
+
+  .remember-me-info
+    padding: 0.625rem
+    font-size: 0.85rem
+
+  .verification-info
+    padding: 0.625rem
+    font-size: 0.85rem
+
+// Small Mobile (< 480px)
+@media (max-width: 480px)
+  .login-container
+    padding: clamp(0.25rem, 1.5vw, 0.5rem)
+    padding-top: clamp(0.75rem, 2vw, 1rem)
+
+  .login-box
+    padding: clamp(0.75rem, 2.5vw, 1rem)
+    border-width: 1px
+    border-radius: clamp(8px, 2vw, 10px)
+
+  .steps-indicator
+    margin-bottom: clamp(1rem, 3vw, 1.5rem)
+    padding: 0 clamp(0.15rem, 0.8vw, 0.25rem)
+    gap: clamp(0.1rem, 0.4vw, 0.15rem)
+
+  .step-circle
+    width: clamp(28px, 6vw, 32px)
+    height: clamp(28px, 6vw, 32px)
+    font-size: clamp(0.8rem, 2vw, 0.85rem)
+    min-width: clamp(28px, 6vw, 32px)
+
+  .step-line
+    margin: 0 clamp(2px, 0.8vw, 3px)
+    height: 2px
+    min-width: clamp(6px, 1.5vw, 8px)
+
+  .welcome-title
+    font-size: clamp(1.25rem, 3.5vw, 1.5rem)
+    margin-bottom: clamp(0.75rem, 2vw, 1rem)
+
+  .step-title
+    font-size: clamp(1.1rem, 3vw, 1.25rem)
+    margin-bottom: clamp(0.75rem, 2vw, 1rem)
+
+  .form-group
+    gap: clamp(0.3rem, 1.2vw, 0.4rem)
+    width: 100%
+
+    label
+      font-size: clamp(0.8rem, 2.2vw, 0.85rem)
+      margin-bottom: clamp(0.15rem, 0.5vw, 0.3rem)
+      padding: 0 clamp(0.15rem, 0.5vw, 0.3rem)
+      width: 100%
+
+    input[type="email"],
+    input[type="password"],
+    input[type="text"]
+      padding: clamp(0.625rem, 1.8vw, 0.75rem)
+      font-size: clamp(0.85rem, 2.3vw, 0.9rem)
+
+  .form-actions
+    gap: clamp(0.4rem, 1.2vw, 0.5rem)
+    margin-top: clamp(0.75rem, 2vw, 1rem)
+
+  .prev-button,
+  .next-button,
+  .submit-button
+    padding: clamp(0.625rem, 1.8vw, 0.75rem) clamp(1rem, 2.8vw, 1.25rem)
+    font-size: clamp(0.85rem, 2.3vw, 0.9rem)
+
+  .oauth-section
+    margin-top: 1rem
+    padding-top: 1rem
+
+  .oauth-divider
+    margin-bottom: 1rem
+
+    span
+      font-size: 0.85rem
+
+  .oauth-btn
+    padding: 0.75rem 1.25rem
+    font-size: 0.9rem
+
+  .review-card
+    padding: 1rem
+
+  .carousel-btn
+    padding: 0.5rem 0.75rem
+    font-size: 0.8rem
+
+  .welcome-back-card
+    padding: 1.5rem 1rem
+
+  .welcome-back-title
+    font-size: 1.75rem
+
+  .welcome-back-message
+    font-size: 0.95rem
+
+  .welcome-icon
+    width: 60px
+    height: 60px
+    font-size: 1.75rem
+    margin-bottom: 1rem
+
+  .redirect-message
+    font-size: 0.9rem
+
+  .remember-me-info
+    padding: 0.5rem
+    font-size: 0.8rem
+
+  .verification-info
+    padding: 0.5rem
+    font-size: 0.8rem
+
+  .password-toggle
+    right: 0.5rem
+    font-size: 1rem

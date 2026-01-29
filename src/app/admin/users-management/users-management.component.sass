@@ -1,0 +1,683 @@
+.users-management
+  min-height: 100vh
+  background: var(--bg-primary)
+  color: var(--text-primary)
+  padding: clamp(20px, 3vw, 30px)
+
+.users-header
+  display: flex
+  align-items: center
+  gap: 20px
+  margin-bottom: clamp(20px, 3vw, 30px)
+  padding-bottom: clamp(15px, 2.5vw, 20px)
+  border-bottom: 2px solid var(--accent-primary)
+  box-shadow: 0 2px 8px var(--shadow-color)
+
+  .back-btn
+    display: flex
+    align-items: center
+    gap: 8px
+    padding: 10px 20px
+    background: var(--bg-secondary)
+    border: 1px solid var(--border-primary)
+    border-radius: 8px
+    color: var(--text-primary)
+    cursor: pointer
+    transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94)
+    font-size: clamp(14px, 2vw, 16px)
+
+    &:hover
+      background: var(--bg-primary)
+      border-color: var(--accent-primary)
+      color: var(--accent-primary)
+
+  .users-title
+    display: flex
+    align-items: center
+    gap: 12px
+    font-size: clamp(24px, 4vw, 32px)
+    font-weight: 700
+    color: var(--accent-primary)
+    margin: 0
+    text-shadow: 0 2px 4px var(--shadow-color)
+
+    i
+      color: var(--accent-primary)
+      font-size: clamp(28px, 4.5vw, 36px)
+      filter: drop-shadow(0 2px 4px var(--shadow-color))
+
+.users-content
+  max-width: 1400px
+  margin: 0 auto
+  position: relative
+
+.refresh-indicator
+  display: flex
+  align-items: center
+  justify-content: center
+  gap: 10px
+  padding: 12px 20px
+  background: var(--bg-secondary)
+  border: 1px solid var(--accent-primary)
+  border-radius: 8px
+  color: var(--accent-primary)
+  font-size: clamp(14px, 2vw, 16px)
+  font-weight: 600
+  margin-bottom: 20px
+  animation: slideDown 0.3s ease
+
+  i
+    font-size: clamp(16px, 2.5vw, 18px)
+    animation: spin 1s linear infinite
+
+@keyframes slideDown
+  from
+    opacity: 0
+    transform: translateY(-10px)
+  to
+    opacity: 1
+    transform: translateY(0)
+
+@keyframes spin
+  from
+    transform: rotate(0deg)
+  to
+    transform: rotate(360deg)
+
+.loading-container,
+.error-container
+  display: flex
+  flex-direction: column
+  align-items: center
+  justify-content: center
+  padding: 60px 20px
+  text-align: center
+
+  i
+    font-size: 48px
+    color: var(--accent-primary)
+    margin-bottom: 20px
+
+  p
+    font-size: clamp(16px, 2.5vw, 20px)
+    color: var(--text-secondary)
+
+.error-container i
+  color: #e74c3c
+
+// Statistics Cards
+.stats-cards
+  display: grid
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr))
+  gap: clamp(15px, 2.5vw, 20px)
+  margin-bottom: clamp(25px, 4vw, 30px)
+  transition: opacity 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94)
+
+  &.refreshing
+    opacity: 0.7
+
+.stat-card
+  display: flex
+  align-items: center
+  gap: 20px
+  padding: clamp(20px, 3vw, 24px)
+  background: var(--bg-secondary)
+  border: 2px solid var(--border-primary)
+  border-radius: clamp(10px, 2vw, 12px)
+  transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94)
+  position: relative
+  overflow: hidden
+
+  &::before
+    content: ''
+    position: absolute
+    top: 0
+    left: 0
+    width: 100%
+    height: 100%
+    background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-hover) 100%)
+    opacity: 0
+    transition: opacity 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94)
+
+  &:hover
+    border-color: var(--accent-primary)
+    transform: translateY(-4px)
+    box-shadow: 0 8px 24px var(--shadow-color)
+
+    &::before
+      opacity: 1
+
+  .stat-icon
+    width: clamp(55px, 8vw, 60px)
+    height: clamp(55px, 8vw, 60px)
+    display: flex
+    align-items: center
+    justify-content: center
+    background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%)
+    border-radius: clamp(10px, 2vw, 12px)
+    color: var(--button-primary-text)
+    font-size: clamp(20px, 3vw, 24px)
+    box-shadow: 0 4px 12px var(--shadow-color)
+    transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94)
+
+  &:hover .stat-icon
+    transform: scale(1.1) rotate(5deg)
+    box-shadow: 0 6px 16px var(--shadow-light)
+
+  .stat-info
+    flex: 1
+
+    h3
+      font-size: clamp(28px, 4vw, 36px)
+      font-weight: 700
+      color: var(--text-primary)
+      margin: 0 0 8px 0
+
+    p
+      font-size: clamp(14px, 2vw, 16px)
+      color: var(--text-secondary)
+      margin: 0
+
+// Chart Section
+.chart-section
+  margin-bottom: clamp(30px, 5vw, 40px)
+  padding: clamp(20px, 3vw, 24px)
+  background: var(--bg-secondary)
+  border: 2px solid var(--border-primary)
+  border-radius: clamp(10px, 2vw, 12px)
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1)
+  transition: all 0.3s ease
+
+  &:hover
+    border-color: var(--accent-primary)
+    box-shadow: 0 8px 24px var(--shadow-color)
+
+  &.refreshing
+    opacity: 0.8
+
+  .chart-header
+    display: flex
+    align-items: center
+    justify-content: space-between
+    gap: 20px
+    margin-bottom: clamp(20px, 3vw, 24px)
+    flex-wrap: wrap
+
+  .section-title
+    display: flex
+    align-items: center
+    gap: 12px
+    font-size: clamp(20px, 3vw, 24px)
+    font-weight: 700
+    color: var(--text-primary)
+    margin: 0
+
+    i
+      color: var(--accent-primary)
+      font-size: clamp(22px, 3.5vw, 26px)
+      filter: drop-shadow(0 2px 4px var(--shadow-color))
+
+  .refresh-chart-btn
+    display: flex
+    align-items: center
+    gap: 8px
+    padding: clamp(10px, 1.5vw, 12px) clamp(16px, 2.5vw, 20px)
+    background: var(--bg-primary)
+    border: 2px solid var(--accent-primary)
+    border-radius: clamp(8px, 1.5vw, 10px)
+    color: var(--accent-primary)
+    font-size: clamp(14px, 2vw, 16px)
+    font-weight: 600
+    cursor: pointer
+    transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94)
+    white-space: nowrap
+
+    i
+      font-size: clamp(14px, 2vw, 16px)
+      transition: transform 0.3s ease
+
+    &:hover:not(:disabled)
+      background: var(--accent-primary)
+      color: var(--button-primary-text)
+      transform: translateY(-2px)
+      box-shadow: 0 4px 12px var(--shadow-color)
+
+    &:active:not(:disabled)
+      transform: translateY(0)
+
+    &:disabled
+      opacity: 0.6
+      cursor: not-allowed
+      border-color: var(--border-primary)
+      color: var(--text-secondary)
+
+    .fa-spin
+      animation: spin 1s linear infinite
+
+  .chart-container
+    height: clamp(250px, 40vh, 300px)
+    position: relative
+    background: var(--bg-primary)
+    border-radius: clamp(8px, 1.5vw, 10px)
+    padding: clamp(10px, 2vw, 15px)
+
+@keyframes spin
+  from
+    transform: rotate(0deg)
+  to
+    transform: rotate(360deg)
+
+// Users Table Section
+.users-table-section
+  padding: clamp(20px, 3vw, 24px)
+  background: var(--bg-secondary)
+  border: 2px solid var(--border-primary)
+  border-radius: clamp(10px, 2vw, 12px)
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1)
+  transition: all 0.3s ease
+
+  &:hover
+    border-color: var(--accent-primary)
+    box-shadow: 0 8px 24px var(--shadow-color)
+
+  &.refreshing
+    opacity: 0.8
+
+  .section-title
+    display: flex
+    align-items: center
+    gap: 12px
+    font-size: clamp(20px, 3vw, 24px)
+    font-weight: 600
+    color: var(--text-primary)
+    margin: 0 0 24px 0
+
+    i
+      color: var(--accent-primary)
+
+.table-container
+  overflow-x: auto
+
+.users-table
+  width: 100%
+  border-collapse: collapse
+  font-size: clamp(14px, 2vw, 16px)
+
+  thead
+    background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%)
+    border-bottom: 2px solid var(--accent-primary)
+    box-shadow: 0 2px 8px var(--shadow-color)
+
+    th
+      padding: clamp(12px, 2vw, 16px)
+      text-align: right
+      font-weight: 700
+      color: var(--accent-primary)
+      white-space: nowrap
+      font-size: clamp(14px, 2vw, 16px)
+      text-transform: uppercase
+      letter-spacing: 0.5px
+
+      &:first-child
+        text-align: right
+
+  tbody
+    tr
+      border-bottom: 1px solid var(--border-primary)
+      transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94)
+
+      &:hover
+        background: var(--bg-primary)
+        transform: scale(1.01)
+        box-shadow: 0 2px 8px var(--shadow-color)
+
+      td
+        padding: 16px
+        color: var(--text-secondary)
+        text-align: right
+
+        .user-avatar
+          display: flex
+          align-items: center
+          justify-content: center
+
+          img
+            width: clamp(40px, 10vw, 50px)
+            height: clamp(40px, 10vw, 50px)
+            border-radius: 50%
+            border: 2px solid var(--accent-primary)
+            object-fit: cover
+            background-color: var(--bg-tertiary)
+
+          .avatar-placeholder
+            width: clamp(40px, 10vw, 50px)
+            height: clamp(40px, 10vw, 50px)
+            border-radius: 50%
+            border: 2px solid var(--accent-primary)
+            background-color: var(--bg-tertiary)
+            display: flex
+            align-items: center
+            justify-content: center
+
+            i
+              font-size: clamp(1.2rem, 3vw, 1.5rem)
+              color: var(--text-tertiary)
+
+        .visits-badge
+          display: inline-block
+          padding: clamp(4px, 1vw, 6px) clamp(10px, 2vw, 12px)
+          background: var(--bg-secondary)
+          color: var(--accent-primary)
+          border: 1px solid var(--accent-primary)
+          border-radius: clamp(10px, 2vw, 12px)
+          font-weight: 700
+          font-size: clamp(12px, 1.5vw, 14px)
+          box-shadow: 0 2px 4px var(--shadow-color)
+          transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94)
+
+          &:hover
+            transform: scale(1.05)
+            box-shadow: 0 4px 8px var(--shadow-color)
+
+        .status-badge
+          display: inline-flex
+          align-items: center
+          gap: 6px
+          padding: 4px 12px
+          border-radius: 12px
+          font-weight: 600
+          font-size: clamp(12px, 1.5vw, 14px)
+
+          &.online
+            background: rgba(39, 174, 96, 0.2)
+            color: #27ae60
+
+            i
+              color: #27ae60
+              font-size: 8px
+
+          &.offline
+            background: rgba(149, 165, 166, 0.2)
+            color: #95a5a6
+
+            i
+              color: #95a5a6
+              font-size: 8px
+
+        .delete-btn
+          display: flex
+          align-items: center
+          gap: 6px
+          padding: 8px 16px
+          background: rgba(231, 76, 60, 0.1)
+          border: 1px solid rgba(231, 76, 60, 0.3)
+          border-radius: 8px
+          color: #e74c3c
+          cursor: pointer
+          transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94)
+          font-size: clamp(12px, 1.5vw, 14px)
+
+          &:hover
+            background: rgba(231, 76, 60, 0.2)
+            border-color: #e74c3c
+
+      .empty-state
+        text-align: center
+        padding: 40px
+        color: var(--text-secondary)
+        font-size: clamp(16px, 2.5vw, 18px)
+
+// Skeleton Loading
+.skeleton
+  pointer-events: none
+  user-select: none
+
+.skeleton-shimmer
+  background: linear-gradient(90deg, var(--bg-primary) 0%, var(--bg-secondary) 50%, var(--bg-primary) 100%)
+  background-size: 200% 100%
+  animation: shimmer 1.5s ease-in-out infinite
+  border-radius: 4px
+
+@keyframes shimmer
+  0%
+    background-position: -200% 0
+  100%
+    background-position: 200% 0
+
+.stat-card.skeleton
+  .stat-icon.skeleton-shimmer
+    width: clamp(55px, 8vw, 60px)
+    height: clamp(55px, 8vw, 60px)
+    border-radius: clamp(10px, 2vw, 12px)
+
+  .skeleton-text-large
+    width: 60px
+    height: 32px
+    margin-bottom: 8px
+
+  .skeleton-text-small
+    width: 120px
+    height: 16px
+
+.chart-container.skeleton
+  .skeleton-chart
+    width: 100%
+    height: 100%
+    min-height: 250px
+    border-radius: clamp(8px, 1.5vw, 10px)
+
+.table-skeleton
+  width: 100%
+
+.skeleton-row
+  display: grid
+  grid-template-columns: repeat(8, 1fr)
+  gap: 10px
+  padding: 16px
+  border-bottom: 1px solid var(--border-primary)
+
+  .skeleton-cell
+    height: 20px
+    width: 100%
+
+// RTL Support
+html[dir="rtl"]
+  .users-table thead th,
+  .users-table tbody td
+    text-align: right
+
+// Responsive Design
+@media (max-width: 1024px)
+  .users-management
+    padding: 15px
+
+  .stats-cards
+    grid-template-columns: 1fr
+
+  .chart-container
+    height: 250px
+
+  .users-table
+    font-size: 14px
+
+    thead th,
+    tbody td
+      padding: 12px 8px
+
+@media (max-width: 768px)
+  .users-header
+    flex-direction: column
+    align-items: flex-start
+
+  .stat-card
+    flex-direction: column
+    text-align: center
+
+  .chart-container
+    height: 200px
+
+  .users-table
+    font-size: 12px
+
+    thead th,
+    tbody td
+      padding: 10px 6px
+
+    .delete-btn span
+      display: none
+
+@media (max-width: 480px)
+  .users-management
+    padding: 10px
+
+  .chart-container
+    height: 180px
+
+  .users-table
+    thead th,
+    tbody td
+      padding: 8px 4px
+      font-size: 11px
+
+// View ID Button
+.view-id-btn
+  display: inline-flex
+  align-items: center
+  gap: 6px
+  padding: 6px 12px
+  background: var(--bg-primary)
+  border: 2px solid var(--accent-primary)
+  border-radius: 8px
+  color: var(--accent-primary)
+  cursor: pointer
+  transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94)
+  font-size: clamp(12px, 1.5vw, 14px)
+  font-weight: 600
+
+  &:hover
+    background: var(--accent-primary)
+    color: var(--button-primary-text)
+    transform: translateY(-2px)
+    box-shadow: 0 4px 12px var(--shadow-color)
+
+  i
+    font-size: 14px
+
+.no-id-images
+  color: var(--text-tertiary)
+  font-style: italic
+  font-size: clamp(12px, 1.5vw, 14px)
+
+// National ID Modal
+.nid-modal-backdrop
+  position: fixed
+  inset: 0
+  background: rgba(0, 0, 0, 0.6)
+  backdrop-filter: blur(4px)
+  display: flex
+  align-items: center
+  justify-content: center
+  z-index: 10004
+  padding: 1rem
+
+.nid-modal
+  background: var(--bg-secondary)
+  border: 2px solid var(--border-primary)
+  border-radius: 12px
+  box-shadow: 0 10px 30px var(--shadow-color)
+  width: min(900px, 95vw)
+  max-height: 90vh
+  overflow: hidden
+  animation: modalSlideIn 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)
+
+@keyframes modalSlideIn
+  from
+    opacity: 0
+    transform: scale(0.95) translateY(-20px)
+  to
+    opacity: 1
+    transform: scale(1) translateY(0)
+
+.nid-modal-header
+  display: flex
+  justify-content: space-between
+  align-items: center
+  padding: 1rem 1.25rem
+  border-bottom: 1px solid var(--border-primary)
+  background: var(--bg-tertiary)
+
+.nid-modal-title
+  display: flex
+  align-items: center
+  gap: 0.5rem
+  color: var(--text-primary)
+  font-weight: 700
+  font-size: clamp(16px, 2.5vw, 18px)
+
+  i
+    color: var(--accent-primary)
+
+.nid-modal-close
+  background: transparent
+  border: none
+  color: var(--text-primary)
+  cursor: pointer
+  font-size: 1.1rem
+  padding: 0.35rem
+  border-radius: 6px
+  transition: all 0.2s ease
+
+  &:hover
+    background: var(--bg-hover)
+    color: var(--accent-primary)
+
+.nid-modal-user
+  display: flex
+  flex-direction: column
+  align-items: center
+  gap: 0.25rem
+  padding: 0.75rem 1.25rem
+  background: var(--bg-primary)
+  border-bottom: 1px solid var(--border-primary)
+
+.nid-user-name
+  font-weight: 700
+  color: var(--text-primary)
+  font-size: clamp(14px, 2vw, 16px)
+
+.nid-user-id
+  font-family: monospace
+  color: var(--accent-primary)
+  font-size: clamp(12px, 1.5vw, 14px)
+
+.nid-modal-body
+  padding: 1.25rem
+  display: grid
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr))
+  gap: 1rem
+  overflow-y: auto
+  max-height: calc(90vh - 140px)
+
+.nid-modal-card
+  background: var(--bg-tertiary)
+  border: 1px solid var(--border-primary)
+  border-radius: 10px
+  padding: 0.75rem
+  display: flex
+  flex-direction: column
+  gap: 0.5rem
+
+  img
+    width: 100%
+    border-radius: 8px
+    border: 1px solid var(--border-primary)
+    object-fit: contain
+    background: var(--bg-primary)
+
+.nid-modal-label
+  margin: 0
+  color: var(--text-secondary)
+  font-weight: 700
+  text-transform: uppercase
+  font-size: clamp(12px, 1.5vw, 14px)
+

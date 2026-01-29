@@ -1,0 +1,171 @@
+<div class="customer-feedback-page">
+  <div class="page-header">
+    <button class="back-btn" (click)="goBack()">
+      <i class="fas fa-arrow-left"></i>
+      <span>{{ back() }}</span>
+    </button>
+    <h1 class="page-title">
+      <i class="fas fa-comments"></i>
+      <span>{{ title() }}</span>
+    </h1>
+  </div>
+
+  @if (isLoading()) {
+    <div class="loading-container">
+      <div class="spinner"></div>
+      <p>{{ isArabic() ? 'جاري التحميل...' : 'Loading...' }}</p>
+    </div>
+  } @else if (tickets().length === 0) {
+    <div class="empty-state">
+      <i class="fas fa-inbox"></i>
+      <p>{{ noTickets() }}</p>
+    </div>
+  } @else {
+    <div class="tickets-container">
+      @for (ticket of tickets(); track ticket._id) {
+        <div class="ticket-card" [class]="getStatusClass(ticket.status)">
+          <div class="ticket-header">
+            <div class="ticket-user-section">
+              @if (ticket.userId.profileImageUrl) {
+                <img
+                  [src]="ticket.userId.profileImageUrl | assetUrl"
+                  [alt]="ticket.userId.email"
+                  class="ticket-user-avatar"
+                />
+              } @else {
+                <div class="ticket-user-avatar-placeholder">
+                  <i class="fas fa-user"></i>
+                </div>
+              }
+              <div class="ticket-user-info">
+                <div class="user-name">
+                  @if (ticket.userId.firstName && ticket.userId.lastName) {
+                    {{ ticket.userId.firstName }} {{ ticket.userId.middleName || '' }}
+                    {{ ticket.userId.lastName }}
+                  } @else {
+                    {{ ticket.userId.email || 'N/A' }}
+                  }
+                </div>
+                <div class="user-email">
+                  <i class="fas fa-envelope"></i>
+                  <span>{{ ticket.userId.email || 'N/A' }}</span>
+                </div>
+              </div>
+            </div>
+            <div class="ticket-status">
+              <span class="status-badge" [class]="getStatusClass(ticket.status)">
+                {{ getStatusText(ticket.status) }}
+              </span>
+            </div>
+          </div>
+
+          <div class="ticket-info-section">
+            <div class="info-item">
+              <i class="fas fa-tag"></i>
+              <span
+                ><strong>{{ category() }}:</strong> {{ getCategoryText(ticket.category) }}</span
+              >
+            </div>
+            <div class="info-item">
+              <i class="fas fa-heading"></i>
+              <span
+                ><strong>{{ subject() }}:</strong> {{ ticket.subject }}</span
+              >
+            </div>
+            <div class="info-item">
+              <i class="fas fa-calendar"></i>
+              <span
+                ><strong>{{ createdAt() }}:</strong> {{ ticket.createdAt | date: 'short' }}</span
+              >
+            </div>
+          </div>
+
+          <div class="ticket-body">
+            <div class="message-section">
+              <label>{{ message() }}</label>
+              <div class="message-content">
+                {{ ticket.message }}
+              </div>
+            </div>
+
+            @if (ticket.adminResponse) {
+              <div class="admin-response-section">
+                <label>{{ adminResponse() }}</label>
+                <div class="response-content">
+                  {{ ticket.adminResponse }}
+                </div>
+                @if (ticket.respondedAt) {
+                  <div class="response-date">
+                    <i class="fas fa-clock"></i>
+                    <span>{{ ticket.respondedAt | date: 'short' }}</span>
+                  </div>
+                }
+              </div>
+            }
+
+            @if (ticket.status === 'pending' || ticket.status === 'in_progress') {
+              <div class="ticket-actions">
+                <button class="btn-respond" (click)="openResponseModal(ticket)">
+                  <i class="fas fa-reply"></i>
+                  <span>{{ respond() }}</span>
+                </button>
+              </div>
+            }
+
+            @if (ticket.status === 'resolved' || ticket.status === 'closed') {
+              <div class="ticket-actions-delete">
+                <button class="btn-delete" (click)="deleteTicket(ticket)">
+                  <i class="fas fa-trash"></i>
+                  <span>{{ delete() }}</span>
+                </button>
+              </div>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Response Modal -->
+  @if (showResponseModal() && selectedTicket()) {
+    <div class="response-modal-overlay" (click)="closeResponseModal()">
+      <div class="response-modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h2>{{ respond() }}</h2>
+          <button class="modal-close" (click)="closeResponseModal()">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="ticket-preview">
+            <strong>{{ subject() }}:</strong> {{ selectedTicket()!.subject }}
+            <br />
+            <strong>{{ message() }}:</strong> {{ selectedTicket()!.message }}
+          </div>
+          <div class="response-input">
+            <label>{{ adminResponse() }}</label>
+            <textarea
+              [(ngModel)]="adminResponseInput"
+              rows="6"
+              [placeholder]="isArabic() ? 'اكتب ردك هنا...' : 'Write your response here...'"
+            ></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-cancel" (click)="closeResponseModal()">
+            <i class="fas fa-times"></i>
+            <span>{{ isArabic() ? 'إلغاء' : 'Cancel' }}</span>
+          </button>
+          <button
+            class="btn-submit"
+            (click)="submitResponse()"
+            [disabled]="!adminResponseInput.trim()"
+          >
+            <i class="fas fa-paper-plane"></i>
+            <span>{{ isArabic() ? 'إرسال' : 'Send' }}</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+</div>

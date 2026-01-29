@@ -1,0 +1,707 @@
+<div class="register-container">
+  <div class="register-box">
+    <div class="steps-indicator">
+      @for (step of steps(); track step.number) {
+        <div class="step-item" [class.active]="step.active" [class.completed]="step.completed">
+          <div class="step-circle">{{ step.number }}</div>
+          @if (step.number < 8) {
+            <div class="step-line" [class.completed]="step.completed"></div>
+          }
+        </div>
+      }
+    </div>
+
+    <h1 class="welcome-title">{{ welcome() }}</h1>
+
+    @if (currentStep() === 1) {
+      <div class="step-content step-enter">
+        <h2 class="step-title">{{ personalInfo() }}</h2>
+        <form [formGroup]="registerForm" class="register-form">
+          <div class="form-group">
+            <label for="firstName">{{ fullName() }}</label>
+            <div class="name-inputs-row">
+              <input
+                id="firstName"
+                type="text"
+                formControlName="firstName"
+                [placeholder]="firstName()"
+                [class.error]="
+                  registerForm.get('firstName')?.invalid && registerForm.get('firstName')?.touched
+                "
+              />
+              <input
+                id="middleName"
+                type="text"
+                formControlName="middleName"
+                [placeholder]="middleName()"
+                [class.error]="
+                  registerForm.get('middleName')?.invalid && registerForm.get('middleName')?.touched
+                "
+              />
+              <input
+                id="lastName"
+                type="text"
+                formControlName="lastName"
+                [placeholder]="lastName()"
+                [class.error]="
+                  registerForm.get('lastName')?.invalid && registerForm.get('lastName')?.touched
+                "
+              />
+            </div>
+            @if (
+              (registerForm.get('firstName')?.invalid && registerForm.get('firstName')?.touched) ||
+              (registerForm.get('middleName')?.invalid &&
+                registerForm.get('middleName')?.touched) ||
+              (registerForm.get('lastName')?.invalid && registerForm.get('lastName')?.touched)
+            ) {
+              <span class="error-message">{{ t('validation.nameRequired') }}</span>
+            }
+          </div>
+
+          <div class="form-group">
+            <label for="nickname">{{ nickname() }}</label>
+            <input
+              id="nickname"
+              type="text"
+              formControlName="nickname"
+              [placeholder]="t('register.nickname') + ' - ' + t('validation.required')"
+              [class.error]="
+                registerForm.get('nickname')?.invalid && registerForm.get('nickname')?.touched
+              "
+            />
+            @if (registerForm.get('nickname')?.invalid && registerForm.get('nickname')?.touched) {
+              <span class="error-message">
+                @if (registerForm.get('nickname')?.hasError('nicknameExists')) {
+                  {{ t('validation.nicknameExists') }}
+                } @else {
+                  {{ t('validation.nicknameRequired') }}
+                }
+              </span>
+            }
+          </div>
+        </form>
+      </div>
+    }
+
+    @if (currentStep() === 2) {
+      <div class="step-content step-enter">
+        <h2 class="step-title">{{ phoneNumber() }}</h2>
+        <form [formGroup]="registerForm" class="register-form">
+          <div class="form-group">
+            <label for="phone">{{ phoneNumber() }}</label>
+            <input
+              id="phone"
+              type="tel"
+              formControlName="phone"
+              placeholder="e.g., 01012345678 or +201012345678"
+              [class.error]="
+                registerForm.get('phone')?.invalid && registerForm.get('phone')?.touched
+              "
+            />
+            @if (registerForm.get('phone')?.invalid && registerForm.get('phone')?.touched) {
+              <span class="error-message">
+                @if (registerForm.get('phone')?.hasError('invalidEgyptianPhone')) {
+                  {{ t('validation.invalidPhone') }}
+                } @else if (registerForm.get('phone')?.hasError('phoneExists')) {
+                  {{ t('validation.phoneExists') }}
+                } @else {
+                  {{ t('validation.invalidPhone') }}
+                }
+              </span>
+            }
+            @if (registerForm.get('phone')?.pending) {
+              <span class="checking-message"
+                ><i class="fas fa-spinner fa-spin"></i> Checking availability...</span
+              >
+            }
+            @if (
+              registerForm.get('phone')?.valid &&
+              registerForm.get('phone')?.touched &&
+              !registerForm.get('phone')?.pending
+            ) {
+              <span class="success-message"
+                ><i class="fas fa-check-circle"></i> Phone number is available</span
+              >
+            }
+            <small class="hint">Format: 01X XXXX XXXX or +20 1XX XXXX XXXX</small>
+          </div>
+        </form>
+      </div>
+    }
+
+    @if (currentStep() === 3) {
+      <div class="step-content step-enter">
+        <h2 class="step-title">{{ nationalId() }}</h2>
+        <form [formGroup]="registerForm" class="register-form">
+          <div class="form-group">
+            <label for="nationalId">{{ nationalId() }}</label>
+            <input
+              id="nationalId"
+              type="text"
+              formControlName="nationalId"
+              placeholder="e.g., 29010123456789"
+              maxlength="14"
+              [class.error]="
+                registerForm.get('nationalId')?.invalid && registerForm.get('nationalId')?.touched
+              "
+            />
+            @if (
+              registerForm.get('nationalId')?.invalid && registerForm.get('nationalId')?.touched
+            ) {
+              <span class="error-message">
+                @if (registerForm.get('nationalId')?.hasError('invalidEgyptianNationalId')) {
+                  {{ t('validation.invalidNationalId') }}
+                } @else if (registerForm.get('nationalId')?.hasError('nationalIdExists')) {
+                  {{ t('validation.nationalIdExists') }}
+                } @else {
+                  {{ t('validation.required') }}
+                }
+              </span>
+            }
+            @if (registerForm.get('nationalId')?.pending) {
+              <span class="checking-message"
+                ><i class="fas fa-spinner fa-spin"></i> Checking availability...</span
+              >
+            }
+            @if (
+              registerForm.get('nationalId')?.valid &&
+              registerForm.get('nationalId')?.touched &&
+              !registerForm.get('nationalId')?.pending
+            ) {
+              <span class="success-message"
+                ><i class="fas fa-check-circle"></i> National ID is available</span
+              >
+            }
+            <small class="hint">Format: 14 digits, starting with 2 or 3</small>
+
+            <div class="id-upload-grid">
+              <div class="id-upload-card">
+                <div class="upload-header">
+                  <i class="fas fa-id-card"></i>
+                  <div>
+                    <p class="upload-title">
+                      {{ isArabic() ? 'صورة البطاقة - الوجه' : 'National ID - Front' }}
+                    </p>
+                    <p class="upload-subtitle">
+                      {{ isArabic() ? 'ملف صورة، حد أقصى 2 ميجا' : 'Image file, max 2MB' }}
+                    </p>
+                  </div>
+                </div>
+                <label class="upload-dropzone">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    (change)="onNationalIdImageSelected($event, 'front')"
+                  />
+                  <div class="dropzone-content">
+                    <i class="fas fa-upload"></i>
+                    <span>{{ isArabic() ? 'اضغط أو اسحب للرفع' : 'Click or drop to upload' }}</span>
+                  </div>
+                </label>
+                @if (nationalIdFrontPreview()) {
+                  <div class="id-preview">
+                    <img [src]="nationalIdFrontPreview()" alt="National ID front preview" />
+                  </div>
+                }
+              </div>
+
+              <div class="id-upload-card">
+                <div class="upload-header">
+                  <i class="fas fa-id-card-alt"></i>
+                  <div>
+                    <p class="upload-title">
+                      {{ isArabic() ? 'صورة البطاقة - الظهر' : 'National ID - Back' }}
+                    </p>
+                    <p class="upload-subtitle">
+                      {{ isArabic() ? 'ملف صورة، حد أقصى 2 ميجا' : 'Image file, max 2MB' }}
+                    </p>
+                  </div>
+                </div>
+                <label class="upload-dropzone">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    (change)="onNationalIdImageSelected($event, 'back')"
+                  />
+                  <div class="dropzone-content">
+                    <i class="fas fa-upload"></i>
+                    <span>{{ isArabic() ? 'اضغط أو اسحب للرفع' : 'Click or drop to upload' }}</span>
+                  </div>
+                </label>
+                @if (nationalIdBackPreview()) {
+                  <div class="id-preview">
+                    <img [src]="nationalIdBackPreview()" alt="National ID back preview" />
+                  </div>
+                }
+              </div>
+            </div>
+
+            @if (nationalIdImageError()) {
+              <span class="error-message">
+                <i class="fas fa-exclamation-triangle"></i>
+                {{ nationalIdImageError() }}
+              </span>
+            }
+          </div>
+        </form>
+      </div>
+    }
+
+    @if (currentStep() === 4) {
+      <div class="step-content step-enter">
+        <h2 class="step-title">{{ email() }}</h2>
+        <form [formGroup]="registerForm" class="register-form">
+          <div class="form-group">
+            <label for="email">{{ email() }}</label>
+            <input
+              id="email"
+              type="email"
+              formControlName="email"
+              placeholder="Enter your email"
+              [class.error]="
+                registerForm.get('email')?.invalid && registerForm.get('email')?.touched
+              "
+            />
+            @if (registerForm.get('email')?.invalid && registerForm.get('email')?.touched) {
+              <span class="error-message">
+                @if (registerForm.get('email')?.hasError('email')) {
+                  {{ t('validation.email') }}
+                } @else if (registerForm.get('email')?.hasError('emailExists')) {
+                  {{ t('validation.emailExists') }}
+                } @else {
+                  {{ t('validation.email') }}
+                }
+              </span>
+            }
+            @if (registerForm.get('email')?.pending) {
+              <span class="checking-message"
+                ><i class="fas fa-spinner fa-spin"></i> Checking availability...</span
+              >
+            }
+            @if (
+              registerForm.get('email')?.valid &&
+              registerForm.get('email')?.touched &&
+              !registerForm.get('email')?.pending
+            ) {
+              <span class="success-message"
+                ><i class="fas fa-check-circle"></i> Email is available</span
+              >
+            }
+            @if (verificationCodeSent()) {
+              <span class="success-message"
+                ><i class="fas fa-check-circle"></i> Verification code sent to your email!</span
+              >
+            }
+          </div>
+        </form>
+      </div>
+    }
+
+    @if (currentStep() === 5) {
+      <div class="step-content step-enter">
+        <h2 class="step-title">{{ verifyEmail() }}</h2>
+        <form [formGroup]="registerForm" class="register-form">
+          <div class="form-group">
+            <label for="verificationCode">{{ verificationCode() }}</label>
+            <p class="verification-hint">
+              Enter the 6-digit code sent to {{ registerForm.get('email')?.value }}
+            </p>
+            <input
+              id="verificationCode"
+              type="text"
+              formControlName="verificationCode"
+              placeholder="000000"
+              maxlength="6"
+              [class.error]="
+                registerForm.get('verificationCode')?.invalid &&
+                registerForm.get('verificationCode')?.touched
+              "
+              (keypress)="onKeyPress($event, 'verify')"
+              autofocus
+            />
+            <div class="code-timer-container">
+              @if (codeExpiryTime() > 0) {
+                <small class="code-timer">
+                  <i class="fas fa-clock"></i> Code expires in {{ formatTime(codeExpiryTime()) }}
+                </small>
+              } @else {
+                <small class="code-expired">
+                  <i class="fas fa-exclamation-triangle"></i> Code has expired. Please request a new
+                  one.
+                </small>
+              }
+            </div>
+            <div class="resend-code-container">
+              @if (verificationCodeSent() && !isLoading()) {
+                <button
+                  type="button"
+                  class="resend-code-btn"
+                  (click)="sendVerificationCode()"
+                  [disabled]="resendCooldown() > 0"
+                >
+                  @if (resendCooldown() > 0) {
+                    Resend Code ({{ resendCooldown() }}s)
+                  } @else {
+                    Resend Code
+                  }
+                </button>
+              }
+            </div>
+            @if (
+              registerForm.get('verificationCode')?.invalid &&
+              registerForm.get('verificationCode')?.touched
+            ) {
+              <span class="error-message">{{ t('validation.verificationCode') }}</span>
+            }
+          </div>
+        </form>
+      </div>
+    }
+
+    @if (currentStep() === 6) {
+      <div class="step-content step-enter">
+        <h2 class="step-title"><i class="fas fa-lock"></i> {{ password() }}</h2>
+        <p class="step-description">
+          {{ t('register.password') }} - {{ t('validation.required') }}
+        </p>
+        <form [formGroup]="registerForm" class="register-form">
+          <div class="form-group password-group">
+            <label for="password"> <i class="fas fa-key"></i> {{ password() }} </label>
+            <div class="password-input-wrapper">
+              <i class="fas fa-lock input-icon"></i>
+              <input
+                id="password"
+                [type]="showPassword() ? 'text' : 'password'"
+                formControlName="password"
+                placeholder="Enter a strong password"
+                [class.error]="
+                  registerForm.get('password')?.invalid && registerForm.get('password')?.touched
+                "
+                [class.has-value]="
+                  registerForm.get('password')?.value &&
+                  (registerForm.get('password')?.value?.length ?? 0) > 0
+                "
+                (keypress)="onKeyPress($event, 'next')"
+                autofocus
+              />
+              <button
+                type="button"
+                class="password-toggle"
+                (click)="togglePasswordVisibility()"
+                [attr.aria-label]="showPassword() ? 'Hide password' : 'Show password'"
+                tabindex="-1"
+              >
+                <i [class]="showPassword() ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
+              </button>
+            </div>
+            @if (
+              registerForm.get('password')?.value &&
+              (registerForm.get('password')?.value?.length ?? 0) > 0
+            ) {
+              <div class="password-strength-indicator">
+                <div class="strength-bar">
+                  <div
+                    class="strength-fill"
+                    [class.weak]="passwordStrength() === 'weak'"
+                    [class.medium]="passwordStrength() === 'medium'"
+                    [class.strong]="passwordStrength() === 'strong'"
+                    [style.width.%]="
+                      passwordStrength() === 'weak'
+                        ? 33
+                        : passwordStrength() === 'medium'
+                          ? 66
+                          : 100
+                    "
+                  ></div>
+                </div>
+                <div class="strength-info">
+                  <span
+                    class="strength-text"
+                    [class.weak]="passwordStrength() === 'weak'"
+                    [class.medium]="passwordStrength() === 'medium'"
+                    [class.strong]="passwordStrength() === 'strong'"
+                  >
+                    @if (passwordStrength() === 'weak') {
+                      <i class="fas fa-exclamation-triangle"></i> Weak Password
+                    } @else if (passwordStrength() === 'medium') {
+                      <i class="fas fa-check-circle"></i> Medium Strength
+                    } @else {
+                      <i class="fas fa-shield-alt"></i> Strong Password
+                    }
+                  </span>
+                </div>
+              </div>
+            }
+            @if (registerForm.get('password')?.invalid && registerForm.get('password')?.touched) {
+              <span class="error-message">
+                <i class="fas fa-exclamation-circle"></i> {{ t('validation.passwordMinLength') }}
+              </span>
+            }
+            <div class="password-hints">
+              <small class="hint-text">
+                <i class="fas fa-info-circle"></i> Use at least 8 characters with uppercase,
+                lowercase, numbers, and symbols
+              </small>
+            </div>
+          </div>
+
+          <div class="form-group password-group">
+            <label for="confirmPassword">
+              <i class="fas fa-check-double"></i> {{ confirmPassword() }}
+            </label>
+            <div class="password-input-wrapper">
+              <i class="fas fa-lock input-icon"></i>
+              <input
+                id="confirmPassword"
+                [type]="showConfirmPassword() ? 'text' : 'password'"
+                formControlName="confirmPassword"
+                placeholder="Re-enter your password"
+                [class.error]="
+                  registerForm.get('confirmPassword')?.invalid &&
+                  registerForm.get('confirmPassword')?.touched
+                "
+                [class.has-value]="
+                  registerForm.get('confirmPassword')?.value &&
+                  (registerForm.get('confirmPassword')?.value?.length ?? 0) > 0
+                "
+                [class.match]="
+                  registerForm.get('confirmPassword')?.value &&
+                  !registerForm.get('confirmPassword')?.hasError('passwordMismatch') &&
+                  registerForm.get('confirmPassword')?.touched
+                "
+                (keypress)="onKeyPress($event, 'next')"
+              />
+              <button
+                type="button"
+                class="password-toggle"
+                (click)="toggleConfirmPasswordVisibility()"
+                [attr.aria-label]="showConfirmPassword() ? 'Hide password' : 'Show password'"
+                tabindex="-1"
+              >
+                <i [class]="showConfirmPassword() ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
+              </button>
+              @if (
+                registerForm.get('confirmPassword')?.value &&
+                !registerForm.get('confirmPassword')?.hasError('passwordMismatch') &&
+                registerForm.get('confirmPassword')?.touched &&
+                registerForm.get('password')?.value === registerForm.get('confirmPassword')?.value
+              ) {
+                <i class="fas fa-check-circle match-icon"></i>
+              }
+            </div>
+            @if (
+              registerForm.get('confirmPassword')?.hasError('passwordMismatch') &&
+              registerForm.get('confirmPassword')?.touched
+            ) {
+              <span class="error-message">
+                <i class="fas fa-times-circle"></i> {{ t('validation.passwordMismatch') }}
+              </span>
+            }
+            @if (
+              registerForm.get('confirmPassword')?.hasError('required') &&
+              registerForm.get('confirmPassword')?.touched
+            ) {
+              <span class="error-message">
+                <i class="fas fa-exclamation-circle"></i> {{ t('validation.required') }}
+              </span>
+            }
+            @if (
+              registerForm.get('confirmPassword')?.value &&
+              !registerForm.get('confirmPassword')?.hasError('passwordMismatch') &&
+              registerForm.get('confirmPassword')?.touched &&
+              registerForm.get('password')?.value === registerForm.get('confirmPassword')?.value
+            ) {
+              <span class="success-message">
+                <i class="fas fa-check-circle"></i> Passwords match
+              </span>
+            }
+          </div>
+        </form>
+      </div>
+    }
+
+    @if (currentStep() === 7) {
+      <div class="step-content step-enter">
+        <h2 class="step-title">{{ reviewInfo() }}</h2>
+
+        <div class="review-carousel">
+          <div class="carousel-container">
+            @if (reviewCarouselIndex() === 0) {
+              <div class="carousel-item">
+                <div class="review-card">
+                  <h3 class="review-card-title"><i class="fas fa-user"></i> Full Name</h3>
+                  <p class="review-card-value">
+                    {{ registerForm.get('firstName')?.value }}
+                    {{ registerForm.get('middleName')?.value }}
+                    {{ registerForm.get('lastName')?.value }}
+                  </p>
+                </div>
+              </div>
+            }
+            @if (reviewCarouselIndex() === 1) {
+              <div class="carousel-item">
+                <div class="review-card">
+                  <h3 class="review-card-title"><i class="fas fa-at"></i> Nickname</h3>
+                  <p class="review-card-value">{{ registerForm.get('nickname')?.value }}</p>
+                </div>
+              </div>
+            }
+            @if (reviewCarouselIndex() === 2) {
+              <div class="carousel-item">
+                <div class="review-card">
+                  <h3 class="review-card-title"><i class="fas fa-phone"></i> Phone Number</h3>
+                  <p class="review-card-value">{{ registerForm.get('phone')?.value }}</p>
+                </div>
+              </div>
+            }
+            @if (reviewCarouselIndex() === 3) {
+              <div class="carousel-item">
+                <div class="review-card">
+                  <h3 class="review-card-title"><i class="fas fa-id-card"></i> National ID</h3>
+                  <p class="review-card-value">{{ registerForm.get('nationalId')?.value }}</p>
+                </div>
+              </div>
+            }
+            @if (reviewCarouselIndex() === 4) {
+              <div class="carousel-item">
+                <div class="review-card">
+                  <h3 class="review-card-title"><i class="fas fa-envelope"></i> Email Address</h3>
+                  <p class="review-card-value">{{ registerForm.get('email')?.value }}</p>
+                </div>
+              </div>
+            }
+          </div>
+
+          <div class="carousel-controls">
+            <button
+              type="button"
+              class="carousel-btn prev-btn"
+              (click)="prevCarouselItem()"
+              [disabled]="reviewCarouselIndex() === 0"
+            >
+              ← Previous
+            </button>
+            <div class="carousel-indicators">
+              <span class="indicator" [class.active]="reviewCarouselIndex() === 0"></span>
+              <span class="indicator" [class.active]="reviewCarouselIndex() === 1"></span>
+              <span class="indicator" [class.active]="reviewCarouselIndex() === 2"></span>
+              <span class="indicator" [class.active]="reviewCarouselIndex() === 3"></span>
+              <span class="indicator" [class.active]="reviewCarouselIndex() === 4"></span>
+            </div>
+            <button
+              type="button"
+              class="carousel-btn next-btn"
+              (click)="nextCarouselItem()"
+              [disabled]="reviewCarouselIndex() === 4"
+            >
+              Next →
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Review Actions (Step 7) -->
+      <div class="review-actions">
+        <button type="button" class="prev-button" (click)="prevStep()">
+          {{ previous() }}
+        </button>
+        <button type="button" class="next-button" (click)="nextStep()">
+          {{ next() }}
+        </button>
+        <button
+          type="button"
+          class="submit-button"
+          (click)="onSubmit()"
+          [disabled]="isSubmitting()"
+          appLoadingButton
+          [loading]="isSubmitting()"
+        >
+          {{ isSubmitting() ? t('common.loading') : confirm() }}
+        </button>
+      </div>
+    }
+
+    @if (currentStep() === 8) {
+      <div class="step-content success-content step-enter">
+        <div class="success-icon"><i class="fas fa-check-circle"></i></div>
+        <h2 class="step-title">{{ success() }}</h2>
+        <p class="success-message"><i class="fas fa-check"></i> {{ successMessage() }}</p>
+        <p class="redirect-message">
+          {{ redirecting() }} <strong>{{ redirectCountdown() }}</strong> {{ t('common.loading') }}
+        </p>
+        <button type="button" class="submit-button" (click)="goToLogin()">
+          {{ goToLoginText() }}
+        </button>
+      </div>
+    }
+
+    @if (error()) {
+      <div class="error-alert">{{ error() }}</div>
+    }
+
+    @if (currentStep() < 7) {
+      <div class="form-actions">
+        @if (currentStep() > 1) {
+          <button type="button" class="prev-button" (click)="prevStep()">
+            {{ previous() }}
+          </button>
+        }
+        @if (currentStep() === 5) {
+          <button
+            type="button"
+            class="next-button"
+            (click)="verifyCode()"
+            [disabled]="registerForm.get('verificationCode')?.invalid || isLoading()"
+            appLoadingButton
+            [loading]="isLoading()"
+          >
+            {{ isLoading() ? t('login.verifying') : t('register.verificationCode') }}
+          </button>
+        }
+        @if (currentStep() < 8 && currentStep() !== 5 && currentStep() !== 7) {
+          <button
+            type="button"
+            class="next-button"
+            (click)="nextStep()"
+            [disabled]="
+              (currentStep() === 4 &&
+                (registerForm.get('email')?.invalid || registerForm.get('email')?.pending)) ||
+              (currentStep() === 6 &&
+                (registerForm.get('password')?.invalid ||
+                  registerForm.get('confirmPassword')?.invalid ||
+                  registerForm.hasError('passwordMismatch')))
+            "
+          >
+            {{ next() }}
+          </button>
+        }
+      </div>
+    }
+
+    @if (currentStep() === 1) {
+      <div class="oauth-section">
+        <div class="oauth-divider">
+          <span>Or continue with</span>
+        </div>
+        <div class="oauth-buttons">
+          <button type="button" class="oauth-btn google-btn" (click)="registerWithGoogle()">
+            <i class="fab fa-google oauth-icon"></i>
+            <span>Google</span>
+          </button>
+          <button type="button" class="oauth-btn facebook-btn" (click)="registerWithFacebook()">
+            <i class="fab fa-facebook-f oauth-icon"></i>
+            <span>Facebook</span>
+          </button>
+        </div>
+      </div>
+    }
+
+    @if (currentStep() < 7) {
+      <div class="login-link">
+        <p>
+          {{ t('login.welcome') }} <a routerLink="/login">{{ t('login.welcomeBack') }}</a>
+        </p>
+      </div>
+    }
+  </div>
+</div>

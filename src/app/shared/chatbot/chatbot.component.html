@@ -1,0 +1,487 @@
+@if (isOpen()) {
+  <div
+    class="chatbot-wrapper"
+    [class.admin-mode]="isAdminMode()"
+    [class.closing]="isClosing()"
+    (mousedown)="!isAdminMode() && onMouseDown($event)"
+    (mousemove)="!isAdminMode() && onMouseMove($event)"
+    (mouseup)="!isAdminMode() && onMouseUp()"
+    (mouseleave)="!isAdminMode() && onMouseUp()"
+    (touchstart)="!isAdminMode() && onTouchStart($event)"
+    (touchmove)="!isAdminMode() && onTouchMove($event)"
+    (touchend)="!isAdminMode() && onTouchEnd()"
+  >
+    <div
+      class="chatbot-container"
+      [class.admin-fixed]="isAdminMode()"
+      [style.left.px]="!isAdminMode() ? containerLeft() : null"
+      [style.right.px]="!isAdminMode() ? containerRight() : null"
+      [style.top.px]="!isAdminMode() ? containerTop() : null"
+      [style.bottom.px]="!isAdminMode() ? containerBottom() : null"
+    >
+      <!-- Header (Draggable) -->
+      <div class="chatbot-header" [style.cursor]="isAdminMode() ? 'default' : 'move'">
+        <div class="header-content">
+          <div class="header-icon">
+            <i class="fas fa-robot"></i>
+          </div>
+          <div class="header-info">
+            <h3>Mazzady Assistant</h3>
+            <span class="status">Online</span>
+          </div>
+        </div>
+        <button class="close-btn" (click)="closeChat()" [attr.aria-label]="'Close chat'">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+
+      <!-- Messages Container -->
+      <div class="chatbot-messages">
+        @for (message of messages(); track $index) {
+          <div
+            class="message"
+            [class.bot]="message.type === 'bot'"
+            [class.user]="message.type === 'user'"
+          >
+            <div class="message-content">
+              <p>{{ message.text }}</p>
+            </div>
+          </div>
+        }
+      </div>
+
+      <!-- Buttons Container -->
+      <div class="chatbot-buttons">
+        @if (currentStep() === 'menu') {
+          @if (isAdminMode()) {
+            <!-- Admin Mode: Dropdown Menu -->
+            <button class="chat-button menu-toggle" (click)="toggleButtonsMenu()">
+              <i [class]="buttonsMenuOpen() ? 'fas fa-chevron-up' : 'fas fa-chevron-down'"></i>
+              <span>{{ buttonsMenuOpen() ? hideOptions() : showOptions() }}</span>
+            </button>
+
+            <!-- Dropdown Menu -->
+            @if (buttonsMenuOpen()) {
+              <div class="buttons-dropdown">
+                <button class="chat-button dropdown-item" (click)="onAdminClick()">
+                  <i class="fas fa-user-shield"></i>
+                  <span>{{ adminButton() }}</span>
+                </button>
+                <button class="chat-button dropdown-item" (click)="onAdminUsersManagementClick()">
+                  <i class="fas fa-users"></i>
+                  <span>{{ adminUsersManagement() }}</span>
+                </button>
+                <button class="chat-button dropdown-item" (click)="onAdminEditHomePageClick()">
+                  <i class="fas fa-edit"></i>
+                  <span>{{ adminEditHomePage() }}</span>
+                </button>
+                <button class="chat-button dropdown-item" (click)="onAdminMoneyRequestsClick()">
+                  <i class="fas fa-money-bill-wave"></i>
+                  <span>{{ adminMoneyRequests() }}</span>
+                </button>
+                <button class="chat-button dropdown-item" (click)="onAdminCustomerFeedbackClick()">
+                  <i class="fas fa-comments"></i>
+                  <span>{{ adminCustomerFeedback() }}</span>
+                </button>
+                <button class="chat-button dropdown-item" (click)="onAdminJobApplicationsClick()">
+                  <i class="fas fa-briefcase"></i>
+                  <span>{{ adminJobApplications() }}</span>
+                </button>
+                <button class="chat-button dropdown-item" (click)="onAdminAuctionProductsClick()">
+                  <i class="fas fa-gavel"></i>
+                  <span>{{ adminAuctionProducts() }}</span>
+                </button>
+                <button class="chat-button dropdown-item" (click)="onAdminSendMessagesClick()">
+                  <i class="fas fa-paper-plane"></i>
+                  <span>{{ adminSendMessages() }}</span>
+                </button>
+                <button class="chat-button dropdown-item" (click)="onAdminAddProductsClick()">
+                  <i class="fas fa-box"></i>
+                  <span>{{ adminAddProducts() }}</span>
+                </button>
+                <button
+                  class="chat-button dropdown-item"
+                  (click)="onAdminAuctionsManagementClick()"
+                >
+                  <i class="fas fa-hammer"></i>
+                  <span>{{ adminAuctionsManagement() }}</span>
+                </button>
+                <button class="chat-button dropdown-item" (click)="onAdminChangeLanguageClick()">
+                  <i class="fas fa-language"></i>
+                  <span>{{ adminChangeLanguage() }}</span>
+                </button>
+                <button class="chat-button dropdown-item" (click)="onAdminThemeSelectionClick()">
+                  <i class="fas fa-palette"></i>
+                  <span>{{ changeSchemeLabel() }}</span>
+                </button>
+                <button class="chat-button dropdown-item" (click)="onAdminModeSelectionClick()">
+                  <i class="fas fa-adjust"></i>
+                  <span>{{ changeModeLabel() }}</span>
+                </button>
+              </div>
+            }
+          } @else {
+            <!-- Normal Mode: Dropdown Menu -->
+            <button class="chat-button menu-toggle" (click)="toggleButtonsMenu()">
+              <i [class]="buttonsMenuOpen() ? 'fas fa-chevron-up' : 'fas fa-chevron-down'"></i>
+              <span>{{ buttonsMenuOpen() ? hideOptions() : showOptions() }}</span>
+            </button>
+
+            <!-- Dropdown Menu -->
+            @if (buttonsMenuOpen()) {
+              <div class="buttons-dropdown">
+                <button class="chat-button dropdown-item" (click)="onAboutClick()">
+                  <i class="fas fa-info-circle"></i>
+                  <span>{{ aboutButton() }}</span>
+                </button>
+                <button class="chat-button dropdown-item" (click)="onHomeClick()">
+                  <i class="fas fa-home"></i>
+                  <span>{{ homeButton() }}</span>
+                </button>
+                <button class="chat-button dropdown-item" (click)="onQuickReferenceClick()">
+                  <i class="fas fa-book"></i>
+                  <span>{{ quickReferenceButton() }}</span>
+                </button>
+                <button class="chat-button dropdown-item" (click)="onPrivacyPolicyClick()">
+                  <i class="fas fa-shield-alt"></i>
+                  <span>{{ privacyPolicyButton() }}</span>
+                </button>
+                <button class="chat-button dropdown-item" (click)="onReturnPolicyClick()">
+                  <i class="fas fa-undo"></i>
+                  <span>{{ returnPolicyButton() }}</span>
+                </button>
+                <button class="chat-button dropdown-item" (click)="onSitePolicyClick()">
+                  <i class="fas fa-file-contract"></i>
+                  <span>{{ sitePolicyButton() }}</span>
+                </button>
+                <button class="chat-button dropdown-item" (click)="onCopyrightClick()">
+                  <i class="fas fa-copyright"></i>
+                  <span>{{ copyrightButton() }}</span>
+                </button>
+                <button class="chat-button dropdown-item" (click)="onLoginClick()">
+                  <i class="fas fa-sign-in-alt"></i>
+                  <span>{{ loginButton() }}</span>
+                </button>
+                <button class="chat-button dropdown-item" (click)="onRegisterClick()">
+                  <i class="fas fa-user-plus"></i>
+                  <span>{{ registerButton() }}</span>
+                </button>
+                @if (checkIfUserIsAuthenticated()) {
+                  <button class="chat-button dropdown-item" (click)="onDepositClick()">
+                    <i class="fas fa-wallet"></i>
+                    <span>{{ depositButton() }}</span>
+                  </button>
+                  <button class="chat-button dropdown-item" (click)="onMessagesClick()">
+                    <i class="fas fa-envelope"></i>
+                    <span>{{ messagesButton() }}</span>
+                  </button>
+                  <button class="chat-button dropdown-item" (click)="onCartClick()">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span>{{ cartButton() }}</span>
+                  </button>
+                  <button class="chat-button dropdown-item" (click)="onProfileClick()">
+                    <i class="fas fa-user-circle"></i>
+                    <span>{{ profileButton() }}</span>
+                  </button>
+                  <button class="chat-button dropdown-item" (click)="onCustomerServiceClick()">
+                    <i class="fas fa-headset"></i>
+                    <span>{{ customerServiceButton() }}</span>
+                  </button>
+                  <button class="chat-button dropdown-item" (click)="onSellProductClick()">
+                    <i class="fas fa-tag"></i>
+                    <span>{{ sellProductButton() }}</span>
+                  </button>
+                  <button class="chat-button dropdown-item" (click)="onAuctionsClick()">
+                    <i class="fas fa-gavel"></i>
+                    <span>{{ auctionsButton() }}</span>
+                  </button>
+                }
+                <button class="chat-button dropdown-item" (click)="onJoinUsClick()">
+                  <i class="fas fa-user-plus"></i>
+                  <span>{{ joinUsButton() }}</span>
+                </button>
+                <button class="chat-button dropdown-item" (click)="onThemeClick()">
+                  <i class="fas fa-palette"></i>
+                  <span>{{ themeButton() }}</span>
+                </button>
+              </div>
+            }
+          }
+        }
+
+        @if (currentStep() === 'login') {
+          <button class="chat-button secondary" (click)="onBackToMenu()">
+            <i class="fas fa-arrow-left"></i>
+            <span>{{ backToMenu() }}</span>
+          </button>
+          <button class="chat-button primary" (click)="onGoToLoginPage()">
+            <i class="fas fa-external-link-alt"></i>
+            <span>{{ goToLogin() }}</span>
+          </button>
+        }
+
+        @if (currentStep() === 'register') {
+          <button class="chat-button secondary" (click)="onBackToMenu()">
+            <i class="fas fa-arrow-left"></i>
+            <span>{{ backToMenu() }}</span>
+          </button>
+          <button class="chat-button primary" (click)="onGoToRegisterPage()">
+            <i class="fas fa-external-link-alt"></i>
+            <span>{{ goToRegister() }}</span>
+          </button>
+        }
+
+        @if (currentStep() === 'theme') {
+          <button class="chat-button secondary" (click)="onBackToMenu()">
+            <i class="fas fa-arrow-left"></i>
+            <span>{{ backToMenu() }}</span>
+          </button>
+          <button class="chat-button primary" (click)="onGoToThemeMenu()">
+            <i class="fas fa-palette"></i>
+            <span>{{ goToTheme() }}</span>
+          </button>
+        }
+
+        @if (currentStep() === 'about') {
+          <button class="chat-button secondary" (click)="onBackToMenu()">
+            <i class="fas fa-arrow-left"></i>
+            <span>{{ backToMenu() }}</span>
+          </button>
+        }
+
+        @if (currentStep() === 'home') {
+          <button class="chat-button secondary" (click)="onBackToMenu()">
+            <i class="fas fa-arrow-left"></i>
+            <span>{{ backToMenu() }}</span>
+          </button>
+        }
+
+        @if (currentStep() === 'admin') {
+          <button class="chat-button secondary" (click)="onBackToMenu()">
+            <i class="fas fa-arrow-left"></i>
+            <span>{{ backToMenu() }}</span>
+          </button>
+        }
+
+        @if (currentStep() === 'adminUsersManagement') {
+          <button class="chat-button secondary" (click)="onBackToMenu()">
+            <i class="fas fa-arrow-left"></i>
+            <span>{{ backToMenu() }}</span>
+          </button>
+        }
+
+        @if (currentStep() === 'adminEditHomePage') {
+          <button class="chat-button secondary" (click)="onBackToMenu()">
+            <i class="fas fa-arrow-left"></i>
+            <span>{{ backToMenu() }}</span>
+          </button>
+        }
+
+        @if (currentStep() === 'adminMoneyRequests') {
+          <button class="chat-button secondary" (click)="onBackToMenu()">
+            <i class="fas fa-arrow-left"></i>
+            <span>{{ backToMenu() }}</span>
+          </button>
+        }
+
+        @if (currentStep() === 'deposit') {
+          <button class="chat-button secondary" (click)="onBackToMenu()">
+            <i class="fas fa-arrow-left"></i>
+            <span>{{ backToMenu() }}</span>
+          </button>
+        }
+
+        @if (currentStep() === 'messages') {
+          <button class="chat-button secondary" (click)="onBackToMenu()">
+            <i class="fas fa-arrow-left"></i>
+            <span>{{ backToMenu() }}</span>
+          </button>
+        }
+
+        @if (currentStep() === 'cart') {
+          <button class="chat-button primary" (click)="onGoToCart()">
+            <i class="fas fa-shopping-cart"></i>
+            <span>{{ goToCart() }}</span>
+          </button>
+          <button class="chat-button secondary" (click)="onBackToMenu()">
+            <i class="fas fa-arrow-left"></i>
+            <span>{{ backToMenu() }}</span>
+          </button>
+        }
+
+        @if (currentStep() === 'profile') {
+          <button class="chat-button primary" (click)="onGoToProfile()">
+            <i class="fas fa-user-circle"></i>
+            <span>{{ goToProfile() }}</span>
+          </button>
+          <button class="chat-button secondary" (click)="onBackToMenu()">
+            <i class="fas fa-arrow-left"></i>
+            <span>{{ backToMenu() }}</span>
+          </button>
+        }
+
+        @if (currentStep() === 'adminCustomerFeedback') {
+          <button class="chat-button primary" (click)="onGoToCustomerFeedback()">
+            <i class="fas fa-comments"></i>
+            <span>{{ goToCustomerFeedback() }}</span>
+          </button>
+          <button class="chat-button secondary" (click)="onBackToMenu()">
+            <i class="fas fa-arrow-left"></i>
+            <span>{{ backToMenu() }}</span>
+          </button>
+        }
+
+        @if (currentStep() === 'customerService') {
+          <button class="chat-button primary" (click)="onGoToCustomerService()">
+            <i class="fas fa-headset"></i>
+            <span>{{ goToCustomerService() }}</span>
+          </button>
+          <button class="chat-button secondary" (click)="onBackToMenu()">
+            <i class="fas fa-arrow-left"></i>
+            <span>{{ backToMenu() }}</span>
+          </button>
+        }
+
+        @if (currentStep() === 'joinUs') {
+          <button class="chat-button primary" (click)="onGoToJoinUs()">
+            <i class="fas fa-user-plus"></i>
+            <span>{{ goToJoinUs() }}</span>
+          </button>
+          <button class="chat-button secondary" (click)="onBackToMenu()">
+            <i class="fas fa-arrow-left"></i>
+            <span>{{ backToMenu() }}</span>
+          </button>
+        }
+
+        @if (currentStep() === 'adminJobApplications') {
+          <button class="chat-button primary" (click)="onGoToJobApplications()">
+            <i class="fas fa-briefcase"></i>
+            <span>{{ goToJobApplications() }}</span>
+          </button>
+          <button class="chat-button secondary" (click)="onBackToMenu()">
+            <i class="fas fa-arrow-left"></i>
+            <span>{{ backToMenu() }}</span>
+          </button>
+        }
+
+        @if (currentStep() === 'sellProduct') {
+          <button class="chat-button primary" (click)="onGoToSellProduct()">
+            <i class="fas fa-tag"></i>
+            <span>{{ goToSellProduct() }}</span>
+          </button>
+          <button class="chat-button secondary" (click)="onBackToMenu()">
+            <i class="fas fa-arrow-left"></i>
+            <span>{{ backToMenu() }}</span>
+          </button>
+        }
+
+        @if (currentStep() === 'auctions') {
+          <button class="chat-button primary" (click)="onGoToAuctions()">
+            <i class="fas fa-gavel"></i>
+            <span>{{ goToAuctions() }}</span>
+          </button>
+          <button class="chat-button secondary" (click)="onBackToMenu()">
+            <i class="fas fa-arrow-left"></i>
+            <span>{{ backToMenu() }}</span>
+          </button>
+        }
+
+        @if (currentStep() === 'adminAuctionProducts') {
+          <button class="chat-button primary" (click)="onGoToAuctionProducts()">
+            <i class="fas fa-gavel"></i>
+            <span>{{ goToAuctionProducts() }}</span>
+          </button>
+          <button class="chat-button secondary" (click)="onBackToMenu()">
+            <i class="fas fa-arrow-left"></i>
+            <span>{{ backToMenu() }}</span>
+          </button>
+        }
+
+        @if (currentStep() === 'adminSendMessages') {
+          <button class="chat-button primary" (click)="onGoToSendMessages()">
+            <i class="fas fa-paper-plane"></i>
+            <span>{{ goToSendMessages() }}</span>
+          </button>
+          <button class="chat-button secondary" (click)="onBackToMenu()">
+            <i class="fas fa-arrow-left"></i>
+            <span>{{ backToMenu() }}</span>
+          </button>
+        }
+
+        @if (currentStep() === 'adminAddProducts') {
+          <button class="chat-button primary" (click)="onGoToAddProducts()">
+            <i class="fas fa-box"></i>
+            <span>{{ goToAddProducts() }}</span>
+          </button>
+          <button class="chat-button secondary" (click)="onBackToMenu()">
+            <i class="fas fa-arrow-left"></i>
+            <span>{{ backToMenu() }}</span>
+          </button>
+        }
+
+        @if (currentStep() === 'adminAuctionsManagement') {
+          <button class="chat-button primary" (click)="onGoToAuctionsManagement()">
+            <i class="fas fa-hammer"></i>
+            <span>{{ goToAuctionsManagement() }}</span>
+          </button>
+          <button class="chat-button secondary" (click)="onBackToMenu()">
+            <i class="fas fa-arrow-left"></i>
+            <span>{{ backToMenu() }}</span>
+          </button>
+        }
+
+        @if (
+          currentStep() === 'privacyPolicy' ||
+          currentStep() === 'returnPolicy' ||
+          currentStep() === 'sitePolicy' ||
+          currentStep() === 'copyright' ||
+          currentStep() === 'quickReference'
+        ) {
+          <button class="chat-button secondary" (click)="onBackToMenu()">
+            <i class="fas fa-arrow-left"></i>
+            <span>{{ backToMenu() }}</span>
+          </button>
+        }
+
+        @if (currentStep() === 'confirmLanguage' || currentStep() === 'confirmTheme') {
+          <button class="chat-button primary" (click)="onConfirmYes()">
+            <i class="fas fa-check"></i>
+            <span>{{ yesButton() }}</span>
+          </button>
+          <button class="chat-button secondary" (click)="onConfirmNo()">
+            <i class="fas fa-times"></i>
+            <span>{{ noButton() }}</span>
+          </button>
+        }
+        @if (currentStep() === 'adminThemeSelection') {
+          <button class="chat-button dropdown-item" (click)="onAdminSelectTheme('default')">
+            <i class="fas fa-circle" style="color: #d4af37"></i>
+            <span>{{ themeDefault() }}</span>
+          </button>
+          <button class="chat-button dropdown-item" (click)="onAdminSelectTheme('basic')">
+            <i class="fas fa-circle" style="color: #808080"></i>
+            <span>{{ themeBasic() }}</span>
+          </button>
+          <button class="chat-button secondary" (click)="onBackToMenu()">
+            <i class="fas fa-arrow-left"></i>
+            <span>{{ backToMenu() }}</span>
+          </button>
+        }
+        @if (currentStep() === 'adminModeSelection') {
+          <button class="chat-button dropdown-item" (click)="onAdminSelectMode('light')">
+            <i class="fas fa-sun" style="color: #f1c40f"></i>
+            <span>{{ modeLight() }}</span>
+          </button>
+          <button class="chat-button dropdown-item" (click)="onAdminSelectMode('dark')">
+            <i class="fas fa-moon" style="color: #95a5a6"></i>
+            <span>{{ modeDark() }}</span>
+          </button>
+          <button class="chat-button secondary" (click)="onBackToMenu()">
+            <i class="fas fa-arrow-left"></i>
+            <span>{{ backToMenu() }}</span>
+          </button>
+        }
+      </div>
+    </div>
+  </div>
+}

@@ -1,0 +1,315 @@
+<div class="home-page">
+  <!-- Hero Section with Carousel -->
+  <section class="hero-section">
+    @if (heroLoading()) {
+      <div class="hero-skeleton">
+        <div class="skeleton-hero-placeholder"></div>
+      </div>
+    } @else {
+      <div class="hero-carousel">
+        @for (image of heroImages(); track $index) {
+          <div class="hero-slide" [class.active]="currentSlide() === $index">
+            <!-- Optimized Image Loading for LCP -->
+            @if ($index === 0) {
+              <img
+                [src]="image"
+                alt="Mazzady Hero Image"
+                class="hero-bg-img"
+                fetchpriority="high"
+                loading="eager"
+                decoding="async"
+                width="1920"
+                height="1080"
+              />
+            } @else {
+              <img
+                [src]="image"
+                alt="Mazzady Hero Image"
+                class="hero-bg-img"
+                loading="lazy"
+                decoding="async"
+                width="1920"
+                height="1080"
+              />
+            }
+            <div class="hero-overlay"></div>
+            <div class="hero-content">
+              <h1 class="hero-title">{{ heroTitle() }}</h1>
+              <p class="hero-subtitle">{{ heroSubtitle() }}</p>
+            </div>
+          </div>
+        }
+      </div>
+
+      <!-- Carousel Controls -->
+      <button
+        class="carousel-control prev"
+        (click)="prevSlide()"
+        [attr.aria-label]="'Previous slide'"
+      >
+        <i class="fas fa-chevron-left"></i>
+      </button>
+      <button class="carousel-control next" (click)="nextSlide()" [attr.aria-label]="'Next slide'">
+        <i class="fas fa-chevron-right"></i>
+      </button>
+
+      <!-- Carousel Indicators -->
+      <div class="carousel-indicators">
+        @for (image of heroImages(); track $index) {
+          <button
+            class="indicator"
+            [class.active]="currentSlide() === $index"
+            (click)="goToSlide($index)"
+            [attr.aria-label]="'Go to slide ' + ($index + 1)"
+          ></button>
+        }
+      </div>
+    }
+  </section>
+
+  <!-- Statistics Section -->
+  <section class="stats-section" appScrollLoad (scrollLoad)="onStatsVisible()">
+    <div class="container">
+      <h2 class="section-title">{{ statsTitle() }}</h2>
+      <div class="stats-grid">
+        @if (statsLoading() && !stats()) {
+          @for (i of [1, 2, 3]; track i) {
+            <div class="stat-card skeleton-stat"></div>
+          }
+        } @else {
+          <div class="stat-card" style="animation-delay: 0s">
+            <div class="stat-icon">
+              <i class="fas fa-users"></i>
+            </div>
+            <div class="stat-content">
+              <div class="stat-value" [attr.data-count]="stats()?.totalUsers || 0">
+                {{ formatNumber(stats()?.totalUsers || 0) }}
+              </div>
+              <div class="stat-label">{{ statsTotalUsers() }}</div>
+            </div>
+          </div>
+          <div class="stat-card" style="animation-delay: 0.1s">
+            <div class="stat-icon">
+              <i class="fas fa-box"></i>
+            </div>
+            <div class="stat-content">
+              <div class="stat-value" [attr.data-count]="stats()?.totalProducts || 0">
+                {{ formatNumber(stats()?.totalProducts || 0) }}
+              </div>
+              <div class="stat-label">{{ statsTotalProducts() }}</div>
+            </div>
+          </div>
+          <div class="stat-card" style="animation-delay: 0.2s">
+            <div class="stat-icon">
+              <i class="fas fa-gavel"></i>
+            </div>
+            <div class="stat-content">
+              <div class="stat-value" [attr.data-count]="stats()?.endedAuctions || 0">
+                {{ formatNumber(stats()?.endedAuctions || 0) }}
+              </div>
+              <div class="stat-label">{{ statsEndedAuctions() }}</div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works Section -->
+  <section class="how-it-works-section" appScrollLoad (scrollLoad)="onHowItWorksVisible()">
+    <div class="container">
+      <h2 class="section-title">{{ howItWorksTitle() }}</h2>
+
+      @if (howItWorksLoading()) {
+        <div class="how-it-works-skeleton">
+          <app-skeleton type="card" width="100%"></app-skeleton>
+          <app-skeleton type="card" width="100%"></app-skeleton>
+        </div>
+      } @else {
+        <!-- Step 1: Image Right, Text Left -->
+        <div class="how-it-works-item" [class.rtl]="isArabic()">
+          <div class="how-it-works-content">
+            <div class="how-it-works-text">
+              <h3 class="step-title">{{ step1Title() }}</h3>
+              <p class="step-description">{{ step1Description() }}</p>
+            </div>
+            <div class="how-it-works-image">
+              @if (howItWorksImages().length > 0) {
+                <img
+                  [src]="howItWorksImages()[0]"
+                  alt="Step 1"
+                  loading="lazy"
+                  decoding="async"
+                  width="600"
+                  height="400"
+                />
+              } @else {
+                <img
+                  src="https://via.placeholder.com/600x400/1a1a1a/d4af37?text=Step+1"
+                  alt="Step 1"
+                  loading="lazy"
+                  decoding="async"
+                  width="600"
+                  height="400"
+                />
+              }
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 2: Image Left, Text Right -->
+        <div class="how-it-works-item reverse" [class.rtl]="isArabic()">
+          <div class="how-it-works-content">
+            <div class="how-it-works-image">
+              @if (howItWorksImages().length > 1) {
+                <img
+                  [src]="howItWorksImages()[1]"
+                  alt="Step 2"
+                  loading="lazy"
+                  decoding="async"
+                  width="600"
+                  height="400"
+                />
+              } @else {
+                <img
+                  src="https://via.placeholder.com/600x400/1a1a1a/d4af37?text=Step+2"
+                  alt="Step 2"
+                  loading="lazy"
+                  decoding="async"
+                  width="600"
+                  height="400"
+                />
+              }
+            </div>
+            <div class="how-it-works-text">
+              <h3 class="step-title">{{ step2Title() }}</h3>
+              <p class="step-description">{{ step2Description() }}</p>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  </section>
+
+  <!-- Project Journey Section -->
+  <section class="project-journey-section" appScrollLoad (scrollLoad)="onJourneyVisible()">
+    <div class="container">
+      <h2 class="section-title">{{ projectJourneyTitle() }}</h2>
+      <p class="journey-subtitle">{{ projectJourneySubtitle() }}</p>
+
+      @if (journeyLoading()) {
+        <div class="journey-skeleton">
+          <app-skeleton type="list" [lines]="5"></app-skeleton>
+        </div>
+      } @else {
+        <div class="journey-map-wrapper">
+          <div class="journey-timeline">
+            @for (point of projectJourneyPoints(); track point.id) {
+              <div
+                class="journey-point"
+                [class.left]="point.id % 2 === 0"
+                [class.right]="point.id % 2 === 1"
+                [class.active]="selectedPointId() === point.id"
+                (click)="openJourneyModal(point.id)"
+              >
+                <div class="point-marker">
+                  <span class="point-number">{{ point.id }}</span>
+                </div>
+                <div class="point-content">
+                  <h3 class="point-title">{{ point.title() }}</h3>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  </section>
+
+  <!-- Featured Auctions Section -->
+  <section class="featured-auctions-section" appScrollLoad (scrollLoad)="onFeaturedVisible()">
+    <div class="container">
+      <h2 class="section-title">{{ featuredAuctionsTitle() }}</h2>
+      @if (featuredLoading()) {
+        <div class="featured-auctions-grid">
+          @for (i of [1, 2, 3]; track i) {
+            <app-skeleton type="card"></app-skeleton>
+          }
+        </div>
+      } @else if (featuredAuctions().length === 0) {
+        <div class="auctions-placeholder">
+          <p class="placeholder-text">
+            {{
+              isArabic() ? 'سيتم عرض المزادات هنا قريباً' : 'Auctions will be displayed here soon'
+            }}
+          </p>
+        </div>
+      } @else {
+        <div class="featured-auctions-grid">
+          @for (auction of featuredAuctions(); track auction._id) {
+            <div class="featured-auction-card" [routerLink]="['/auctions']">
+              <div class="auction-image">
+                <img
+                  [src]="auction.mainImageUrl | assetUrl"
+                  [alt]="auction.productName"
+                  loading="lazy"
+                  decoding="async"
+                  width="400"
+                  height="300"
+                />
+              </div>
+              <div class="auction-info">
+                <h3>{{ auction.productName }}</h3>
+                <div class="auction-price">
+                  <span class="price-label">{{
+                    isArabic() ? 'السعر الحالي:' : 'Current Price:'
+                  }}</span>
+                  <span class="price-value">{{
+                    formatPrice(auction.highestBid || auction.startingPrice)
+                  }}</span>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  </section>
+
+  <!-- Contact Section -->
+  <section class="contact-section" appScrollLoad (scrollLoad)="onContactVisible()">
+    <div class="container">
+      <div class="contact-content" [class.visible]="contactVisible()">
+        <h2 class="contact-title">{{ contactTitle() }}</h2>
+        <p class="contact-subtitle">{{ contactSubtitle() }}</p>
+        <button class="contact-button" (click)="onContactClick()">
+          <i class="fas fa-envelope"></i>
+          <span>{{ contactButton() }}</span>
+        </button>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- Journey Modal -->
+@if (isModalOpen() && selectedPoint()) {
+  @let point = selectedPoint()!;
+  <div class="modal-overlay" (click)="closeJourneyModal()">
+    <div class="modal-container" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2 class="modal-title">{{ point.title() }}</h2>
+        <button
+          class="modal-close"
+          (click)="closeJourneyModal()"
+          type="button"
+          [attr.aria-label]="'Close modal'"
+        >
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-content">{{ point.content() }}</p>
+      </div>
+    </div>
+  </div>
+}

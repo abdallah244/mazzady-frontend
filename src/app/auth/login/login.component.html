@@ -1,0 +1,270 @@
+<div class="login-container">
+  <!-- Admin Login Icon - Only show if user is NOT authenticated -->
+  @if (!isAuthenticated()) {
+    <button class="admin-login-btn" (click)="goToAdminLogin()" [attr.aria-label]="'Admin Login'">
+      <i class="fas fa-user-shield"></i>
+    </button>
+  }
+
+  <div class="login-box">
+    <div class="steps-indicator">
+      @for (step of steps(); track step.number) {
+        <div class="step-item" [class.active]="step.active" [class.completed]="step.completed">
+          <div class="step-circle">{{ step.number }}</div>
+          @if (step.number < totalSteps) {
+            <div class="step-line" [class.completed]="step.completed"></div>
+          }
+        </div>
+      }
+    </div>
+
+    <h1 class="welcome-title">
+      {{ isExistingUser() ? welcomeBack() : welcome() }}
+    </h1>
+
+    <form [formGroup]="loginForm" class="login-form">
+      @if (currentStep() === 1) {
+        <div class="step-content step-enter">
+          <h2 class="step-title">{{ email() }}</h2>
+          <div class="form-group">
+            <label for="email">{{ email() }}</label>
+            <input
+              id="email"
+              type="email"
+              formControlName="email"
+              placeholder="Enter your email"
+              [class.error]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched"
+              (keypress)="onKeyPress($event, 'next')"
+              autofocus
+            />
+            @if (loginForm.get('email')?.invalid && loginForm.get('email')?.touched) {
+              <span class="error-message">{{ t('validation.email') }}</span>
+            }
+          </div>
+        </div>
+      }
+      @if (currentStep() === 2) {
+        <div class="step-content step-enter">
+          <h2 class="step-title">{{ password() }}</h2>
+          <div class="form-group">
+            <label for="password">{{ password() }}</label>
+            <div class="password-input-wrapper">
+              <input
+                id="password"
+                [type]="showPassword() ? 'text' : 'password'"
+                formControlName="password"
+                placeholder="Enter your password"
+                [class.error]="
+                  loginForm.get('password')?.invalid && loginForm.get('password')?.touched
+                "
+                (keypress)="onKeyPress($event, 'next')"
+                autofocus
+              />
+              <button
+                type="button"
+                class="password-toggle"
+                (click)="togglePasswordVisibility()"
+                [attr.aria-label]="showPassword() ? 'Hide password' : 'Show password'"
+              >
+                <i [class]="showPassword() ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
+              </button>
+            </div>
+            @if (loginForm.get('password')?.invalid && loginForm.get('password')?.touched) {
+              <span class="error-message">{{ t('validation.passwordMinLength') }}</span>
+            }
+          </div>
+
+          <div class="form-group checkbox-group">
+            <label class="checkbox-label">
+              <input type="checkbox" formControlName="rememberMe" />
+              <span>{{ rememberMe() }}</span>
+            </label>
+            @if (loginForm.get('rememberMe')?.value) {
+              <div class="remember-me-info">
+                <p><i class="fas fa-exclamation-triangle"></i> {{ rememberMeInfo() }}</p>
+              </div>
+            }
+          </div>
+        </div>
+      }
+      @if (currentStep() === 3) {
+        <div class="step-content step-enter">
+          <h2 class="step-title">{{ reviewInfo() }}</h2>
+
+          <div class="review-carousel">
+            <div class="carousel-container">
+              @if (reviewCarouselIndex() === 0) {
+                <div class="carousel-item">
+                  <div class="review-card">
+                    <h3 class="review-card-title">Email Address</h3>
+                    <p class="review-card-value">{{ getReviewData().email }}</p>
+                  </div>
+                </div>
+              }
+              @if (reviewCarouselIndex() === 1) {
+                <div class="carousel-item">
+                  <div class="review-card">
+                    <h3 class="review-card-title">Remember Me</h3>
+                    <p class="review-card-value">
+                      {{ getReviewData().rememberMe ? 'Enabled' : 'Disabled' }}
+                    </p>
+                    @if (getReviewData().rememberMe) {
+                      <div class="remember-me-warning">
+                        <p>
+                          <i class="fas fa-exclamation-triangle"></i> Your session will remain
+                          active for
+                          <strong>7 days only</strong>
+                        </p>
+                      </div>
+                    }
+                  </div>
+                </div>
+              }
+            </div>
+
+            <div class="carousel-controls">
+              <button
+                type="button"
+                class="carousel-btn prev-btn"
+                (click)="prevCarouselItem()"
+                [disabled]="reviewCarouselIndex() === 0"
+              >
+                ← Previous
+              </button>
+              <div class="carousel-indicators">
+                <span class="indicator" [class.active]="reviewCarouselIndex() === 0"></span>
+                <span class="indicator" [class.active]="reviewCarouselIndex() === 1"></span>
+              </div>
+              <button
+                type="button"
+                class="carousel-btn next-btn"
+                (click)="nextCarouselItem()"
+                [disabled]="reviewCarouselIndex() === 1"
+              >
+                Next →
+              </button>
+            </div>
+          </div>
+        </div>
+      }
+      @if (currentStep() === 4) {
+        <div class="step-content step-enter">
+          <h2 class="step-title">{{ verifyCodeText() }}</h2>
+          <div class="form-group">
+            <label for="verificationCode">Verification Code</label>
+            <p class="verification-info">
+              @if (verificationCodeSent()) {
+                <span
+                  ><i class="fas fa-check-circle"></i> Verification code has been sent to your
+                  email</span
+                >
+              } @else if (isVerifyingCode()) {
+                <span>Sending verification code...</span>
+              } @else {
+                <span>Please enter the 6-digit code sent to your email</span>
+              }
+            </p>
+            <input
+              id="verificationCode"
+              type="text"
+              formControlName="verificationCode"
+              placeholder="Enter 6-digit code"
+              maxlength="6"
+              [class.error]="
+                loginForm.get('verificationCode')?.invalid &&
+                loginForm.get('verificationCode')?.touched
+              "
+              (keypress)="onKeyPress($event, 'submit')"
+              autofocus
+            />
+            @if (
+              loginForm.get('verificationCode')?.invalid &&
+              loginForm.get('verificationCode')?.touched
+            ) {
+              <span class="error-message">{{ t('validation.verificationCode6Digits') }}</span>
+            }
+            <div class="resend-code-container">
+              @if (verificationCodeSent() && !isVerifyingCode()) {
+                <button type="button" class="resend-code-btn" (click)="sendVerificationCode()">
+                  Resend Code
+                </button>
+              }
+            </div>
+          </div>
+        </div>
+      }
+      @if (currentStep() === 5) {
+        <div class="step-content step-enter welcome-back-step">
+          <div class="welcome-back-card">
+            <div class="welcome-icon"><i class="fas fa-check"></i></div>
+            <h2 class="welcome-back-title">{{ welcomeBackTitle() }}</h2>
+            <p class="welcome-back-message">{{ welcomeBackMessage() }}</p>
+            <p class="redirect-message">
+              {{ redirecting() }} <strong>{{ redirectCountdown() }}</strong>
+              {{ t('common.loading') }}
+            </p>
+          </div>
+        </div>
+      }
+      @if (error()) {
+        <div class="error-alert">{{ error() }}</div>
+      }
+      @if (currentStep() < 5) {
+        <div class="form-actions">
+          @if (currentStep() > 1) {
+            <button type="button" class="prev-button" (click)="prevStep()">
+              {{ previous() }}
+            </button>
+          }
+          @if (currentStep() < totalSteps && currentStep() !== 4) {
+            <button type="button" class="next-button" (click)="nextStep()">
+              {{ next() }}
+            </button>
+          }
+          @if (currentStep() === 4) {
+            <button
+              type="button"
+              class="submit-button"
+              (click)="onSubmit()"
+              [disabled]="
+                loginForm.get('verificationCode')?.invalid || isLoading() || isVerifyingCode()
+              "
+              appLoadingButton
+              [loading]="isLoading() || isVerifyingCode()"
+            >
+              @if (isVerifyingCode()) {
+                {{ verifying() }}
+              } @else if (isLoading()) {
+                {{ loggingIn() }}
+              } @else {
+                {{ verifyAndLogin() }}
+              }
+            </button>
+          }
+        </div>
+      }
+    </form>
+
+    @if (currentStep() === 1) {
+      <div class="oauth-section">
+        <div class="oauth-divider">
+          <span>Or continue with</span>
+        </div>
+        <div class="oauth-buttons">
+          <button type="button" class="oauth-btn google-btn" (click)="loginWithGoogle()">
+            <i class="fab fa-google oauth-icon"></i>
+            <span>Google</span>
+          </button>
+          <button type="button" class="oauth-btn facebook-btn" (click)="loginWithFacebook()">
+            <i class="fab fa-facebook-f oauth-icon"></i>
+            <span>Facebook</span>
+          </button>
+        </div>
+      </div>
+    }
+
+    <div class="register-link">
+      <p>Don't have an account? <a routerLink="/register">Sign Up</a></p>
+    </div>
+  </div>
+</div>

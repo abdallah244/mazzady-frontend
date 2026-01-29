@@ -1,0 +1,209 @@
+<nav class="navbar" [class.rtl]="isArabic()">
+  <!-- New Messages Notification -->
+  @if (isAuthenticated() && hasNewMessages()) {
+    <div class="new-messages-notification" [class.rtl]="isArabic()">
+      <i class="fas fa-envelope"></i>
+      <span>{{ isArabic() ? 'لديك رسائل جديدة' : 'You have new messages' }}</span>
+      <button class="close-notification" (click)="dismissNotification()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+  }
+  <div class="navbar-container">
+    <!-- Logo -->
+    <div class="navbar-logo">
+      <a routerLink="/home">
+        <i class="fas fa-gavel"></i>
+        <span>Mazzady</span>
+      </a>
+    </div>
+
+    <!-- Menu Items -->
+    <div class="navbar-menu">
+      <!-- Links with Icon + Text -->
+      <div class="navbar-menu-text-links">
+        <a routerLink="/home" routerLinkActive="active" class="navbar-link">
+          <i class="fas fa-home"></i>
+          <span>{{ home() }}</span>
+        </a>
+        <a routerLink="/auctions" routerLinkActive="active" class="navbar-link">
+          <i class="fas fa-hammer"></i>
+          <span>{{ auctions() }}</span>
+        </a>
+        <a routerLink="/join-us" class="navbar-link">
+          <i class="fas fa-user-plus"></i>
+          <span>{{ joinUs() }}</span>
+        </a>
+        <a routerLink="/customer-service" class="navbar-link">
+          <i class="fas fa-headset"></i>
+          <span>{{ customerService() }}</span>
+        </a>
+        <a routerLink="/sell-product" class="navbar-link">
+          <i class="fas fa-tag"></i>
+          <span>{{ sellProduct() }}</span>
+        </a>
+      </div>
+
+      <!-- Icon-only Links (only when authenticated) -->
+      @if (isAuthenticated()) {
+        <div class="navbar-menu-icon-links">
+          <a routerLink="/cart" class="navbar-link icon-only" [attr.title]="card()">
+            <i class="fas fa-shopping-cart"></i>
+          </a>
+          <a routerLink="/profile" class="navbar-link icon-only" [attr.title]="profile()">
+            <i class="fas fa-user"></i>
+          </a>
+          <div class="wallet-container">
+            <button type="button" class="navbar-link icon-only wallet-link" [attr.title]="wallet()" (click)="toggleWalletDropdown($event)">
+              <i class="fas fa-wallet"></i>
+              <span class="wallet-balance">{{ walletBalance() | number:'1.0-0' }}</span>
+            </button>
+
+            @if (walletDropdownOpen()) {
+              <div class="wallet-dropdown">
+                <button class="wallet-dropdown-item" (click)="openPaymentModal('instapay')">
+                  <i class="fas fa-mobile-alt"></i>
+                  <span>{{ walletInstaPay() }}</span>
+                </button>
+              </div>
+            }
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- Auth Buttons -->
+    <div class="navbar-auth">
+      @if (isAuthenticated()) {
+        <button class="navbar-button icon-only logout-btn" (click)="onLogout()" [attr.title]="logout()">
+          <i class="fas fa-sign-out-alt"></i>
+        </button>
+      } @else {
+        <a routerLink="/register" class="navbar-button icon-only register-btn" [attr.title]="register()">
+          <i class="fas fa-user-plus"></i>
+        </a>
+        <a routerLink="/login" class="navbar-button icon-only login-btn" [attr.title]="login()">
+          <i class="fas fa-sign-in-alt"></i>
+        </a>
+      }
+    </div>
+
+    <!-- Mobile Menu Toggle -->
+    <button class="mobile-menu-toggle" (click)="toggleMobileMenu()">
+      <i [class]="mobileMenuOpen() ? 'fas fa-times' : 'fas fa-bars'"></i>
+    </button>
+  </div>
+
+  <!-- Mobile Menu -->
+  @if (mobileMenuOpen()) {
+    <div class="mobile-menu">
+      <a routerLink="/home" routerLinkActive="active" class="mobile-link" (click)="closeMobileMenu()">
+        <i class="fas fa-home"></i>
+        <span>{{ home() }}</span>
+      </a>
+      <a routerLink="/auctions" routerLinkActive="active" class="mobile-link" (click)="closeMobileMenu()">
+        <i class="fas fa-hammer"></i>
+        <span>{{ auctions() }}</span>
+      </a>
+      <a routerLink="/join-us" class="mobile-link" (click)="closeMobileMenu()">
+        <i class="fas fa-user-plus"></i>
+        <span>{{ joinUs() }}</span>
+      </a>
+      <a routerLink="/customer-service" class="mobile-link" (click)="closeMobileMenu()">
+        <i class="fas fa-headset"></i>
+        <span>{{ customerService() }}</span>
+      </a>
+      <a routerLink="/sell-product" class="mobile-link" (click)="closeMobileMenu()">
+        <i class="fas fa-tag"></i>
+        <span>{{ sellProduct() }}</span>
+      </a>
+      @if (isAuthenticated()) {
+        <a routerLink="/cart" class="mobile-link" (click)="closeMobileMenu()">
+          <i class="fas fa-shopping-cart"></i>
+          <span>{{ card() }}</span>
+        </a>
+        <a routerLink="/profile" class="mobile-link" (click)="closeMobileMenu()">
+          <i class="fas fa-user"></i>
+          <span>{{ profile() }}</span>
+        </a>
+        <button type="button" class="mobile-link" (click)="openPaymentModal('instapay'); closeMobileMenu()">
+          <i class="fas fa-wallet"></i>
+          <span>{{ wallet() }}: {{ walletBalance() | number:'1.0-0' }}</span>
+        </button>
+        <button class="mobile-link logout-btn" (click)="onLogout(); closeMobileMenu()">
+          <i class="fas fa-sign-out-alt"></i>
+          <span>{{ logout() }}</span>
+        </button>
+      } @else {
+        <a routerLink="/login" class="mobile-link login-btn" (click)="closeMobileMenu()">
+          <i class="fas fa-sign-in-alt"></i>
+          <span>{{ login() }}</span>
+        </a>
+        <a routerLink="/register" class="mobile-link register-btn" (click)="closeMobileMenu()">
+          <i class="fas fa-user-plus"></i>
+          <span>{{ register() }}</span>
+        </a>
+      }
+    </div>
+  }
+
+  <!-- Payment Modal -->
+  @if (paymentModalOpen()) {
+    <div class="modal-overlay" (click)="closePaymentModal()">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h3>{{ walletAddFunds() }}</h3>
+          <button class="modal-close" (click)="closePaymentModal()">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <form [formGroup]="paymentForm" (ngSubmit)="onSubmitPayment()">
+              <div class="form-group">
+                <label>{{ walletAmount() }}</label>
+                <input type="number" formControlName="amount" placeholder="0.00" min="1" step="0.01">
+                @if (paymentForm.get('amount')?.invalid && paymentForm.get('amount')?.touched) {
+                  <span class="error-message">{{ isArabic() ? 'المبلغ مطلوب' : 'Amount is required' }}</span>
+                }
+              </div>
+
+              <div class="form-group">
+                <label>{{ walletPhoneNumber() }}</label>
+                <input type="text" value="01142402039" readonly class="readonly-input">
+                <small>{{ isArabic() ? 'يرجى إرسال المبلغ إلى هذا الرقم' : 'Please send the amount to this number' }}</small>
+              </div>
+
+              <div class="form-group">
+                <label>{{ walletDepositImage() }}</label>
+                <div class="file-input-wrapper">
+                  <input type="file" id="depositImage" accept="image/*" (change)="onImageSelected($event)" style="display: none;">
+                  <label for="depositImage" class="file-input-label">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <span>{{ isArabic() ? 'اختر صورة الإيداع' : 'Choose Deposit Image' }}</span>
+                  </label>
+                </div>
+                @if (depositImagePreview) {
+                  <div class="image-preview">
+                    <img [src]="depositImagePreview" alt="Deposit Image">
+                    <button type="button" class="remove-image-btn" (click)="removeImage()">
+                      <i class="fas fa-times"></i>
+                    </button>
+                  </div>
+                }
+                @if (paymentForm.get('depositImage')?.invalid && paymentForm.get('depositImage')?.touched) {
+                  <span class="error-message">{{ isArabic() ? 'صورة الإيداع مطلوبة' : 'Deposit image is required' }}</span>
+                }
+              </div>
+
+              <div class="modal-actions">
+                <button type="button" class="btn-cancel" (click)="closePaymentModal()">{{ walletCancel() }}</button>
+                <button type="submit" class="btn-submit" [disabled]="paymentForm.invalid">{{ walletSubmitRequest() }}</button>
+              </div>
+            </form>
+        </div>
+      </div>
+    </div>
+  }
+</nav>
+

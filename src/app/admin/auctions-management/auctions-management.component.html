@@ -1,0 +1,498 @@
+<div class="auctions-management-page">
+  <div class="page-header">
+    <button class="back-btn" (click)="goBack()">
+      <i class="fas fa-arrow-left"></i>
+      <span>{{ isArabic() ? 'رجوع' : 'Back' }}</span>
+    </button>
+    <h1 class="page-title">
+      <i class="fas fa-gavel"></i>
+      <span>{{ isArabic() ? 'إدارة المزادات' : 'Auctions Management' }}</span>
+    </h1>
+    <button class="add-auction-btn" (click)="openAddModal()">
+      <i class="fas fa-plus"></i>
+      <span>{{ isArabic() ? 'إضافة مزاد' : 'Add Auction' }}</span>
+    </button>
+  </div>
+
+  @if (isLoading()) {
+    <div class="loading-container">
+      <div class="spinner"></div>
+      <p>{{ isArabic() ? 'جاري التحميل...' : 'Loading...' }}</p>
+    </div>
+  } @else if (auctions().length === 0) {
+    <div class="empty-state">
+      <i class="fas fa-inbox"></i>
+      <p>{{ isArabic() ? 'لا توجد مزادات' : 'No auctions found' }}</p>
+    </div>
+  } @else {
+    <div class="auctions-carousel">
+      @for (auction of paginatedAuctions(); track auction._id) {
+        <div class="auction-card">
+          <div class="auction-header">
+            <h3>{{ auction.productName }}</h3>
+            <span
+              class="status-badge"
+              [class.pending]="auction.status === 'pending'"
+              [class.active]="auction.status === 'active'"
+              [class.ended]="auction.status === 'ended'"
+            >
+              @if (auction.status === 'pending') {
+                {{ isArabic() ? 'معلق' : 'Pending' }}
+              } @else if (auction.status === 'active') {
+                {{ isArabic() ? 'نشط' : 'Active' }}
+              } @else {
+                {{ isArabic() ? 'منتهي' : 'Ended' }}
+              }
+            </span>
+          </div>
+
+          <!-- Auction Images -->
+          <div class="auction-images-preview">
+            <div class="main-image-preview">
+              <img [src]="auction.mainImageUrl | assetUrl" [alt]="auction.productName" />
+            </div>
+            @if (auction.additionalImagesUrl && auction.additionalImagesUrl.length > 0) {
+              <div class="additional-images-preview">
+                @for (imageUrl of auction.additionalImagesUrl.slice(0, 3); track $index) {
+                  <img [src]="imageUrl | assetUrl" [alt]="'Additional image ' + ($index + 1)" />
+                }
+                @if (auction.additionalImagesUrl.length > 3) {
+                  <div class="more-images-indicator">
+                    +{{ auction.additionalImagesUrl.length - 3 }}
+                  </div>
+                }
+              </div>
+            }
+          </div>
+
+          <div class="auction-info">
+            <div class="info-item">
+              <i class="fas fa-dollar-sign"></i>
+              <span
+                ><strong>{{ isArabic() ? 'السعر المبدئي:' : 'Starting Price:' }}</strong>
+                {{ formatPrice(auction.startingPrice) }}</span
+              >
+            </div>
+            <div class="info-item">
+              <i class="fas fa-arrow-up"></i>
+              <span
+                ><strong>{{ isArabic() ? 'أقل معدل للزيادة:' : 'Min Bid Increment:' }}</strong>
+                {{ formatPrice(auction.minBidIncrement) }}</span
+              >
+            </div>
+            <div class="info-item">
+              <i class="fas fa-images"></i>
+              <span
+                ><strong>{{ isArabic() ? 'عدد الصور:' : 'Images:' }}</strong>
+                {{ getImageCount(auction) }}</span
+              >
+            </div>
+            <div class="info-item">
+              <i class="fas fa-user"></i>
+              <span
+                ><strong>{{ isArabic() ? 'صاحب المنتج:' : 'Seller:' }}</strong>
+                {{ auction.sellerId.nickname }}</span
+              >
+            </div>
+            @if (auction.highestBid) {
+              <div class="info-item">
+                <i class="fas fa-trophy"></i>
+                <span
+                  ><strong>{{ isArabic() ? 'أعلى مزايدة:' : 'Highest Bid:' }}</strong>
+                  {{ formatPrice(auction.highestBid) }}</span
+                >
+              </div>
+              @if (auction.status === 'ended' && auction.highestBidderId) {
+                <div class="info-item winner-item">
+                  <i class="fas fa-crown"></i>
+                  <span
+                    ><strong>{{ isArabic() ? 'الفائز:' : 'Winner:' }}</strong>
+                    {{ auction.highestBidderId.nickname }} ({{
+                      formatPrice(auction.highestBid)
+                    }})</span
+                  >
+                </div>
+              }
+            }
+            <div class="info-item">
+              <i class="fas fa-calendar"></i>
+              <span
+                ><strong>{{ isArabic() ? 'تاريخ الانتهاء:' : 'End Date:' }}</strong>
+                {{ formatDate(auction.endDate) }}</span
+              >
+            </div>
+            @if (auction.status === 'pending') {
+              <div class="info-item pending-item">
+                <i class="fas fa-pause-circle"></i>
+                <span
+                  ><strong>{{ isArabic() ? 'حالة المزاد:' : 'Auction Status:' }}</strong>
+                  {{
+                    isArabic() ? 'معلق - في انتظار التفعيل' : 'Pending - Awaiting Activation'
+                  }}</span
+                >
+              </div>
+            } @else if (auction.status === 'active') {
+              <div class="info-item timer-item">
+                <i class="fas fa-clock"></i>
+                <span
+                  ><strong>{{ isArabic() ? 'الوقت المتبقي:' : 'Time Remaining:' }}</strong>
+                  <span class="timer-value">{{ formatTimeRemaining(auction.endDate) }}</span>
+                </span>
+              </div>
+            }
+          </div>
+
+          <div class="auction-actions">
+            @if (auction.status === 'pending') {
+              <button class="activate-btn" (click)="activateAuction(auction)">
+                <i class="fas fa-play"></i>
+                <span>{{ isArabic() ? 'تفعيل' : 'Activate' }}</span>
+              </button>
+            }
+            @if (canEditAuction(auction)) {
+              <button class="edit-btn" (click)="openEditModal(auction)">
+                <i class="fas fa-edit"></i>
+                <span>{{ isArabic() ? 'تعديل' : 'Edit' }}</span>
+              </button>
+            }
+            @if (isAuctionEnded(auction.endDate)) {
+              <button
+                class="view-details-btn"
+                (click)="viewWinnerDetails(auction)"
+                [disabled]="!auction.highestBidderId"
+              >
+                <i class="fas fa-eye"></i>
+                <span>{{ isArabic() ? 'عرض تفاصيل المزاد' : 'View Auction Details' }}</span>
+              </button>
+            }
+            <button class="delete-btn" (click)="deleteAuction(auction)">
+              <i class="fas fa-trash"></i>
+              <span>{{ isArabic() ? 'حذف' : 'Delete' }}</span>
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+
+    @if (totalPages() > 1) {
+      <div class="pagination">
+        <button class="pagination-btn" (click)="prevPage()" [disabled]="currentPage() === 0">
+          <i class="fas fa-chevron-left"></i>
+        </button>
+        @for (page of [].constructor(totalPages()); track $index) {
+          <button
+            class="pagination-btn"
+            [class.active]="currentPage() === $index"
+            (click)="goToPage($index)"
+          >
+            {{ $index + 1 }}
+          </button>
+        }
+        <button
+          class="pagination-btn"
+          (click)="nextPage()"
+          [disabled]="currentPage() === totalPages() - 1"
+        >
+          <i class="fas fa-chevron-right"></i>
+        </button>
+      </div>
+    }
+  }
+
+  <!-- Add Auction Modal -->
+  @if (showAddModal()) {
+    <div class="modal-overlay" (click)="closeAddModal()">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h2>{{ isArabic() ? 'إضافة مزاد جديد' : 'Add New Auction' }}</h2>
+          <button class="close-btn" (click)="closeAddModal()">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <div class="form-group">
+            <label>{{ isArabic() ? 'اسم المنتج' : 'Product Name' }} *</label>
+            <input
+              type="text"
+              [(ngModel)]="productName"
+              [placeholder]="isArabic() ? 'أدخل اسم المنتج' : 'Enter product name'"
+            />
+          </div>
+
+          <div class="form-group">
+            <label>{{ isArabic() ? 'صاحب المنتج' : 'Seller' }} *</label>
+            <select [(ngModel)]="sellerId" class="user-select">
+              <option value="">{{ isArabic() ? 'اختر صاحب المنتج' : 'Select Seller' }}</option>
+              @for (user of users(); track user.id) {
+                <option [value]="user.id">{{ getUserDisplayName(user) }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>{{ isArabic() ? 'السعر المبدئي' : 'Starting Price' }} *</label>
+              <input
+                type="number"
+                [(ngModel)]="startingPrice"
+                [placeholder]="isArabic() ? 'أدخل السعر' : 'Enter price'"
+                min="0"
+                step="0.01"
+              />
+            </div>
+            <div class="form-group">
+              <label>{{ isArabic() ? 'أقل معدل للزيادة' : 'Min Bid Increment' }}</label>
+              <input
+                type="number"
+                [(ngModel)]="minBidIncrement"
+                [placeholder]="isArabic() ? 'معدل الزيادة' : 'Increment'"
+                min="1"
+              />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>{{ isArabic() ? 'مدة المزاد' : 'Auction Duration' }}</label>
+              <select [(ngModel)]="durationInSeconds">
+                @for (option of getDurationOptions(); track option.value) {
+                  <option [value]="option.value">
+                    {{ isArabic() ? option.label : option.en }}
+                  </option>
+                }
+              </select>
+            </div>
+            <div class="form-group">
+              <label>{{ isArabic() ? 'الفئة' : 'Category' }}</label>
+              <select [(ngModel)]="category">
+                @for (cat of categories; track cat) {
+                  <option [value]="cat">{{ getCategoryName(cat) }}</option>
+                }
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>{{ isArabic() ? 'الصورة الرئيسية' : 'Main Image' }} *</label>
+            <input type="file" accept="image/*" (change)="onMainImageSelect($event)" />
+          </div>
+
+          <div class="form-group">
+            <label>{{
+              isArabic() ? 'الصور الفرعية (حتى 9 صور)' : 'Additional Images (up to 9 images)'
+            }}</label>
+            <input
+              type="file"
+              accept="image/*"
+              multiple
+              (change)="onAdditionalImagesSelect($event)"
+            />
+            @if (additionalImages.length > 0) {
+              <div class="selected-images-info">
+                <span
+                  >{{ isArabic() ? 'تم اختيار' : 'Selected' }} {{ additionalImages.length }}
+                  {{ isArabic() ? 'صورة' : 'image(s)' }}</span
+                >
+              </div>
+            }
+          </div>
+
+          <div class="form-group checkbox-group">
+            <label>
+              <input type="checkbox" [(ngModel)]="isFeatured" />
+              <span>{{ isArabic() ? 'إضافة في أبرز المزادات' : 'Add to Featured Auctions' }}</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button class="cancel-btn" (click)="closeAddModal()">
+            {{ isArabic() ? 'إلغاء' : 'Cancel' }}
+          </button>
+          <button class="submit-btn" (click)="submitAuction()">
+            {{ isArabic() ? 'حفظ' : 'Save' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Winner Details Modal -->
+  @if (showWinnerModal() && selectedWinner) {
+    <div class="modal-overlay" (click)="closeWinnerModal()">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h2>{{ isArabic() ? 'تفاصيل المزاد والفائز' : 'Auction Details & Winner' }}</h2>
+          <button class="close-btn" (click)="closeWinnerModal()">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <div class="winner-info-section">
+            <h3>{{ isArabic() ? 'معلومات المزاد' : 'Auction Information' }}</h3>
+            <div class="info-grid">
+              <div class="info-item">
+                <span class="info-label">{{ isArabic() ? 'اسم المنتج:' : 'Product Name:' }}</span>
+                <span class="info-value">{{ selectedWinner.auction.productName }}</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">{{
+                  isArabic() ? 'السعر المبدئي:' : 'Starting Price:'
+                }}</span>
+                <span class="info-value">{{
+                  formatPrice(selectedWinner.auction.startingPrice)
+                }}</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">{{ isArabic() ? 'أعلى مزايدة:' : 'Highest Bid:' }}</span>
+                <span class="info-value highlight">{{
+                  formatPrice(selectedWinner.highestBid || selectedWinner.auction.startingPrice)
+                }}</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">{{ isArabic() ? 'صاحب المنتج:' : 'Seller:' }}</span>
+                <span class="info-value">{{ selectedWinner.auction.sellerId.nickname }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="winner-info-section">
+            <h3>{{ isArabic() ? 'بيانات الفائز' : 'Winner Information' }}</h3>
+            <div class="winner-card">
+              <div class="winner-header">
+                <i class="fas fa-crown"></i>
+                <span>{{ isArabic() ? 'الفائز بالمزاد' : 'Auction Winner' }}</span>
+              </div>
+              <div class="info-grid">
+                <div class="info-item">
+                  <span class="info-label">{{ isArabic() ? 'النيك نيم:' : 'Nickname:' }}</span>
+                  <span class="info-value">{{ selectedWinner.winner.nickname }}</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">{{ isArabic() ? 'الاسم الكامل:' : 'Full Name:' }}</span>
+                  <span class="info-value"
+                    >{{ selectedWinner.winner.firstName }}
+                    {{ selectedWinner.winner.middleName || '' }}
+                    {{ selectedWinner.winner.lastName }}</span
+                  >
+                </div>
+                <div class="info-item">
+                  <span class="info-label">{{ isArabic() ? 'البريد الإلكتروني:' : 'Email:' }}</span>
+                  <span class="info-value">{{ selectedWinner.winner.email }}</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">{{
+                    isArabic() ? 'مبلغ المزايدة:' : 'Bid Amount:'
+                  }}</span>
+                  <span class="info-value highlight">{{
+                    formatPrice(selectedWinner.highestBid || selectedWinner.auction.startingPrice)
+                  }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button class="cancel-btn" (click)="closeWinnerModal()">
+            <span>{{ isArabic() ? 'إغلاق' : 'Close' }}</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Edit Auction Settings Modal -->
+  @if (showEditModal() && selectedAuction()) {
+    <div class="modal-overlay" (click)="closeEditModal()">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h2>{{ isArabic() ? 'تعديل إعدادات المزاد' : 'Edit Auction Settings' }}</h2>
+          <button class="close-btn" (click)="closeEditModal()">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <div class="auction-preview">
+            <h3>{{ selectedAuction()!.productName }}</h3>
+            <div class="preview-image">
+              <img
+                [src]="selectedAuction()!.mainImageUrl | assetUrl"
+                [alt]="selectedAuction()!.productName"
+              />
+            </div>
+            <div class="preview-info">
+              <p>
+                <strong>{{ isArabic() ? 'السعر المبدئي:' : 'Starting Price:' }}</strong>
+                {{ formatPrice(selectedAuction()!.startingPrice) }}
+              </p>
+              <p>
+                <strong>{{ isArabic() ? 'صاحب المنتج:' : 'Seller:' }}</strong>
+                {{ selectedAuction()!.sellerId.nickname }}
+              </p>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>{{ isArabic() ? 'اسم المنتج' : 'Product Name' }} *</label>
+            <input
+              type="text"
+              [(ngModel)]="editProductName"
+              [placeholder]="isArabic() ? 'أدخل اسم المنتج' : 'Enter product name'"
+            />
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>{{ isArabic() ? 'أقل معدل للزيادة' : 'Min Bid Increment' }} *</label>
+              <input
+                type="number"
+                [(ngModel)]="editMinBidIncrement"
+                [placeholder]="isArabic() ? 'أدخل معدل الزيادة' : 'Enter increment'"
+                min="1"
+                step="0.01"
+              />
+              <small>{{ isArabic() ? 'الحد الأدنى: 1' : 'Minimum: 1' }}</small>
+            </div>
+            <div class="form-group">
+              <label>{{ isArabic() ? 'الفئة' : 'Category' }}</label>
+              <select [(ngModel)]="editCategory">
+                @for (cat of categories; track cat) {
+                  <option [value]="cat">{{ getCategoryName(cat) }}</option>
+                }
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>{{ isArabic() ? 'مدة المزاد' : 'Auction Duration' }} *</label>
+            <select [(ngModel)]="editDurationInSeconds">
+              @for (option of getDurationOptions(); track option.value) {
+                <option [value]="option.value">{{ isArabic() ? option.label : option.en }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="form-group checkbox-group">
+            <label>
+              <input type="checkbox" [(ngModel)]="editIsFeatured" />
+              <span>{{ isArabic() ? 'إضافة في أبرز المزادات' : 'Add to Featured Auctions' }}</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button class="cancel-btn" (click)="closeEditModal()">
+            {{ isArabic() ? 'إلغاء' : 'Cancel' }}
+          </button>
+          <button class="submit-btn" (click)="updateAuctionSettings()">
+            {{ isArabic() ? 'حفظ' : 'Save' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+</div>

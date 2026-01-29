@@ -1,0 +1,577 @@
+<div class="send-messages">
+  <div class="messages-header">
+    <button class="back-btn" (click)="goBack()">
+      <i class="fas fa-arrow-left"></i>
+      <span>{{ isArabic() ? 'العودة' : 'Back' }}</span>
+    </button>
+    <h1 class="messages-title">
+      <i class="fas fa-envelope"></i>
+      <span>{{
+        isArabic() ? 'إرسال الرسائل وإدارة المبيعات' : 'Send Messages & Sales Management'
+      }}</span>
+    </h1>
+  </div>
+
+  <div class="messages-content">
+    <div class="tabs">
+      <button
+        class="tab-btn"
+        [class.active]="activeTab() === 'messages'"
+        (click)="activeTab.set('messages')"
+      >
+        <i class="fas fa-envelope"></i>
+        <span>{{ isArabic() ? 'إرسال الرسائل' : 'Send Messages' }}</span>
+      </button>
+      <button
+        class="tab-btn"
+        [class.active]="activeTab() === 'products'"
+        (click)="activeTab.set('products')"
+      >
+        <i class="fas fa-box"></i>
+        <span>{{ isArabic() ? 'إدارة المنتجات' : 'Manage Products' }}</span>
+      </button>
+    </div>
+
+    @if (activeTab() === 'messages') {
+      @if (isLoading()) {
+        <div class="loading-container">
+          <i class="fas fa-spinner fa-spin"></i>
+          <p>{{ isArabic() ? 'جاري التحميل...' : 'Loading...' }}</p>
+        </div>
+      } @else if (error()) {
+        <div class="error-container">
+          <i class="fas fa-exclamation-circle"></i>
+          <p>{{ error() }}</p>
+        </div>
+      } @else {
+        <div class="message-form-container">
+          @if (success()) {
+            <div class="success-message">
+              <i class="fas fa-check-circle"></i>
+              <span>{{ success() }}</span>
+            </div>
+          }
+
+          <div class="form-group">
+            <label for="user-search">
+              <i class="fas fa-user"></i>
+              <span>{{ isArabic() ? 'اختر المستخدم' : 'Select User' }}</span>
+            </label>
+            <div class="user-select-container">
+              <input
+                type="text"
+                id="user-search"
+                class="user-search-input"
+                [(ngModel)]="searchQuery"
+                [placeholder]="isArabic() ? 'ابحث عن المستخدم...' : 'Search for user...'"
+                (input)="selectedUserId.set(''); selectedUser.set(null)"
+              />
+              @if (searchQuery() && filteredUsers().length > 0) {
+                <div class="users-dropdown">
+                  @for (user of filteredUsers(); track user.id) {
+                    <div
+                      class="user-option"
+                      (click)="selectUser(user)"
+                      [class.selected]="selectedUserId() === user.id"
+                    >
+                      <div class="user-option-info">
+                        <span class="user-nickname">{{ user.nickname }}</span>
+                        <span class="user-email">{{ user.email }}</span>
+                      </div>
+                    </div>
+                  }
+                </div>
+              }
+              @if (selectedUser()) {
+                <div class="selected-user-display">
+                  <i class="fas fa-check-circle"></i>
+                  <span>{{ selectedUser()!.nickname }}</span>
+                  <span class="user-email-small">({{ selectedUser()!.email }})</span>
+                </div>
+              }
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="subject">
+              <i class="fas fa-tag"></i>
+              <span>{{ isArabic() ? 'عنوان الرسالة' : 'Message Subject' }}</span>
+            </label>
+            <input
+              type="text"
+              id="subject"
+              class="form-input"
+              [(ngModel)]="subject"
+              [placeholder]="isArabic() ? 'أدخل عنوان الرسالة...' : 'Enter message subject...'"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="message">
+              <i class="fas fa-comment-alt"></i>
+              <span>{{ isArabic() ? 'نص الرسالة' : 'Message Text' }}</span>
+            </label>
+            <textarea
+              id="message"
+              class="form-textarea"
+              [(ngModel)]="message"
+              [placeholder]="isArabic() ? 'أدخل نص الرسالة...' : 'Enter message text...'"
+              rows="8"
+            ></textarea>
+          </div>
+
+          <div class="form-actions">
+            <button
+              class="send-btn"
+              appLoadingButton
+              [loading]="isSending()"
+              (click)="sendMessage()"
+              [disabled]="!selectedUserId() || !subject().trim() || !message().trim()"
+            >
+              <i class="fas fa-paper-plane"></i>
+              <span>{{ isArabic() ? 'إرسال الرسالة' : 'Send Message' }}</span>
+            </button>
+            <button class="cancel-btn" (click)="goBack()">
+              <i class="fas fa-times"></i>
+              <span>{{ isArabic() ? 'إلغاء' : 'Cancel' }}</span>
+            </button>
+          </div>
+        </div>
+      }
+    }
+
+    @if (activeTab() === 'products') {
+      @if (isLoadingProducts()) {
+        <div class="loading-container">
+          <i class="fas fa-spinner fa-spin"></i>
+          <p>{{ isArabic() ? 'جاري التحميل...' : 'Loading...' }}</p>
+        </div>
+      } @else {
+        <div class="products-section">
+          @if (productError()) {
+            <div class="error-message">
+              <i class="fas fa-exclamation-circle"></i>
+              <span>{{ productError() }}</span>
+            </div>
+          }
+          @if (productSuccess()) {
+            <div class="success-message">
+              <i class="fas fa-check-circle"></i>
+              <span>{{ productSuccess() }}</span>
+            </div>
+          }
+          <button class="add-product-btn" (click)="showAddProductModal.set(true)">
+            <i class="fas fa-plus"></i>
+            <span>{{ isArabic() ? 'إضافة منتج' : 'Add Product' }}</span>
+          </button>
+
+          @if (products().length === 0) {
+            <div class="empty-state">
+              <i class="fas fa-box-open"></i>
+              <p>{{ isArabic() ? 'لا توجد منتجات' : 'No products found' }}</p>
+            </div>
+          } @else {
+            <div class="products-grid">
+              @for (product of products(); track product._id) {
+                <div class="product-card" [class.pending]="product.status === 'pending'">
+                  <div class="product-image">
+                    <img [src]="product.imageUrl | assetUrl" [alt]="product.productName" />
+                    @if (product.status === 'pending') {
+                      <div class="pending-badge">
+                        <i class="fas fa-pause-circle"></i>
+                        <span>{{ isArabic() ? 'معلق' : 'Pending' }}</span>
+                      </div>
+                    } @else if (product.isPaid) {
+                      <div class="paid-badge">
+                        <i class="fas fa-check-circle"></i>
+                        <span>{{ isArabic() ? 'تم الدفع' : 'Paid' }}</span>
+                      </div>
+                    }
+                  </div>
+                  <div class="product-info">
+                    <h3 class="product-name">{{ product.productName }}</h3>
+                    <p class="product-price">{{ formatPrice(product.price) }}</p>
+                    <p class="product-user">
+                      {{ isArabic() ? 'المستخدم:' : 'User:' }}
+                      {{ product.userId.nickname || (isArabic() ? 'غير معروف' : 'Unknown') }}
+                    </p>
+                    @if (product.status === 'pending') {
+                      <div class="pending-status">
+                        <i class="fas fa-clock"></i>
+                        <span>{{ isArabic() ? 'في انتظار الموافقة' : 'Awaiting Approval' }}</span>
+                      </div>
+                    } @else if (product.isPaid) {
+                      <div class="payment-status">
+                        <i class="fas fa-check-circle"></i>
+                        <span>{{ isArabic() ? 'تم الدفع بنجاح' : 'Payment Successful' }}</span>
+                      </div>
+                    }
+                  </div>
+                  <div class="product-actions">
+                    @if (product.status === 'pending') {
+                      <button class="approve-product-btn" (click)="approveProduct(product._id)">
+                        <i class="fas fa-check"></i>
+                        <span>{{ isArabic() ? 'موافقة' : 'Approve' }}</span>
+                      </button>
+                    }
+                    @if (product.isPaid) {
+                      <button class="payment-details-btn" (click)="showPaymentDetails(product._id)">
+                        <i class="fas fa-receipt"></i>
+                        <span>{{ isArabic() ? 'تفاصيل الدفع' : 'Payment Details' }}</span>
+                      </button>
+                    }
+                    <button class="delete-product-btn" (click)="deleteProduct(product._id)">
+                      <i class="fas fa-trash"></i>
+                      <span>{{ isArabic() ? 'حذف' : 'Delete' }}</span>
+                    </button>
+                  </div>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      }
+    }
+  </div>
+
+  <!-- Add Product Modal -->
+  @if (showAddProductModal()) {
+    <div class="modal-overlay" (click)="closeAddProductModal()">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h2>{{ isArabic() ? 'إضافة منتج جديد' : 'Add New Product' }}</h2>
+          <button class="close-btn" (click)="closeAddProductModal()">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          @if (productError()) {
+            <div class="error-message">
+              <i class="fas fa-exclamation-circle"></i>
+              <span>{{ productError() }}</span>
+            </div>
+          }
+          @if (productSuccess()) {
+            <div class="success-message">
+              <i class="fas fa-check-circle"></i>
+              <span>{{ productSuccess() }}</span>
+            </div>
+          }
+
+          <div class="form-group">
+            <label for="product-name">
+              <i class="fas fa-tag"></i>
+              <span>{{ isArabic() ? 'اسم المنتج' : 'Product Name' }}</span>
+            </label>
+            <input
+              type="text"
+              id="product-name"
+              class="form-input"
+              [(ngModel)]="productName"
+              [placeholder]="isArabic() ? 'أدخل اسم المنتج...' : 'Enter product name...'"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="product-price">
+              <i class="fas fa-dollar-sign"></i>
+              <span>{{ isArabic() ? 'السعر' : 'Price' }}</span>
+            </label>
+            <input
+              type="number"
+              id="product-price"
+              class="form-input"
+              [(ngModel)]="productPrice"
+              [placeholder]="isArabic() ? 'أدخل السعر...' : 'Enter price...'"
+              min="0"
+              step="0.01"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="product-user-search">
+              <i class="fas fa-user"></i>
+              <span>{{ isArabic() ? 'اختر المستخدم' : 'Select User' }}</span>
+            </label>
+            <div class="user-select-container">
+              <input
+                type="text"
+                id="product-user-search"
+                class="user-search-input"
+                [(ngModel)]="productUserSearchQuery"
+                [placeholder]="isArabic() ? 'ابحث عن المستخدم...' : 'Search for user...'"
+                (input)="selectedProductUserId.set(''); selectedProductUser.set(null)"
+              />
+              @if (productUserSearchQuery() && filteredProductUsers().length > 0) {
+                <div class="users-dropdown">
+                  @for (user of filteredProductUsers(); track user.id) {
+                    <div
+                      class="user-option"
+                      (click)="selectProductUser(user)"
+                      [class.selected]="selectedProductUserId() === user.id"
+                    >
+                      <div class="user-option-info">
+                        <span class="user-nickname">{{ user.nickname }}</span>
+                        <span class="user-email">{{ user.email }}</span>
+                      </div>
+                    </div>
+                  }
+                </div>
+              }
+              @if (selectedProductUser()) {
+                <div class="selected-user-display">
+                  <i class="fas fa-check-circle"></i>
+                  <span>{{ selectedProductUser()!.nickname }}</span>
+                  <span class="user-email-small">({{ selectedProductUser()!.email }})</span>
+                </div>
+              }
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="product-image">
+              <i class="fas fa-image"></i>
+              <span>{{ isArabic() ? 'صورة المنتج' : 'Product Image' }}</span>
+            </label>
+            <div class="image-upload-container">
+              <input
+                type="file"
+                id="product-image"
+                class="file-input"
+                accept="image/*"
+                (change)="onProductImageSelected($event)"
+              />
+              <label for="product-image" class="file-label">
+                <i class="fas fa-upload"></i>
+                <span>{{ isArabic() ? 'اختر صورة' : 'Choose Image' }}</span>
+              </label>
+              @if (selectedProductImage()) {
+                <div class="image-preview">
+                  <img [src]="selectedProductImage()" [alt]="'Preview'" />
+                  <button class="remove-image-btn" (click)="removeProductImage()">
+                    <i class="fas fa-times"></i>
+                  </button>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button
+            class="save-btn"
+            appLoadingButton
+            [loading]="isAddingProduct()"
+            (click)="addProduct()"
+          >
+            <i class="fas fa-check"></i>
+            <span>{{ isArabic() ? 'إضافة' : 'Add' }}</span>
+          </button>
+          <button class="cancel-btn" (click)="closeAddProductModal()">
+            <i class="fas fa-times"></i>
+            <span>{{ isArabic() ? 'إلغاء' : 'Cancel' }}</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Payment Details Modal -->
+  @if (showPaymentDetailsModal()) {
+    <div class="modal-overlay" (click)="closePaymentDetailsModal()">
+      <div class="modal-content payment-details-modal" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h2>{{ isArabic() ? 'تفاصيل الدفع' : 'Payment Details' }}</h2>
+          <button class="close-btn" (click)="closePaymentDetailsModal()">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          @if (isLoadingPaymentInfo()) {
+            <div class="loading-container">
+              <i class="fas fa-spinner fa-spin"></i>
+              <p>{{ isArabic() ? 'جاري التحميل...' : 'Loading...' }}</p>
+            </div>
+          } @else if (paymentInfoError()) {
+            <div class="error-message">
+              <i class="fas fa-exclamation-circle"></i>
+              <span>{{ paymentInfoError() }}</span>
+            </div>
+          } @else if (selectedPaymentInfo()?.invoice) {
+            <div class="payment-details">
+              <div class="payment-status-badge success">
+                <i class="fas fa-check-circle"></i>
+                <span>{{ isArabic() ? 'تم الدفع بنجاح' : 'Payment Successful' }}</span>
+              </div>
+
+              <div class="details-section">
+                <h3 class="section-title">
+                  {{ isArabic() ? 'معلومات المستخدم:' : 'User Information:' }}
+                </h3>
+                <div class="detail-row">
+                  <span class="detail-label">{{ isArabic() ? 'الاسم:' : 'Name:' }}</span>
+                  <span class="detail-value"
+                    >{{ selectedPaymentInfo()!.invoice!.userId.firstName }}
+                    {{ selectedPaymentInfo()!.invoice!.userId.middleName || '' }}
+                    {{ selectedPaymentInfo()!.invoice!.userId.lastName }}</span
+                  >
+                </div>
+                <div class="detail-row">
+                  <span class="detail-label">{{
+                    isArabic() ? 'البريد الإلكتروني:' : 'Email:'
+                  }}</span>
+                  <span class="detail-value">{{
+                    selectedPaymentInfo()!.invoice!.userId.email
+                  }}</span>
+                </div>
+                <div class="detail-row">
+                  <span class="detail-label">{{ isArabic() ? 'النيك نيم:' : 'Nickname:' }}</span>
+                  <span class="detail-value">{{
+                    selectedPaymentInfo()!.invoice!.userId.nickname
+                  }}</span>
+                </div>
+                @if (selectedPaymentInfo()!.invoice!.userId.phone) {
+                  <div class="detail-row">
+                    <span class="detail-label">{{ isArabic() ? 'رقم الهاتف:' : 'Phone:' }}</span>
+                    <span class="detail-value">{{
+                      selectedPaymentInfo()!.invoice!.userId.phone
+                    }}</span>
+                  </div>
+                }
+              </div>
+
+              <div class="details-section">
+                <h3 class="section-title">
+                  {{ isArabic() ? 'معلومات المنتج:' : 'Product Information:' }}
+                </h3>
+                <div class="detail-row">
+                  <span class="detail-label">{{
+                    isArabic() ? 'اسم المنتج:' : 'Product Name:'
+                  }}</span>
+                  <span class="detail-value">{{
+                    selectedPaymentInfo()!.invoice!.productName
+                  }}</span>
+                </div>
+                <div class="detail-row">
+                  <span class="detail-label">{{
+                    isArabic() ? 'سعر المنتج:' : 'Product Price:'
+                  }}</span>
+                  <span class="detail-value">{{
+                    formatPrice(selectedPaymentInfo()!.invoice!.productPrice)
+                  }}</span>
+                </div>
+              </div>
+
+              <div class="details-section">
+                <h3 class="section-title">
+                  {{ isArabic() ? 'معلومات الشحن:' : 'Shipping Information:' }}
+                </h3>
+                <div class="detail-row">
+                  <span class="detail-label">{{
+                    isArabic() ? 'طريقة الشحن:' : 'Shipping Method:'
+                  }}</span>
+                  <span class="detail-value">{{
+                    selectedPaymentInfo()!.invoice!.shippingMethod === 'air'
+                      ? isArabic()
+                        ? 'جوي'
+                        : 'Air'
+                      : isArabic()
+                        ? 'بري'
+                        : 'Ground'
+                  }}</span>
+                </div>
+                <div class="detail-row">
+                  <span class="detail-label">{{ isArabic() ? 'الدولة:' : 'Country:' }}</span>
+                  <span class="detail-value">{{ selectedPaymentInfo()!.invoice!.country }}</span>
+                </div>
+                <div class="detail-row">
+                  <span class="detail-label">{{ isArabic() ? 'المحافظة:' : 'Governorate:' }}</span>
+                  <span class="detail-value">{{
+                    selectedPaymentInfo()!.invoice!.governorate
+                  }}</span>
+                </div>
+                <div class="detail-row">
+                  <span class="detail-label">{{ isArabic() ? 'عنوان السكن:' : 'Address:' }}</span>
+                  <span class="detail-value">{{
+                    selectedPaymentInfo()!.invoice!.shippingAddress
+                  }}</span>
+                </div>
+                <div class="detail-row">
+                  <span class="detail-label">{{
+                    isArabic() ? 'رقم التواصل:' : 'Contact Phone:'
+                  }}</span>
+                  <span class="detail-value">{{
+                    selectedPaymentInfo()!.invoice!.contactPhone
+                  }}</span>
+                </div>
+                <div class="detail-row">
+                  <span class="detail-label">{{
+                    isArabic() ? 'مكان التوصيل:' : 'Delivery Location:'
+                  }}</span>
+                  <span class="detail-value">{{
+                    selectedPaymentInfo()!.invoice!.deliveryLocation
+                  }}</span>
+                </div>
+              </div>
+
+              <div class="details-section">
+                <h3 class="section-title">
+                  {{ isArabic() ? 'معلومات الدفع:' : 'Payment Information:' }}
+                </h3>
+                <div class="detail-row">
+                  <span class="detail-label">{{ isArabic() ? 'التأمين:' : 'Insurance:' }}</span>
+                  <span class="detail-value">{{
+                    selectedPaymentInfo()!.invoice!.insurance
+                      ? isArabic()
+                        ? 'نعم'
+                        : 'Yes'
+                      : isArabic()
+                        ? 'لا'
+                        : 'No'
+                  }}</span>
+                </div>
+                @if (selectedPaymentInfo()!.invoice!.insurance) {
+                  <div class="detail-row">
+                    <span class="detail-label">{{
+                      isArabic() ? 'تكلفة التأمين:' : 'Insurance Cost:'
+                    }}</span>
+                    <span class="detail-value">{{
+                      formatPrice(selectedPaymentInfo()!.invoice!.insuranceCost)
+                    }}</span>
+                  </div>
+                }
+                <div class="detail-row">
+                  <span class="detail-label">{{
+                    isArabic() ? 'المبلغ الإجمالي:' : 'Total Amount:'
+                  }}</span>
+                  <span class="detail-value total-amount">{{
+                    formatPrice(selectedPaymentInfo()!.invoice!.totalAmount)
+                  }}</span>
+                </div>
+                <div class="detail-row">
+                  <span class="detail-label">{{
+                    isArabic() ? 'تاريخ الدفع:' : 'Payment Date:'
+                  }}</span>
+                  <span class="detail-value">{{
+                    formatDate(selectedPaymentInfo()!.invoice!.issuedAt)
+                  }}</span>
+                </div>
+              </div>
+            </div>
+          } @else {
+            <div class="no-payment-info">
+              <i class="fas fa-info-circle"></i>
+              <p>
+                {{ isArabic() ? 'لا توجد معلومات دفع متاحة' : 'No payment information available' }}
+              </p>
+            </div>
+          }
+        </div>
+        <div class="modal-footer">
+          <button class="close-modal-btn" (click)="closePaymentDetailsModal()">
+            <span>{{ isArabic() ? 'إغلاق' : 'Close' }}</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+</div>

@@ -1,0 +1,134 @@
+<div class="edit-home-page">
+  <div class="page-header">
+    <button class="back-btn" (click)="goBack()">
+      <i class="fas fa-arrow-left"></i>
+      <span>{{ isArabic() ? 'العودة' : 'Back' }}</span>
+    </button>
+    <h1 class="page-title">
+      <i class="fas fa-edit"></i>
+      <span>{{ isArabic() ? 'تعديل الصفحة الرئيسية' : 'Edit Home Page' }}</span>
+    </h1>
+  </div>
+
+  <div class="page-content">
+    @if (error()) {
+      <div class="alert alert-error">
+        <i class="fas fa-exclamation-circle"></i>
+        <span>{{ error() }}</span>
+      </div>
+    }
+
+    @if (success()) {
+      <div class="alert alert-success">
+        <i class="fas fa-check-circle"></i>
+        <span>{{ success() }}</span>
+      </div>
+    }
+
+    <!-- Hero Section Images -->
+    <div class="images-section">
+      <div class="section-header">
+        <h2 class="section-title">
+          <i class="fas fa-images"></i>
+          <span>{{
+            isArabic() ? 'صور Hero Section (الكورسيل)' : 'Hero Section Images (Carousel)'
+          }}</span>
+        </h2>
+        <div class="file-input-wrapper">
+          <input
+            type="file"
+            id="hero-upload"
+            accept="image/*"
+            (change)="onFileSelected($event, 'hero')"
+            style="display: none"
+          />
+          <label for="hero-upload" class="upload-btn">
+            <i class="fas fa-plus"></i>
+            <span>{{ isArabic() ? 'إضافة صورة' : 'Add Image' }}</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="images-grid">
+        @for (image of heroImages(); track image.id) {
+          <div class="image-card">
+            <div class="image-preview">
+              <img [src]="image.url" [alt]="'Hero Image'" />
+              <button
+                class="remove-btn"
+                (click)="removeImage(image.id, 'hero')"
+                [attr.aria-label]="isArabic() ? 'حذف الصورة' : 'Remove image'"
+              >
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+            @if (image.isNew) {
+              <span class="new-badge">{{ isArabic() ? 'جديد' : 'New' }}</span>
+            }
+          </div>
+        } @empty {
+          <div class="empty-state">
+            <i class="fas fa-image"></i>
+            <p>{{ isArabic() ? 'لا توجد صور' : 'No images' }}</p>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- How It Works Section Images -->
+    <div class="images-section">
+      <div class="section-header">
+        <h2 class="section-title">
+          <i class="fas fa-cogs"></i>
+          <span>{{ isArabic() ? 'صور How It Works Section' : 'How It Works Section Images' }}</span>
+        </h2>
+        <div class="file-input-wrapper">
+          <input
+            type="file"
+            id="howItWorks-upload"
+            accept="image/*"
+            (change)="onFileSelected($event, 'howItWorks')"
+            style="display: none"
+          />
+          <label for="howItWorks-upload" class="upload-btn">
+            <i class="fas fa-plus"></i>
+            <span>{{ isArabic() ? 'إضافة صورة' : 'Add Image' }}</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="images-grid">
+        @for (image of howItWorksImages(); track image.id) {
+          <div class="image-card">
+            <div class="image-preview">
+              <img [src]="image.url" [alt]="'How It Works Image'" />
+              <button
+                class="remove-btn"
+                (click)="removeImage(image.id, 'howItWorks')"
+                [attr.aria-label]="isArabic() ? 'حذف الصورة' : 'Remove image'"
+              >
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+            @if (image.isNew) {
+              <span class="new-badge">{{ isArabic() ? 'جديد' : 'New' }}</span>
+            }
+          </div>
+        } @empty {
+          <div class="empty-state">
+            <i class="fas fa-image"></i>
+            <p>{{ isArabic() ? 'لا توجد صور' : 'No images' }}</p>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Save Button -->
+    <div class="actions">
+      <button class="save-btn" appLoadingButton [loading]="isLoading()" (click)="saveImages()">
+        <i class="fas fa-save"></i>
+        <span>{{ isArabic() ? 'حفظ التغييرات' : 'Save Changes' }}</span>
+      </button>
+    </div>
+  </div>
+</div>

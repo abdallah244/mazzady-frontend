@@ -1,0 +1,42 @@
+<div class="app-wrapper">
+  <!-- Progress Bar -->
+  @if (isLoading$ | async) {
+  <div class="progress-bar-container">
+    <div class="progress-bar" [style.width.%]="progress$ | async">
+      <div class="progress-bar-shine"></div>
+    </div>
+  </div>
+  }
+
+  <!-- Navbar - Show only on user pages (not login/register) -->
+  @if (showNavbarAndFooter()) {
+    <app-navbar></app-navbar>
+  }
+
+  <main class="app-shell" [class.with-navbar]="showNavbarAndFooter()">
+    <div class="route-container" #routeContainer [class.route-animating]="isAnimating()" [attr.data-lang]="currentLanguage()">
+      <router-outlet #outlet="outlet"></router-outlet>
+    </div>
+
+    <!-- Chatbot for Admin Routes - Show in all Admin pages (moves with page scroll) -->
+    @if (isAdminRoute()) {
+      <app-chatbot [isOpen]="chatbotOpen()" [isAdminMode]="true" (close)="chatbotOpen.set(false)"></app-chatbot>
+      <!-- Chatbot Icon Button for Admin -->
+      @if (!chatbotOpen()) {
+        <button class="admin-chatbot-icon" (click)="chatbotOpen.set(true)" [attr.aria-label]="'Open Admin Chatbot'">
+          <i class="fas fa-robot"></i>
+        </button>
+      }
+    }
+  </main>
+
+  <!-- Footer - Show only on user pages (not login/register) -->
+  @if (showNavbarAndFooter()) {
+    <app-footer></app-footer>
+  }
+
+  <!-- Floating Menu - Hide in Admin Panel -->
+  @if (showFloatingMenu()) {
+    <app-floating-menu></app-floating-menu>
+  }
+</div>

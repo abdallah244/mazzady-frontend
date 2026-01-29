@@ -1,0 +1,81 @@
+<div class="auto-bid-page" [attr.data-theme]="currentTheme()">
+  <div class="container">
+    <header class="page-header">
+      <h1>{{ isArabic() ? 'المزايدة التلقائية' : 'Auto Bid' }}</h1>
+      <button class="add-btn" (click)="openAddModal()">
+        <i class="fas fa-plus"></i>
+        <span>{{ isArabic() ? 'إضافة مزايدة تلقائية' : 'Add Auto Bid' }}</span>
+      </button>
+    </header>
+
+    @if (isLoading()) {
+      <div class="loading">
+        <i class="fas fa-spinner fa-spin"></i>
+      </div>
+    } @else if (autoBids().length === 0) {
+      <div class="empty-state">
+        <i class="fas fa-robot"></i>
+        <p>{{ isArabic() ? 'لا توجد مزايدات تلقائية' : 'No auto bids' }}</p>
+      </div>
+    } @else {
+      <div class="auto-bids-list">
+        @for (autoBid of autoBids(); track autoBid._id) {
+          <div class="auto-bid-card">
+            <img [src]="autoBid.auctionId.mainImageUrl" [alt]="autoBid.auctionId.productName" (click)="navigateToAuction(autoBid.auctionId._id)">
+            <div class="card-content">
+              <h3 (click)="navigateToAuction(autoBid.auctionId._id)">{{ autoBid.auctionId.productName }}</h3>
+              <div class="auto-bid-info">
+                <div class="info-item">
+                  <span class="label">{{ isArabic() ? 'الحد الأقصى:' : 'Max Bid:' }}</span>
+                  <span class="value">{{ autoBid.maxBidAmount }} EGP</span>
+                </div>
+                <div class="info-item">
+                  <span class="label">{{ isArabic() ? 'الزيادة:' : 'Increment:' }}</span>
+                  <span class="value">{{ autoBid.incrementAmount }} EGP</span>
+                </div>
+                <div class="info-item">
+                  <span class="label">{{ isArabic() ? 'الحالة:' : 'Status:' }}</span>
+                  <span class="value" [class.active]="autoBid.isActive">
+                    {{ autoBid.isActive ? (isArabic() ? 'نشط' : 'Active') : (isArabic() ? 'غير نشط' : 'Inactive') }}
+                  </span>
+                </div>
+              </div>
+              @if (autoBid.isActive) {
+                <button class="cancel-btn" (click)="cancelAutoBid(autoBid.auctionId._id)">
+                  <i class="fas fa-stop"></i>
+                  <span>{{ isArabic() ? 'إلغاء' : 'Cancel' }}</span>
+                </button>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </div>
+
+  @if (showAddModal()) {
+    <div class="modal-overlay" (click)="closeAddModal()">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        <h2>{{ isArabic() ? 'إضافة مزايدة تلقائية' : 'Add Auto Bid' }}</h2>
+        <form (ngSubmit)="createAutoBid()">
+          <div class="form-group">
+            <label>{{ isArabic() ? 'معرف المزاد' : 'Auction ID' }}</label>
+            <input type="text" [(ngModel)]="formData.auctionId" name="auctionId" required>
+          </div>
+          <div class="form-group">
+            <label>{{ isArabic() ? 'الحد الأقصى للمزايدة' : 'Max Bid Amount' }}</label>
+            <input type="number" [(ngModel)]="formData.maxBidAmount" name="maxBidAmount" required min="1">
+          </div>
+          <div class="form-group">
+            <label>{{ isArabic() ? 'مبلغ الزيادة' : 'Increment Amount' }}</label>
+            <input type="number" [(ngModel)]="formData.incrementAmount" name="incrementAmount" required min="1">
+          </div>
+          <div class="form-actions">
+            <button type="button" (click)="closeAddModal()">{{ isArabic() ? 'إلغاء' : 'Cancel' }}</button>
+            <button type="submit">{{ isArabic() ? 'إضافة' : 'Add' }}</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+</div>

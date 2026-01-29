@@ -1,0 +1,272 @@
+<div class="profile-page">
+  <div class="page-header">
+    <button class="back-btn" (click)="goBack()">
+      <i class="fas fa-arrow-left"></i>
+      <span>{{ back() }}</span>
+    </button>
+    <h1 class="page-title">
+      <i class="fas fa-user-circle"></i>
+      <span>{{ title() }}</span>
+    </h1>
+  </div>
+
+  @if (isLoading()) {
+    <div class="loading-container">
+      <div class="spinner"></div>
+      <p>{{ loading() }}</p>
+    </div>
+  } @else if (errorMessage() && !profileData()) {
+    <div class="error-container">
+      <div class="error-message">
+        <i class="fas fa-exclamation-circle"></i>
+        <span>{{ errorMessage() }}</span>
+      </div>
+      <button class="btn-retry" (click)="retryLoad()">
+        <i class="fas fa-redo"></i>
+        <span>{{ isArabic() ? 'إعادة المحاولة' : 'Retry' }}</span>
+      </button>
+    </div>
+  } @else if (profileData()) {
+    <div class="profile-container">
+      <!-- Success Message -->
+      @if (showSuccessMessage()) {
+        <div class="success-message">
+          <i class="fas fa-check-circle"></i>
+          <span>{{ saveSuccess() }}</span>
+        </div>
+      }
+
+      <!-- Error Message -->
+      @if (errorMessage()) {
+        <div class="error-message">
+          <i class="fas fa-exclamation-circle"></i>
+          <span>{{ errorMessage() }}</span>
+        </div>
+      }
+
+      <form [formGroup]="profileForm" (ngSubmit)="onSubmit()" class="profile-form">
+        <!-- Profile Image Section -->
+        <div class="profile-image-section">
+          <label>{{ profileImage() }}</label>
+          <div class="avatar-container">
+            @if (avatarPreview()) {
+              <img [src]="avatarPreview()" alt="Profile Image" class="avatar-preview" />
+            } @else {
+              <div class="avatar-placeholder">
+                <i class="fas fa-user"></i>
+              </div>
+            }
+            <div class="avatar-actions">
+              <label for="avatar-input" class="btn-change-image">
+                <i class="fas fa-camera"></i>
+                <span>{{ changeImage() }}</span>
+              </label>
+              <input
+                type="file"
+                id="avatar-input"
+                accept="image/*"
+                (change)="onAvatarSelected($event)"
+                style="display: none"
+              />
+              @if (selectedAvatar) {
+                <button type="button" class="btn-remove-image" (click)="removeAvatar()">
+                  <i class="fas fa-times"></i>
+                  <span>{{ isArabic() ? 'إلغاء' : 'Cancel' }}</span>
+                </button>
+              }
+            </div>
+          </div>
+        </div>
+
+        <!-- Form Fields -->
+        <div class="form-grid">
+          <!-- First Name -->
+          <div class="form-group">
+            <label for="firstName"> {{ firstName() }} <span class="required">*</span> </label>
+            <input
+              type="text"
+              id="firstName"
+              formControlName="firstName"
+              [class.invalid]="
+                profileForm.get('firstName')?.invalid && profileForm.get('firstName')?.touched
+              "
+            />
+            @if (getFieldError('firstName')) {
+              <span class="error-text">{{ getFieldError('firstName') }}</span>
+            }
+          </div>
+
+          <!-- Middle Name -->
+          <div class="form-group">
+            <label for="middleName"> {{ middleName() }} <span class="required">*</span> </label>
+            <input
+              type="text"
+              id="middleName"
+              formControlName="middleName"
+              [class.invalid]="
+                profileForm.get('middleName')?.invalid && profileForm.get('middleName')?.touched
+              "
+            />
+            @if (getFieldError('middleName')) {
+              <span class="error-text">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span>{{ getFieldError('middleName') }}</span>
+              </span>
+            }
+          </div>
+
+          <!-- Last Name -->
+          <div class="form-group">
+            <label for="lastName"> {{ lastName() }} <span class="required">*</span> </label>
+            <input
+              type="text"
+              id="lastName"
+              formControlName="lastName"
+              [class.invalid]="
+                profileForm.get('lastName')?.invalid && profileForm.get('lastName')?.touched
+              "
+            />
+            @if (getFieldError('lastName')) {
+              <span class="error-text">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span>{{ getFieldError('lastName') }}</span>
+              </span>
+            }
+          </div>
+
+          <!-- Phone -->
+          <div class="form-group">
+            <label for="phone"> {{ phone() }} <span class="required">*</span> </label>
+            <input
+              type="tel"
+              id="phone"
+              formControlName="phone"
+              [class.invalid]="
+                profileForm.get('phone')?.invalid && profileForm.get('phone')?.touched
+              "
+            />
+            @if (getFieldError('phone')) {
+              <span class="error-text">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span>{{ getFieldError('phone') }}</span>
+              </span>
+            }
+          </div>
+
+          <!-- Email (Read-only) -->
+          <div class="form-group readonly">
+            <label for="email">{{ email() }}</label>
+            <input type="email" id="email" [value]="profileData()?.email" readonly disabled />
+            <span class="readonly-note">
+              <i class="fas fa-info-circle"></i>
+              <span>{{ isArabic() ? '(غير قابل للتعديل)' : '(Cannot be changed)' }}</span>
+            </span>
+          </div>
+
+          <!-- Nickname (Read-only) -->
+          <div class="form-group readonly">
+            <label for="nickname">{{ nickname() }}</label>
+            <input type="text" id="nickname" [value]="profileData()?.nickname" readonly disabled />
+            <span class="readonly-note">
+              <i class="fas fa-info-circle"></i>
+              <span>{{ isArabic() ? '(غير قابل للتعديل)' : '(Cannot be changed)' }}</span>
+            </span>
+          </div>
+
+          <!-- National ID (Read-only) -->
+          <div class="form-group readonly">
+            <label for="nationalId">{{ nationalId() }}</label>
+            <div class="id-field-row">
+              <input
+                type="text"
+                id="nationalId"
+                [value]="profileData()?.nationalId"
+                readonly
+                disabled
+              />
+              @if (hasNationalIdImages()) {
+                <button
+                  type="button"
+                  class="id-eye-btn"
+                  (click)="openNationalIdModal()"
+                  aria-label="View national ID images"
+                >
+                  <i class="fas fa-eye"></i>
+                </button>
+              }
+            </div>
+            <span class="readonly-note">
+              <i class="fas fa-info-circle"></i>
+              <span>{{ isArabic() ? '(غير قابل للتعديل)' : '(Cannot be changed)' }}</span>
+            </span>
+          </div>
+
+          <!-- Wallet Balance (Read-only) -->
+          <div class="form-group readonly">
+            <label for="walletBalance">{{ walletBalance() }}</label>
+            <input
+              type="text"
+              id="walletBalance"
+              [value]="profileData()?.walletBalance || 0 | number: '1.2-2'"
+              readonly
+              disabled
+            />
+          </div>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="form-actions">
+          <button type="button" class="btn-cancel" (click)="onCancel()" [disabled]="isSaving()">
+            <i class="fas fa-times"></i>
+            <span>{{ cancel() }}</span>
+          </button>
+          <button
+            type="submit"
+            class="btn-save"
+            [disabled]="profileForm.invalid"
+            appLoadingButton
+            [loading]="isSaving()"
+          >
+            <i class="fas fa-save"></i>
+            <span>{{ save() }}</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  }
+</div>
+
+@if (showNationalIdModal() && hasNationalIdImages()) {
+  <div class="id-modal-backdrop" (click)="closeNationalIdModal()">
+    <div class="id-modal" (click)="$event.stopPropagation()">
+      <div class="id-modal-header">
+        <div class="id-modal-title">
+          <i class="fas fa-id-card"></i>
+          <span>{{ isArabic() ? 'صور البطاقة' : 'National ID Images' }}</span>
+        </div>
+        <button
+          type="button"
+          class="id-modal-close"
+          (click)="closeNationalIdModal()"
+          aria-label="Close"
+        >
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="id-modal-body">
+        @if (getNationalIdImageUrl('front')) {
+          <div class="id-modal-card">
+            <p class="id-modal-label">{{ isArabic() ? 'الوجه' : 'Front' }}</p>
+            <img [src]="getNationalIdImageUrl('front')!" alt="National ID front" />
+          </div>
+        }
+        @if (getNationalIdImageUrl('back')) {
+          <div class="id-modal-card">
+            <p class="id-modal-label">{{ isArabic() ? 'الظهر' : 'Back' }}</p>
+            <img [src]="getNationalIdImageUrl('back')!" alt="National ID back" />
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+}

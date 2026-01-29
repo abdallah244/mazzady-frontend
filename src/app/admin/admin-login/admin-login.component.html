@@ -1,0 +1,74 @@
+<div class="admin-login-container">
+  <div class="admin-login-box">
+    <div class="admin-header">
+      <i class="fas fa-user-shield"></i>
+      <h1 class="admin-title">Admin Login</h1>
+      <p class="admin-subtitle">تسجيل دخول الأدمن</p>
+    </div>
+
+    <form [formGroup]="adminForm" (ngSubmit)="onSubmit($event)" class="admin-form" novalidate>
+      @if (error(); as errorMessage) {
+        <div class="error-alert">
+          <i class="fas fa-exclamation-circle"></i>
+          <span>{{ errorMessage }}</span>
+        </div>
+      }
+
+      <div class="form-group">
+        <label for="admin-email">
+          <i class="fas fa-envelope"></i>
+          <span>{{ isArabic() ? 'البريد الإلكتروني' : 'Email' }}</span>
+        </label>
+        <input
+          id="admin-email"
+          type="email"
+          formControlName="email"
+          placeholder="{{ isArabic() ? 'أدخل البريد الإلكتروني' : 'Enter email' }}"
+          [class.error]="adminForm.get('email')?.invalid && adminForm.get('email')?.touched"
+        />
+        @if (adminForm.get('email')?.invalid && adminForm.get('email')?.touched) {
+          <span class="error-message">
+            {{ isArabic() ? 'البريد الإلكتروني مطلوب' : 'Email is required' }}
+          </span>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="admin-password">
+          <i class="fas fa-lock"></i>
+          <span>{{ isArabic() ? 'كلمة المرور' : 'Password' }}</span>
+        </label>
+        <input
+          id="admin-password"
+          type="password"
+          formControlName="password"
+          placeholder="{{ isArabic() ? 'أدخل كلمة المرور' : 'Enter password' }}"
+          [class.error]="adminForm.get('password')?.invalid && adminForm.get('password')?.touched"
+        />
+        @if (adminForm.get('password')?.invalid && adminForm.get('password')?.touched) {
+          <span class="error-message">
+            {{ isArabic() ? 'كلمة المرور مطلوبة' : 'Password is required' }}
+          </span>
+        }
+      </div>
+
+      <button
+        type="submit"
+        class="admin-submit-btn"
+        [disabled]="adminForm.invalid"
+        appLoadingButton
+        [loading]="isLoading()"
+      >
+        <i class="fas fa-sign-in-alt"></i>
+        <span>{{ isArabic() ? 'تسجيل الدخول' : 'Login' }}</span>
+      </button>
+    </form>
+
+    <div class="admin-footer">
+      <a routerLink="/login" class="back-link">
+        <i class="fas fa-arrow-left"></i>
+        <span>{{ isArabic() ? 'العودة إلى تسجيل الدخول' : 'Back to Login' }}</span>
+      </a>
+    </div>
+  </div>
+</div>

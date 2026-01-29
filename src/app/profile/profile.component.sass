@@ -1,0 +1,478 @@
+.profile-page
+  min-height: 100vh
+  background-color: var(--bg-primary)
+  padding: clamp(1rem, 2.5vw, 2rem)
+
+.page-header
+  display: flex
+  align-items: center
+  gap: clamp(1rem, 2.5vw, 2rem)
+  margin-bottom: clamp(1.5rem, 3.5vw, 2rem)
+
+.back-btn
+  display: flex
+  align-items: center
+  gap: clamp(0.5rem, 1.5vw, 0.75rem)
+  padding: clamp(0.5rem, 1.5vw, 0.75rem) clamp(1rem, 2.5vw, 1.5rem)
+  border: 2px solid var(--border-primary)
+  border-radius: clamp(6px, 1.5vw, 8px)
+  background-color: var(--bg-secondary)
+  color: var(--text-primary)
+  font-size: clamp(0.9rem, 2.3vw, 1rem)
+  font-weight: 600
+  cursor: pointer
+  transition: all 0.3s ease
+
+  &:hover
+    border-color: var(--gold-primary)
+    background-color: var(--bg-hover)
+    color: var(--gold-primary)
+
+.page-title
+  display: flex
+  align-items: center
+  gap: clamp(0.75rem, 2vw, 1rem)
+  margin: 0
+  font-size: clamp(1.5rem, 4vw, 2rem)
+  font-weight: 700
+  color: var(--gold-primary)
+
+  i
+    font-size: clamp(1.75rem, 4.5vw, 2.25rem)
+
+.loading-container
+  display: flex
+  flex-direction: column
+  align-items: center
+  justify-content: center
+  padding: clamp(3rem, 7.5vw, 5rem)
+  text-align: center
+
+  p
+    margin-top: clamp(1rem, 2.5vw, 1.5rem)
+    font-size: clamp(1rem, 2.5vw, 1.2rem)
+    color: var(--text-secondary)
+
+.spinner
+  width: clamp(40px, 10vw, 50px)
+  height: clamp(40px, 10vw, 50px)
+  border: 4px solid var(--bg-tertiary)
+  border-top-color: var(--gold-primary)
+  border-radius: 50%
+  animation: spin 1s linear infinite
+
+  @keyframes spin
+    to
+      transform: rotate(360deg)
+
+.profile-container
+  max-width: 1000px
+  margin: 0 auto
+
+.success-message,
+.error-message
+  padding: clamp(1rem, 2.5vw, 1.25rem) clamp(1.25rem, 3vw, 1.75rem)
+  border-radius: clamp(8px, 2vw, 12px)
+  margin-bottom: clamp(1.5rem, 4vw, 2rem)
+  display: flex
+  align-items: center
+  gap: clamp(0.75rem, 2vw, 1rem)
+  font-size: clamp(0.95rem, 2.4vw, 1.1rem)
+  font-weight: 600
+  box-shadow: 0 2px 8px var(--shadow-color)
+  position: relative
+  padding-left: clamp(3rem, 7.5vw, 4rem)
+
+  i
+    position: absolute
+    left: clamp(1rem, 2.5vw, 1.25rem)
+    font-size: clamp(1.2rem, 3vw, 1.5rem)
+
+.success-message
+  background-color: var(--success-bg)
+  color: var(--success-color)
+  border: 2px solid var(--success-color)
+
+.error-message
+  background-color: var(--error-bg)
+  color: var(--error-color)
+  border: 2px solid var(--error-color)
+
+.profile-form
+  background-color: var(--bg-secondary)
+  border: 2px solid var(--border-primary)
+  border-radius: clamp(12px, 3vw, 16px)
+  padding: clamp(2rem, 5vw, 3rem)
+  box-shadow: 0 4px 16px var(--shadow-color)
+  border-top: 3px solid var(--gold-primary)
+
+.profile-image-section
+  margin-bottom: clamp(2rem, 5vw, 3rem)
+  text-align: center
+  padding: clamp(1.5rem, 4vw, 2rem)
+  background-color: var(--bg-tertiary)
+  border-radius: clamp(12px, 3vw, 16px)
+  border: 1px solid var(--border-primary)
+
+  label
+    display: block
+    margin-bottom: clamp(1.5rem, 4vw, 2rem)
+    font-size: clamp(1rem, 2.5vw, 1.2rem)
+    font-weight: 600
+    color: var(--text-primary)
+
+.avatar-container
+  display: flex
+  flex-direction: column
+  align-items: center
+  gap: clamp(1.5rem, 4vw, 2rem)
+
+.avatar-preview,
+.avatar-placeholder
+  width: clamp(140px, 35vw, 180px)
+  height: clamp(140px, 35vw, 180px)
+  border-radius: 50%
+  border: 4px solid var(--gold-primary)
+  object-fit: cover
+  background-color: var(--bg-tertiary)
+  display: flex
+  align-items: center
+  justify-content: center
+  box-shadow: 0 4px 12px var(--shadow-color)
+  transition: border-color 0.2s ease
+
+  &:hover
+    border-color: var(--gold-secondary)
+
+.avatar-placeholder
+  i
+    font-size: clamp(4rem, 10vw, 5rem)
+    color: var(--text-tertiary)
+
+.avatar-actions
+  display: flex
+  gap: clamp(0.75rem, 2vw, 1rem)
+  flex-wrap: wrap
+  justify-content: center
+
+.btn-change-image,
+.btn-remove-image
+  display: flex
+  align-items: center
+  gap: clamp(0.5rem, 1.5vw, 0.75rem)
+  padding: clamp(0.75rem, 2vw, 1rem) clamp(1.5rem, 3.5vw, 2rem)
+  border: 2px solid var(--border-primary)
+  border-radius: clamp(8px, 2vw, 12px)
+  background-color: var(--bg-primary)
+  color: var(--text-primary)
+  font-size: clamp(0.9rem, 2.3vw, 1rem)
+  font-weight: 600
+  cursor: pointer
+  transition: border-color 0.2s ease, background-color 0.2s ease, color 0.2s ease
+
+  &:hover
+    border-color: var(--gold-primary)
+    background-color: var(--gold-hover)
+    color: var(--gold-primary)
+
+.btn-remove-image
+  border-color: var(--error-color)
+  color: var(--error-color)
+
+  &:hover
+    background-color: var(--error-bg)
+
+.form-grid
+  display: grid
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr))
+  gap: clamp(1.5rem, 4vw, 2rem)
+  margin-bottom: clamp(2.5rem, 6vw, 3.5rem)
+
+.form-group
+  display: flex
+  flex-direction: column
+  gap: clamp(0.75rem, 2vw, 1rem)
+  padding: clamp(1rem, 2.5vw, 1.5rem)
+  background-color: var(--bg-tertiary)
+  border-radius: clamp(8px, 2vw, 12px)
+  border: 1px solid var(--border-primary)
+  transition: border-color 0.2s ease
+
+  &:hover
+    border-color: var(--gold-primary)
+
+  label
+    font-size: clamp(0.95rem, 2.4vw, 1.1rem)
+    font-weight: 700
+    color: var(--text-primary)
+    text-transform: uppercase
+    letter-spacing: 0.5px
+    margin-bottom: clamp(0.25rem, 0.5vw, 0.5rem)
+
+    .required
+      color: var(--error-color)
+      margin-left: 4px
+
+  input
+    padding: clamp(0.875rem, 2.2vw, 1.125rem) clamp(1rem, 2.5vw, 1.25rem)
+    border: 2px solid var(--border-primary)
+    border-radius: clamp(8px, 2vw, 12px)
+    background-color: var(--bg-primary)
+    color: var(--text-primary)
+    font-size: clamp(0.95rem, 2.4vw, 1.1rem)
+    font-family: inherit
+    transition: border-color 0.2s ease
+
+    &::placeholder
+      color: var(--text-tertiary)
+      opacity: 0.6
+
+    &:focus
+      outline: none
+      border-color: var(--gold-primary)
+      box-shadow: 0 0 0 3px var(--gold-hover)
+
+    &.invalid
+      border-color: var(--error-color)
+      box-shadow: 0 0 0 3px var(--error-bg)
+
+    &:disabled
+      background-color: var(--bg-tertiary)
+      color: var(--text-tertiary)
+      cursor: not-allowed
+      opacity: 0.7
+
+  &.readonly
+    background-color: var(--bg-tertiary)
+    border-color: var(--border-primary)
+
+    input
+      background-color: var(--bg-tertiary)
+      color: var(--text-tertiary)
+      cursor: not-allowed
+
+  .readonly-note
+    font-size: clamp(0.75rem, 2vw, 0.85rem)
+    color: var(--text-tertiary)
+    font-style: italic
+    margin-top: clamp(0.25rem, 0.5vw, 0.5rem)
+    display: flex
+    align-items: center
+    gap: 0.5rem
+
+    i
+      font-size: 0.9em
+      color: var(--text-tertiary)
+
+  .error-text
+    font-size: clamp(0.75rem, 2vw, 0.85rem)
+    color: var(--error-color)
+    margin-top: clamp(0.25rem, 0.5vw, 0.5rem)
+    display: flex
+    align-items: center
+    gap: 0.5rem
+    font-weight: 600
+
+    i
+      font-size: 1em
+      color: var(--error-color)
+
+.form-actions
+  display: flex
+  gap: clamp(1rem, 2.5vw, 1.5rem)
+  justify-content: flex-end
+  padding-top: clamp(1.5rem, 4vw, 2rem)
+  border-top: 2px solid var(--border-primary)
+  margin-top: clamp(1rem, 2.5vw, 1.5rem)
+
+.btn-cancel,
+.btn-save
+  display: flex
+  align-items: center
+  gap: clamp(0.5rem, 1.5vw, 0.75rem)
+  padding: clamp(0.75rem, 2vw, 1rem) clamp(1.5rem, 3.5vw, 2rem)
+  border: none
+  border-radius: clamp(6px, 1.5vw, 8px)
+  font-size: clamp(0.9rem, 2.3vw, 1rem)
+  font-weight: 600
+  cursor: pointer
+  transition: all 0.3s ease
+
+  &:disabled
+    opacity: 0.6
+    cursor: not-allowed
+
+.btn-cancel
+  background-color: var(--bg-tertiary)
+  color: var(--text-secondary)
+  border: 2px solid var(--border-primary)
+
+  &:hover:not(:disabled)
+    background-color: var(--bg-hover)
+    border-color: var(--border-primary)
+
+.btn-save
+  background-color: var(--gold-primary)
+  color: #ffffff
+  box-shadow: 0 2px 8px rgba(212, 175, 55, 0.3)
+  transition: background-color 0.2s ease, box-shadow 0.2s ease
+
+  &:hover:not(:disabled)
+    background-color: var(--gold-secondary)
+    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.4)
+
+
+.error-container
+  max-width: 600px
+  margin: 0 auto
+  text-align: center
+  padding: clamp(2rem, 5vw, 3rem)
+
+  .error-message
+    margin-bottom: clamp(1.5rem, 4vw, 2rem)
+
+.btn-retry
+  display: inline-flex
+  align-items: center
+  gap: clamp(0.5rem, 1.5vw, 0.75rem)
+  padding: clamp(0.75rem, 2vw, 1rem) clamp(1.5rem, 3.5vw, 2rem)
+  border: 2px solid var(--gold-primary)
+  border-radius: clamp(8px, 2vw, 12px)
+  background: linear-gradient(135deg, var(--gold-primary) 0%, var(--gold-secondary) 100%)
+  color: #ffffff
+  font-size: clamp(0.9rem, 2.3vw, 1rem)
+  font-weight: 600
+  cursor: pointer
+  transition: all 0.3s ease
+  box-shadow: 0 4px 16px rgba(212, 175, 55, 0.4)
+
+  &:hover
+    transform: translateY(-2px)
+    box-shadow: 0 6px 24px rgba(212, 175, 55, 0.5)
+
+  &:active
+    transform: translateY(0)
+
+.id-field-row
+  display: flex
+  align-items: center
+  gap: 0.5rem
+
+  input
+    flex: 1
+
+.id-eye-btn
+  background-color: var(--bg-primary)
+  border: 2px solid var(--gold-primary)
+  color: var(--gold-primary)
+  border-radius: 8px
+  padding: 0.55rem 0.75rem
+  cursor: pointer
+  transition: all 0.2s ease
+  display: inline-flex
+  align-items: center
+  justify-content: center
+
+  &:hover
+    background-color: var(--gold-hover)
+    color: var(--text-quaternary)
+
+.id-modal-backdrop
+  position: fixed
+  inset: 0
+  background: rgba(0, 0, 0, 0.5)
+  backdrop-filter: blur(4px)
+  display: flex
+  align-items: center
+  justify-content: center
+  z-index: 10004
+  padding: 1rem
+
+.id-modal
+  background: var(--bg-secondary)
+  border: 2px solid var(--border-primary)
+  border-radius: 12px
+  box-shadow: 0 10px 30px var(--shadow-color)
+  width: min(900px, 95vw)
+  max-height: 90vh
+  overflow: hidden
+
+.id-modal-header
+  display: flex
+  justify-content: space-between
+  align-items: center
+  padding: 1rem 1.25rem
+  border-bottom: 1px solid var(--border-primary)
+  background: var(--bg-tertiary)
+
+.id-modal-title
+  display: flex
+  align-items: center
+  gap: 0.5rem
+  color: var(--text-primary)
+  font-weight: 700
+
+  i
+    color: var(--gold-primary)
+
+.id-modal-close
+  background: transparent
+  border: none
+  color: var(--text-primary)
+  cursor: pointer
+  font-size: 1.1rem
+  padding: 0.35rem
+  border-radius: 6px
+
+  &:hover
+    background: var(--bg-hover)
+    color: var(--gold-primary)
+
+.id-modal-body
+  padding: 1.25rem
+  display: grid
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr))
+  gap: 1rem
+  overflow-y: auto
+
+.id-modal-card
+  background: var(--bg-tertiary)
+  border: 1px solid var(--border-primary)
+  border-radius: 10px
+  padding: 0.75rem
+  display: flex
+  flex-direction: column
+  gap: 0.5rem
+
+  img
+    width: 100%
+    border-radius: 8px
+    border: 1px solid var(--border-primary)
+    object-fit: contain
+    background: var(--bg-primary)
+
+.id-modal-label
+  margin: 0
+  color: var(--text-secondary)
+  font-weight: 700
+  text-transform: uppercase
+
+@media (max-width: 768px)
+  .form-grid
+    grid-template-columns: 1fr
+    gap: clamp(1rem, 3vw, 1.5rem)
+
+  .form-actions
+    flex-direction: column-reverse
+
+    button
+      width: 100%
+
+  .profile-image-section
+    padding: clamp(1rem, 3vw, 1.5rem)
+
+  .avatar-preview,
+  .avatar-placeholder
+    width: clamp(120px, 30vw, 140px)
+    height: clamp(120px, 30vw, 140px)
+

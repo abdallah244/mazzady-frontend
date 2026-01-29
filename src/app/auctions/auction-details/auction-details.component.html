@@ -1,0 +1,213 @@
+<div class="auction-details-page" [class.rtl]="isArabic()">
+  @if (isLoading()) {
+    <div class="loading-container">
+      <div class="spinner"></div>
+      <p>{{ isArabic() ? 'جاري التحميل...' : 'Loading...' }}</p>
+    </div>
+  } @else if (auction()) {
+    <div class="details-container">
+      <!-- Header -->
+      <div class="details-header">
+        <button class="back-btn" (click)="goBack()">
+          <i class="fas fa-arrow-left"></i>
+          <span>{{ isArabic() ? 'رجوع' : 'Back' }}</span>
+        </button>
+        <h1 class="product-title">{{ auction()!.productName }}</h1>
+      </div>
+
+      <div class="details-content">
+        <!-- Images Section -->
+        <div class="images-section">
+          <div class="main-image">
+            <img
+              [src]="getImageUrl(activeImage() || auction()!.mainImageUrl)"
+              [alt]="auction()!.productName"
+            />
+          </div>
+          <div class="additional-images">
+            <!-- Main Image Thumbnail -->
+            <div
+              class="thumb-image"
+              [class.active]="activeImage() === auction()!.mainImageUrl"
+              (click)="setActiveImage(auction()!.mainImageUrl)"
+            >
+              <img [src]="getImageUrl(auction()!.mainImageUrl)" [alt]="auction()!.productName" />
+            </div>
+
+            @if (auction()!.additionalImagesUrl && auction()!.additionalImagesUrl.length > 0) {
+              @for (image of auction()!.additionalImagesUrl; track $index) {
+                <div
+                  class="thumb-image"
+                  [class.active]="activeImage() === image"
+                  (click)="setActiveImage(image)"
+                >
+                  <img [src]="getImageUrl(image)" [alt]="'Image ' + ($index + 2)" />
+                </div>
+              }
+            }
+          </div>
+        </div>
+
+        <!-- Info Section -->
+        <div class="info-section">
+          <!-- Seller Info -->
+          <div class="info-card">
+            <h3>{{ isArabic() ? 'البائع' : 'Seller' }}</h3>
+            <div class="seller-info">
+              @if (auction()!.sellerId.profileImageUrl) {
+                <img
+                  [src]="auction()!.sellerId.profileImageUrl | assetUrl"
+                  [alt]="auction()!.sellerId.firstName"
+                  class="seller-avatar"
+                />
+              } @else {
+                <div class="seller-avatar-placeholder">
+                  <i class="fas fa-user"></i>
+                </div>
+              }
+              <div class="seller-details">
+                <span class="seller-name">{{ auction()!.sellerId.nickname }}</span>
+              </div>
+              <button
+                class="like-btn"
+                [class.liked]="isLiked()"
+                (click)="toggleLike()"
+                [title]="isArabic() ? 'إعجاب بالبائع' : 'Like Seller'"
+              >
+                <i class="fas fa-heart"></i>
+                <span>{{ sellerLikesCount() }}</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Timer -->
+          @if (auction()!.status === 'active') {
+            <div class="info-card timer-card">
+              <h3>{{ isArabic() ? 'الوقت المتبقي' : 'Time Remaining' }}</h3>
+              <div class="timer-display">
+                <i class="fas fa-clock"></i>
+                <span class="timer-value">{{ formatTimeRemaining(auction()!.endDate) }}</span>
+              </div>
+            </div>
+          }
+
+          <!-- Price Info -->
+          <div class="info-card">
+            <h3>{{ isArabic() ? 'معلومات السعر' : 'Price Information' }}</h3>
+            <div class="price-info">
+              <div class="price-item">
+                <span class="price-label">{{
+                  isArabic() ? 'السعر المبدئي:' : 'Starting Price:'
+                }}</span>
+                <span class="price-value">{{ formatPrice(auction()!.startingPrice) }}</span>
+              </div>
+              <div class="price-item">
+                <span class="price-label">{{
+                  isArabic() ? 'السعر الحالي:' : 'Current Price:'
+                }}</span>
+                <span class="price-value highlight">{{
+                  formatPrice(auction()!.highestBid || auction()!.startingPrice)
+                }}</span>
+              </div>
+              @if (auction()!.highestBid && auction()!.highestBidderId) {
+                <div class="price-item">
+                  <span class="price-label">{{
+                    isArabic() ? 'صاحب أعلى مزايدة:' : 'Highest Bidder:'
+                  }}</span>
+                  <span class="price-value">{{ auction()!.highestBidderId!.nickname }}</span>
+                </div>
+              } @else if (!auction()!.highestBid) {
+                <div class="price-item">
+                  <span class="price-label">{{
+                    isArabic() ? 'لا توجد مزايدات بعد' : 'No bids yet'
+                  }}</span>
+                </div>
+              }
+              <div class="price-item">
+                <span class="price-label">{{
+                  isArabic() ? 'أقل معدل للزيادة:' : 'Minimum Increment:'
+                }}</span>
+                <span class="price-value">{{ formatPrice(auction()!.minBidIncrement) }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bid Form -->
+          @if (auction()!.status === 'active' && currentUser()) {
+            <div class="info-card bid-form-card">
+              <h3>{{ isArabic() ? 'تقديم مزايدة' : 'Place Bid' }}</h3>
+              <div class="bid-form">
+                <div class="bid-input-group">
+                  <label>{{ isArabic() ? 'المبلغ' : 'Amount' }}</label>
+                  <input
+                    type="number"
+                    [(ngModel)]="bidAmount"
+                    [min]="getMinBidAmount()"
+                    [step]="auction()!.minBidIncrement"
+                    [placeholder]="'Min: ' + formatPrice(getMinBidAmount())"
+                  />
+                  <small
+                    >{{ isArabic() ? 'الحد الأدنى:' : 'Minimum:' }}
+                    {{ formatPrice(getMinBidAmount()) }}</small
+                  >
+                </div>
+                <button
+                  class="bid-btn"
+                  appLoadingButton
+                  [loading]="isPlacingBid()"
+                  (click)="placeBid()"
+                >
+                  <span>{{ isArabic() ? 'تقديم المزايدة' : 'Place Bid' }}</span>
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Bids List -->
+      <div class="bids-section">
+        <h2>{{ isArabic() ? 'المزايدات' : 'Bids' }}</h2>
+        @if (bids().length === 0) {
+          <div class="empty-bids">
+            <i class="fas fa-gavel"></i>
+            <p>{{ isArabic() ? 'لا توجد مزايدات بعد' : 'No bids yet' }}</p>
+          </div>
+        } @else {
+          <div class="bids-list">
+            @for (bid of bids(); track bid._id) {
+              <div class="bid-item">
+                <div class="bidder-info">
+                  @if (bid.userId.profileImageUrl) {
+                    <img
+                      [src]="bid.userId.profileImageUrl | assetUrl"
+                      [alt]="bid.userId.firstName"
+                      class="bidder-avatar"
+                    />
+                  } @else {
+                    <div class="bidder-avatar-placeholder">
+                      <i class="fas fa-user"></i>
+                    </div>
+                  }
+                  <div class="bidder-details">
+                    <span class="bidder-name">{{ bid.userId.nickname }}</span>
+                    <span class="bid-date">{{ formatDate(bid.createdAt) }}</span>
+                  </div>
+                </div>
+                <div class="bid-amount">
+                  {{ formatPrice(bid.amount) }}
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    </div>
+  } @else {
+    <div class="error-state">
+      <i class="fas fa-exclamation-triangle"></i>
+      <p>{{ isArabic() ? 'المزاد غير موجود' : 'Auction not found' }}</p>
+      <button class="back-btn" (click)="goBack()">{{ isArabic() ? 'رجوع' : 'Back' }}</button>
+    </div>
+  }
+</div>

@@ -1,0 +1,488 @@
+<div class="floating-menu-container">
+  <!-- Main Floating Button -->
+  <button
+    class="floating-button"
+    (click)="toggleMenu()"
+    [class.active]="isOpen()"
+    [attr.aria-label]="isOpen() ? 'Close menu' : 'Open menu'"
+    [attr.aria-expanded]="isOpen()"
+  >
+    <i [class]="isOpen() ? 'fas fa-times' : 'fas fa-bars'"></i>
+  </button>
+
+  <!-- Dropdown Menu -->
+  @if (isOpen()) {
+    <div class="dropdown-menu">
+      <!-- Section: Tools & Actions -->
+      <div class="menu-section">
+        <h3 class="section-label">{{ isArabic() ? 'أدوات' : 'Tools' }}</h3>
+
+        <!-- Chat Bot -->
+        <button class="menu-item" (click)="onChatBot()">
+          <div class="icon-wrapper"><i class="fas fa-comments"></i></div>
+          <span>{{ chatBot() }}</span>
+        </button>
+
+        <!-- Messages (only if authenticated) -->
+        @if (isAuthenticated()) {
+          <button class="menu-item" (click)="onMessages()">
+            <div class="icon-wrapper"><i class="fas fa-envelope"></i></div>
+            <span>{{ messages() }}</span>
+            @if (userMessages().length > 0) {
+              <span class="messages-badge">{{ userMessages().length }}</span>
+            }
+          </button>
+        }
+
+        <!-- Quick Reference -->
+        <button class="menu-item" (click)="onQuickReference()">
+          <div class="icon-wrapper"><i class="fas fa-book"></i></div>
+          <span>{{ quickReference() }}</span>
+        </button>
+      </div>
+
+      <div class="menu-divider"></div>
+
+      <!-- Section: Information & Policies -->
+      <div class="menu-section">
+        <h3 class="section-label">{{ isArabic() ? 'معلومات' : 'Information' }}</h3>
+        <div class="grid-items">
+          <!-- Copyright -->
+          <button class="menu-item compact" (click)="onCopyright()">
+            <i class="fas fa-copyright"></i>
+            <span>{{ copyright() }}</span>
+          </button>
+
+          <!-- Site Policy -->
+          <button class="menu-item compact" (click)="onSitePolicy()">
+            <i class="fas fa-file-contract"></i>
+            <span>{{ sitePolicy() }}</span>
+          </button>
+
+          <!-- Privacy Policy -->
+          <button class="menu-item compact" (click)="onPrivacyPolicy()">
+            <i class="fas fa-shield-alt"></i>
+            <span>{{ privacyPolicy() }}</span>
+          </button>
+
+          <!-- Return Policy -->
+          <button class="menu-item compact" (click)="onReturnPolicy()">
+            <i class="fas fa-undo"></i>
+            <span>{{ returnPolicy() }}</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="menu-divider"></div>
+
+      <!-- Section: Settings -->
+      <div class="menu-section">
+        <h3 class="section-label">{{ isArabic() ? 'إعدادات' : 'Settings' }}</h3>
+
+        <!-- Theme Change Dropdown -->
+        <div class="theme-item-container">
+          <button class="menu-item theme-item" (click)="toggleThemeDropdown()">
+            <div class="icon-wrapper">
+              <i [class]="currentTheme() === 'dark' ? 'fas fa-moon' : 'fas fa-sun'"></i>
+            </div>
+            <span>{{ changeTheme() }}</span>
+            <span class="value-badge">{{
+              currentTheme() === 'dark'
+                ? isArabic()
+                  ? 'داكن'
+                  : 'Dark'
+                : isArabic()
+                  ? 'فاتح'
+                  : 'Light'
+            }}</span>
+            <i
+              class="fas fa-chevron-down theme-chevron"
+              [class.rotated]="isThemeDropdownOpen()"
+            ></i>
+          </button>
+
+          @if (isThemeDropdownOpen()) {
+            <div class="theme-dropdown">
+              <button
+                class="theme-option"
+                [class.active]="currentTheme() === 'dark'"
+                (click)="onThemeSelect('dark')"
+              >
+                <i class="fas fa-moon"></i>
+                <span>{{ themeDark() }}</span>
+              </button>
+              <button
+                class="theme-option"
+                [class.active]="currentTheme() === 'light'"
+                (click)="onThemeSelect('light')"
+              >
+                <i class="fas fa-sun"></i>
+                <span>{{ themeLight() }}</span>
+              </button>
+            </div>
+          }
+        </div>
+
+        <!-- Change Scheme -->
+        <div class="scheme-item-container">
+          <button class="menu-item scheme-item" (click)="toggleSchemeDropdown()">
+            <div class="icon-wrapper"><i class="fas fa-palette"></i></div>
+            <span>{{ changeScheme() }}</span>
+            <span class="value-badge">{{ getSchemeName(currentScheme()) }}</span>
+            <i
+              class="fas fa-chevron-down scheme-chevron"
+              [class.rotated]="isSchemeDropdownOpen()"
+            ></i>
+          </button>
+
+          @if (isSchemeDropdownOpen()) {
+            <div class="scheme-dropdown">
+              <button
+                class="scheme-option"
+                [class.active]="currentScheme() === 'default'"
+                (click)="onSchemeSelect('default')"
+              >
+                <i class="fas fa-circle"></i>
+                <span>{{ schemeDefault() }}</span>
+              </button>
+              <button
+                class="scheme-option"
+                [class.active]="currentScheme() === 'basic'"
+                (click)="onSchemeSelect('basic')"
+              >
+                <i class="fas fa-circle"></i>
+                <span>{{ schemeBasic() }}</span>
+              </button>
+            </div>
+          }
+        </div>
+
+        <!-- Language Change -->
+        <button class="menu-item language-item" (click)="onLanguageChange()">
+          <div class="icon-wrapper"><i class="fas fa-language"></i></div>
+          <span>{{ changeLanguage() }}</span>
+          <span class="value-badge">{{ currentLanguage() === 'ar' ? 'EN' : 'AR' }}</span>
+        </button>
+
+        <!-- Theme Persistent Checkbox -->
+        <div class="menu-item checkbox-item">
+          <label class="checkbox-label">
+            <input
+              type="checkbox"
+              [checked]="isPersistent()"
+              (change)="onPersistentChange($event)"
+              class="theme-checkbox"
+            />
+            <span class="checkbox-text">{{ themePersistent() }}</span>
+          </label>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Backdrop -->
+  @if (isOpen()) {
+    <div class="backdrop" (click)="closeMenu()"></div>
+  }
+
+  <!-- Chatbot -->
+  @if (chatbotOpen()) {
+    <app-chatbot [isOpen]="chatbotOpen()" (close)="chatbotOpen.set(false)"></app-chatbot>
+  }
+
+  <!-- Quick Reference Modal -->
+  @if (quickReferenceModalOpen()) {
+    <div class="modal-overlay" (click)="closeQuickReferenceModal()">
+      <div class="modal-container" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h2 class="modal-title">
+            <i class="fas fa-book"></i>
+            <span>{{ quickReference() }}</span>
+          </h2>
+          <button
+            class="modal-close"
+            (click)="closeQuickReferenceModal()"
+            [attr.aria-label]="close()"
+          >
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p class="modal-content">{{ quickReferenceContent() }}</p>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Copyright Modal -->
+  @if (copyrightModalOpen()) {
+    <div class="modal-overlay" (click)="closeCopyrightModal()">
+      <div class="modal-container" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h2 class="modal-title">
+            <i class="fas fa-copyright"></i>
+            <span>{{ copyright() }}</span>
+          </h2>
+          <button class="modal-close" (click)="closeCopyrightModal()" [attr.aria-label]="close()">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p class="modal-content">{{ copyrightContent() }}</p>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Site Policy Modal -->
+  @if (sitePolicyModalOpen()) {
+    <div class="modal-overlay" (click)="closeSitePolicyModal()">
+      <div class="modal-container" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h2 class="modal-title">
+            <i class="fas fa-file-contract"></i>
+            <span>{{ sitePolicy() }}</span>
+          </h2>
+          <button class="modal-close" (click)="closeSitePolicyModal()" [attr.aria-label]="close()">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p class="modal-content">{{ sitePolicyContent() }}</p>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Return Policy Modal -->
+  @if (returnPolicyModalOpen()) {
+    <div class="modal-overlay" (click)="closeReturnPolicyModal()">
+      <div class="modal-container" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h2 class="modal-title">
+            <i class="fas fa-undo"></i>
+            <span>{{ returnPolicy() }}</span>
+          </h2>
+          <button
+            class="modal-close"
+            (click)="closeReturnPolicyModal()"
+            [attr.aria-label]="close()"
+          >
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p class="modal-content">{{ returnPolicyContent() }}</p>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Privacy Policy Modal -->
+  @if (privacyPolicyModalOpen()) {
+    <div class="modal-overlay" (click)="closePrivacyPolicyModal()">
+      <div class="modal-container" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h2 class="modal-title">
+            <i class="fas fa-shield-alt"></i>
+            <span>{{ privacyPolicy() }}</span>
+          </h2>
+          <button
+            class="modal-close"
+            (click)="closePrivacyPolicyModal()"
+            [attr.aria-label]="close()"
+          >
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p class="modal-content">{{ privacyPolicyContent() }}</p>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Messages Modal -->
+  @if (messagesModalOpen()) {
+    <div class="modal-overlay" (click)="closeMessagesModal()">
+      <div class="modal-container messages-modal" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h2 class="modal-title">
+            <i class="fas fa-envelope"></i>
+            <span>{{ messages() }}</span>
+          </h2>
+          <button class="modal-close" (click)="closeMessagesModal()" [attr.aria-label]="close()">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="modal-body messages-body">
+          @if (userMessages().length === 0) {
+            <div class="no-messages">
+              <i class="fas fa-inbox"></i>
+              <p>{{ noMessages() }}</p>
+            </div>
+          } @else {
+            <div class="messages-list">
+              @for (message of userMessages(); track message.id) {
+                <div class="message-item" [class]="getStatusClass(message.status, message.type)">
+                  <div class="message-user-info">
+                    @if (message.userProfileImage) {
+                      <img
+                        [src]="message.userProfileImage | assetUrl"
+                        [alt]="message.userName"
+                        class="user-avatar-small"
+                        loading="lazy"
+                        decoding="async"
+                      />
+                    } @else {
+                      <div class="user-avatar-placeholder-small">
+                        <i class="fas fa-user"></i>
+                      </div>
+                    }
+                    <div class="user-details">
+                      <div class="user-name">{{ message.userName }}</div>
+                      <div class="user-email">{{ message.userEmail }}</div>
+                      <div class="user-phone">
+                        <i class="fas fa-phone"></i>
+                        <span>{{ message.userPhone }}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="message-header">
+                    <div class="message-status">
+                      @if (message.type === 'deposit') {
+                        <i
+                          [class]="
+                            message.status === 'approved'
+                              ? 'fas fa-check-circle'
+                              : 'fas fa-times-circle'
+                          "
+                        ></i>
+                      } @else if (message.type === 'support') {
+                        <i
+                          [class]="
+                            message.status === 'resolved'
+                              ? 'fas fa-check-circle'
+                              : message.status === 'closed'
+                                ? 'fas fa-times-circle'
+                                : 'fas fa-clock'
+                          "
+                        ></i>
+                      } @else if (message.type === 'product') {
+                        <i
+                          [class]="
+                            message.status === 'approved'
+                              ? 'fas fa-check-circle'
+                              : 'fas fa-times-circle'
+                          "
+                        ></i>
+                      } @else if (message.type === 'admin') {
+                        <i class="fas fa-envelope"></i>
+                      } @else {
+                        <i
+                          [class]="
+                            message.status === 'approved'
+                              ? 'fas fa-check-circle'
+                              : 'fas fa-times-circle'
+                          "
+                        ></i>
+                      }
+                      <span class="status-text">{{
+                        getStatusText(message.status, message.type)
+                      }}</span>
+                    </div>
+                    <span class="message-date">{{ message.date | date: 'short' }}</span>
+                  </div>
+                  <div class="message-content">
+                    @if (message.type === 'deposit') {
+                      <div class="message-amount">
+                        <i class="fas fa-dollar-sign"></i>
+                        <span
+                          ><strong>{{ amount() }}:</strong>
+                          {{ message.amount | number: '1.2-2' }}</span
+                        >
+                      </div>
+                      @if (message.reviewNote) {
+                        <div class="message-note">
+                          <i class="fas fa-sticky-note"></i>
+                          <span>{{ message.reviewNote }}</span>
+                        </div>
+                      }
+                    } @else if (message.type === 'support') {
+                      <div class="message-subject">
+                        <i class="fas fa-heading"></i>
+                        <span
+                          ><strong>{{ isArabic() ? 'الموضوع:' : 'Subject:' }}</strong>
+                          {{ message.subject }}</span
+                        >
+                      </div>
+                      <div class="message-text">
+                        <i class="fas fa-comment"></i>
+                        <span>{{ message.message }}</span>
+                      </div>
+                      @if (message.adminResponse) {
+                        <div class="admin-response">
+                          <i class="fas fa-reply"></i>
+                          <div class="response-content">
+                            <strong>{{ isArabic() ? 'رد الأدمن:' : 'Admin Response:' }}</strong>
+                            <p>{{ message.adminResponse }}</p>
+                          </div>
+                        </div>
+                      }
+                    } @else if (message.type === 'product') {
+                      <div class="message-amount">
+                        <i class="fas fa-dollar-sign"></i>
+                        <span
+                          ><strong>{{ isArabic() ? 'السعر المبدئي:' : 'Starting Price:' }}</strong>
+                          {{ message.startingPrice | number: '1.2-2' }}</span
+                        >
+                      </div>
+                      @if (message.adminNote) {
+                        <div class="message-note">
+                          <i class="fas fa-sticky-note"></i>
+                          <span
+                            ><strong>{{ isArabic() ? 'ملاحظة الأدمن:' : 'Admin Note:' }}</strong>
+                            {{ message.adminNote }}</span
+                          >
+                        </div>
+                      }
+                    } @else if (message.type === 'admin') {
+                      <div class="message-subject">
+                        <i class="fas fa-heading"></i>
+                        <span
+                          ><strong>{{ isArabic() ? 'الموضوع:' : 'Subject:' }}</strong>
+                          {{ message.subject }}</span
+                        >
+                      </div>
+                      <div class="message-text">
+                        <i class="fas fa-comment"></i>
+                        <span>{{ message.message }}</span>
+                      </div>
+                    }
+                  </div>
+                  @if (
+                    message.status === 'approved' ||
+                    message.status === 'rejected' ||
+                    message.status === 'resolved' ||
+                    message.status === 'closed' ||
+                    message.type === 'admin'
+                  ) {
+                    <div class="message-actions">
+                      <button
+                        class="btn-delete-message"
+                        (click)="deleteMessage(message.id, message.type)"
+                      >
+                        <i class="fas fa-trash"></i>
+                        <span>{{ delete() }}</span>
+                      </button>
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  }
+</div>

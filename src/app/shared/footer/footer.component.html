@@ -1,0 +1,153 @@
+<footer class="footer" [class.rtl]="isArabic()">
+  <div class="footer-container">
+    <!-- About Section -->
+    <div class="footer-section">
+      <h3 class="footer-title">{{ about() }}</h3>
+      <p class="footer-text">
+        {{ isArabic() ? 'Mazzady هي منصة المزادات الإلكترونية الرائدة التي تجمع بين البائعين والمشترين في مكان واحد.' : 'Mazzady is the leading online auction platform that brings together sellers and buyers in one place.' }}
+      </p>
+    </div>
+
+    <!-- Quick Links -->
+    <div class="footer-section">
+      <h3 class="footer-title">{{ quickLinks() }}</h3>
+      <ul class="footer-links">
+        <li><a routerLink="/home">{{ home() }}</a></li>
+        <li><a routerLink="/auctions">{{ auctions() }}</a></li>
+        <li><a routerLink="/join-us">{{ joinUs() }}</a></li>
+        <li><a routerLink="/customer-service">{{ customerService() }}</a></li>
+        <li><a routerLink="/sell-product">{{ sellProduct() }}</a></li>
+      </ul>
+    </div>
+
+    <!-- Legal -->
+    <div class="footer-section">
+      <h3 class="footer-title">{{ legal() }}</h3>
+      <ul class="footer-links">
+        <li><a (click)="onPrivacyPolicy()" style="cursor: pointer;">{{ privacyPolicy() }}</a></li>
+        <li><a (click)="onReturnPolicy()" style="cursor: pointer;">{{ returnPolicy() }}</a></li>
+        <li><a (click)="onSitePolicy()" style="cursor: pointer;">{{ sitePolicy() }}</a></li>
+      </ul>
+    </div>
+
+    <!-- Contact & Social -->
+    <div class="footer-section">
+      <h3 class="footer-title">{{ contact() }}</h3>
+      <div class="footer-contact">
+        <p class="footer-text">
+          <i class="fas fa-envelope"></i>
+          <span>info@mazzady.com</span>
+        </p>
+        <p class="footer-text">
+          <i class="fas fa-phone"></i>
+          <span>+20 123 456 7890</span>
+        </p>
+      </div>
+      <div class="footer-social">
+        <h4 class="footer-subtitle">{{ followUs() }}</h4>
+        <div class="social-links">
+          <a href="#" class="social-link" aria-label="Facebook">
+            <i class="fab fa-facebook-f"></i>
+          </a>
+          <a href="#" class="social-link" aria-label="Twitter">
+            <i class="fab fa-twitter"></i>
+          </a>
+          <a href="#" class="social-link" aria-label="Instagram">
+            <i class="fab fa-instagram"></i>
+          </a>
+          <a href="#" class="social-link" aria-label="LinkedIn">
+            <i class="fab fa-linkedin-in"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Copyright -->
+  <div class="footer-bottom">
+    <p class="footer-copyright">
+      <a (click)="onCopyright()" style="cursor: pointer; color: inherit; text-decoration: underline;">{{ copyright() }}</a> - {{ allRightsReserved() }}
+    </p>
+  </div>
+
+  <!-- Privacy Policy Modal -->
+  @if (privacyPolicyModalOpen()) {
+    <div class="modal-overlay" (click)="closePrivacyPolicyModal()">
+      <div class="modal-container" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h2 class="modal-title">
+            <i class="fas fa-shield-alt"></i>
+            <span>{{ privacyPolicy() }}</span>
+          </h2>
+          <button class="modal-close" (click)="closePrivacyPolicyModal()" [attr.aria-label]="close()">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p class="modal-content">{{ privacyPolicyContent() }}</p>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Return Policy Modal -->
+  @if (returnPolicyModalOpen()) {
+    <div class="modal-overlay" (click)="closeReturnPolicyModal()">
+      <div class="modal-container" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h2 class="modal-title">
+            <i class="fas fa-undo"></i>
+            <span>{{ returnPolicy() }}</span>
+          </h2>
+          <button class="modal-close" (click)="closeReturnPolicyModal()" [attr.aria-label]="close()">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p class="modal-content">{{ returnPolicyContent() }}</p>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Site Policy Modal -->
+  @if (sitePolicyModalOpen()) {
+    <div class="modal-overlay" (click)="closeSitePolicyModal()">
+      <div class="modal-container" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h2 class="modal-title">
+            <i class="fas fa-file-contract"></i>
+            <span>{{ sitePolicy() }}</span>
+          </h2>
+          <button class="modal-close" (click)="closeSitePolicyModal()" [attr.aria-label]="close()">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p class="modal-content">{{ sitePolicyContent() }}</p>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Copyright Modal -->
+  @if (copyrightModalOpen()) {
+    <div class="modal-overlay" (click)="closeCopyrightModal()">
+      <div class="modal-container" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h2 class="modal-title">
+            <i class="fas fa-copyright"></i>
+            <span>{{ copyright() }}</span>
+          </h2>
+          <button class="modal-close" (click)="closeCopyrightModal()" [attr.aria-label]="close()">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p class="modal-content">{{ copyrightContent() }}</p>
+        </div>
+      </div>
+    </div>
+  }
+</footer>
+

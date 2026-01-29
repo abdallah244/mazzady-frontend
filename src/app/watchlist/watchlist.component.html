@@ -1,0 +1,37 @@
+<div class="watchlist-page" [attr.data-theme]="currentTheme()">
+  <div class="container">
+    <header class="page-header">
+      <h1>{{ isArabic() ? 'قائمة المتابعة' : 'Watchlist' }}</h1>
+    </header>
+
+    @if (isLoading()) {
+      <div class="loading">
+        <i class="fas fa-spinner fa-spin"></i>
+      </div>
+    } @else if (watchlistItems().length === 0) {
+      <div class="empty-state">
+        <i class="fas fa-heart"></i>
+        <p>{{ isArabic() ? 'لا توجد مزادات في قائمة المتابعة' : 'No auctions in watchlist' }}</p>
+      </div>
+    } @else {
+      <div class="watchlist-grid">
+        @for (item of watchlistItems(); track item._id) {
+          <div class="watchlist-card">
+            <img [src]="item.auctionId.mainImageUrl" [alt]="item.auctionId.productName" (click)="navigateToAuction(item.auctionId._id)">
+            <div class="card-content">
+              <h3 (click)="navigateToAuction(item.auctionId._id)">{{ item.auctionId.productName }}</h3>
+              <div class="auction-info">
+                <span class="price">{{ item.auctionId.highestBid || 0 }} EGP</span>
+                <span class="time">{{ getTimeRemaining(item.auctionId.endDate) }}</span>
+              </div>
+              <button class="remove-btn" (click)="removeFromWatchlist(item.auctionId._id)">
+                <i class="fas fa-times"></i>
+                <span>{{ isArabic() ? 'إزالة' : 'Remove' }}</span>
+              </button>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </div>
+</div>

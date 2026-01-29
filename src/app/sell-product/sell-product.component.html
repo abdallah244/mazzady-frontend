@@ -1,0 +1,269 @@
+<div class="sell-product-page">
+  <div class="page-container">
+    <div class="page-header">
+      <h1 class="page-title">
+        <i class="fas fa-tag"></i>
+        <span>{{ title() }}</span>
+      </h1>
+    </div>
+
+    @if (showSuccessMessage()) {
+      <div class="success-message">
+        <i class="fas fa-check-circle"></i>
+        <p>{{ successMessage() }}</p>
+      </div>
+    }
+
+    @if (errorMessage()) {
+      <div class="error-message">
+        <i class="fas fa-exclamation-circle"></i>
+        <p>{{ errorMessage() }}</p>
+      </div>
+    }
+
+    <form [formGroup]="sellForm" (ngSubmit)="onSubmit()" class="sell-form">
+      <!-- Product Name -->
+      <div class="form-group">
+        <label class="form-label" for="productName">
+          <i class="fas fa-tag"></i>
+          <span>{{ productNameLabel() }} <span class="required">*</span></span>
+        </label>
+        <input
+          type="text"
+          id="productName"
+          formControlName="productName"
+          class="form-input"
+          [class.invalid]="
+            sellForm.get('productName')?.invalid && sellForm.get('productName')?.touched
+          "
+          [placeholder]="isArabic() ? 'أدخل اسم المنتج' : 'Enter product name'"
+          maxlength="200"
+        />
+        @if (
+          sellForm.get('productName')?.hasError('required') && sellForm.get('productName')?.touched
+        ) {
+          <span class="error-text">{{ required() }}</span>
+        }
+        @if (
+          sellForm.get('productName')?.hasError('minlength') && sellForm.get('productName')?.touched
+        ) {
+          <span class="error-text">{{
+            isArabic()
+              ? 'اسم المنتج يجب أن يكون على الأقل 3 أحرف'
+              : 'Product name must be at least 3 characters'
+          }}</span>
+        }
+        @if (
+          sellForm.get('productName')?.hasError('maxlength') && sellForm.get('productName')?.touched
+        ) {
+          <span class="error-text">{{
+            isArabic()
+              ? 'اسم المنتج يجب أن يكون أقل من 200 حرف'
+              : 'Product name must be less than 200 characters'
+          }}</span>
+        }
+      </div>
+
+      <!-- Main Image -->
+      <div class="form-group">
+        <label class="form-label">
+          <i class="fas fa-image"></i>
+          <span>{{ mainImageLabel() }} <span class="required">*</span></span>
+        </label>
+        <div class="image-upload-section">
+          @if (mainImagePreview()) {
+            <div class="image-preview-container">
+              <img [src]="mainImagePreview()" alt="Main product image" class="preview-image" />
+              <button type="button" class="remove-image-btn" (click)="removeMainImage()">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+          } @else {
+            <div class="image-upload-box">
+              <input
+                type="file"
+                id="mainImage"
+                accept="image/*"
+                (change)="onMainImageSelected($event)"
+                class="file-input"
+              />
+              <label for="mainImage" class="file-label">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <span>{{ selectMainImage() }}</span>
+              </label>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Additional Images -->
+      <div class="form-group">
+        <label class="form-label">
+          <i class="fas fa-images"></i>
+          <span
+            >{{ additionalImagesLabel() }} ({{
+              isArabic() ? 'حد أقصى 9 صور' : 'Max 9 images'
+            }})</span
+          >
+        </label>
+        <div class="additional-images-section">
+          @if (additionalImagesPreview().length > 0) {
+            <div class="images-grid">
+              @for (preview of additionalImagesPreview(); track $index) {
+                <div class="image-preview-container">
+                  <img
+                    [src]="preview"
+                    [alt]="'Additional image ' + ($index + 1)"
+                    class="preview-image"
+                  />
+                  <button
+                    type="button"
+                    class="remove-image-btn"
+                    (click)="removeAdditionalImage($index)"
+                  >
+                    <i class="fas fa-times"></i>
+                  </button>
+                </div>
+              }
+            </div>
+          }
+          @if (additionalImagesPreview().length < 9) {
+            <div class="image-upload-box">
+              <input
+                type="file"
+                id="additionalImages"
+                accept="image/*"
+                multiple
+                (change)="onAdditionalImagesSelected($event)"
+                class="file-input"
+              />
+              <label for="additionalImages" class="file-label">
+                <i class="fas fa-plus"></i>
+                <span>{{ selectAdditionalImages() }}</span>
+              </label>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Starting Price -->
+      <div class="form-group">
+        <label class="form-label" for="startingPrice">
+          <i class="fas fa-dollar-sign"></i>
+          <span>{{ startingPriceLabel() }} <span class="required">*</span></span>
+        </label>
+        <input
+          type="number"
+          id="startingPrice"
+          formControlName="startingPrice"
+          class="form-input"
+          [class.invalid]="
+            sellForm.get('startingPrice')?.invalid && sellForm.get('startingPrice')?.touched
+          "
+          step="0.01"
+          min="0.01"
+          placeholder="{{ isArabic() ? 'أدخل السعر المبدئي' : 'Enter starting price' }}"
+        />
+        @if (
+          sellForm.get('startingPrice')?.hasError('required') &&
+          sellForm.get('startingPrice')?.touched
+        ) {
+          <span class="error-text">{{ required() }}</span>
+        }
+        @if (
+          sellForm.get('startingPrice')?.hasError('min') && sellForm.get('startingPrice')?.touched
+        ) {
+          <span class="error-text">{{ invalidPrice() }}</span>
+        }
+      </div>
+
+      <!-- Min Bid Increment -->
+      <div class="form-group">
+        <label class="form-label" for="minBidIncrement">
+          <i class="fas fa-arrow-up"></i>
+          <span
+            >{{ isArabic() ? 'الحد الأدنى للمزايدة' : 'Min Bid Increment' }}
+            <span class="required">*</span></span
+          >
+        </label>
+        <input
+          type="number"
+          id="minBidIncrement"
+          formControlName="minBidIncrement"
+          class="form-input"
+          [class.invalid]="
+            sellForm.get('minBidIncrement')?.invalid && sellForm.get('minBidIncrement')?.touched
+          "
+          step="0.01"
+          min="1"
+          placeholder="{{ isArabic() ? 'أدخل الحد الأدنى للمزايدة' : 'Enter min bid increment' }}"
+        />
+        @if (
+          sellForm.get('minBidIncrement')?.hasError('required') &&
+          sellForm.get('minBidIncrement')?.touched
+        ) {
+          <span class="error-text">{{ required() }}</span>
+        }
+        @if (
+          sellForm.get('minBidIncrement')?.hasError('min') &&
+          sellForm.get('minBidIncrement')?.touched
+        ) {
+          <span class="error-text">{{
+            isArabic()
+              ? 'يجب أن يكون الحد الأدنى للمزايدة على الأقل 1'
+              : 'Min bid increment must be at least 1'
+          }}</span>
+        }
+        <small class="form-hint">{{
+          isArabic()
+            ? 'أقل مبلغ يمكن للمزايدين زيادته في كل مزايدة'
+            : 'Minimum amount bidders can increase in each bid'
+        }}</small>
+      </div>
+
+      <!-- Auction Duration -->
+      <div class="form-group">
+        <label class="form-label" for="durationInSeconds">
+          <i class="fas fa-clock"></i>
+          <span
+            >{{ isArabic() ? 'مدة المزاد' : 'Auction Duration' }}
+            <span class="required">*</span></span
+          >
+        </label>
+        <select
+          id="durationInSeconds"
+          formControlName="durationInSeconds"
+          class="form-input"
+          [class.invalid]="
+            sellForm.get('durationInSeconds')?.invalid && sellForm.get('durationInSeconds')?.touched
+          "
+        >
+          @for (option of getDurationOptions(); track option.value) {
+            <option [value]="option.value">{{ isArabic() ? option.label : option.en }}</option>
+          }
+        </select>
+        @if (
+          sellForm.get('durationInSeconds')?.hasError('required') &&
+          sellForm.get('durationInSeconds')?.touched
+        ) {
+          <span class="error-text">{{ required() }}</span>
+        }
+        <small class="form-hint">{{
+          isArabic() ? 'المدة التي سيستمر فيها المزاد' : 'The duration the auction will last'
+        }}</small>
+      </div>
+
+      <!-- Form Actions -->
+      <div class="form-actions">
+        <button type="submit" class="btn-submit" appLoadingButton [loading]="isSubmitting()">
+          <i class="fas fa-paper-plane"></i>
+          <span>{{ submitButton() }}</span>
+        </button>
+        <button type="button" class="btn-cancel" (click)="router.navigate(['/home'])">
+          <i class="fas fa-times"></i>
+          <span>{{ cancelButton() }}</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

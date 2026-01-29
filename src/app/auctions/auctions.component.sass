@@ -1,0 +1,766 @@
+.auctions-page
+  min-height: 100vh
+  background-color: var(--bg-primary)
+  padding-top: clamp(5rem, 12vw, 6rem)
+  padding-bottom: clamp(3rem, 7vw, 4rem)
+
+  .container
+    max-width: 1400px
+    margin: 0 auto
+    padding: 0 clamp(1rem, 3vw, 2rem)
+
+// Page Header
+.page-header
+  margin-bottom: clamp(2rem, 5vw, 3rem)
+  text-align: center
+
+.page-title
+  color: var(--gold-primary)
+  font-size: clamp(2rem, 5vw, 3rem)
+  font-weight: 700
+  margin: 0
+  letter-spacing: -0.5px
+
+// Search and Category Bar
+.search-category-bar
+  display: flex
+  gap: clamp(1rem, 2.5vw, 1.5rem)
+  margin-bottom: clamp(2rem, 5vw, 3rem)
+  flex-wrap: wrap
+
+  @media (max-width: 768px)
+    flex-direction: column
+
+.search-box
+  flex: 1
+  min-width: 200px
+  position: relative
+  display: flex
+  align-items: center
+
+  i
+    position: absolute
+    left: clamp(1rem, 2.5vw, 1.5rem)
+    color: var(--text-tertiary)
+    font-size: clamp(1rem, 2.5vw, 1.15rem)
+    z-index: 1
+
+  .search-input
+    width: 100%
+    padding: clamp(0.875rem, 2vw, 1rem) clamp(1rem, 2.5vw, 1.5rem) clamp(0.875rem, 2vw, 1rem) clamp(2.75rem, 7vw, 3.5rem)
+    border: 2px solid var(--border-primary)
+    border-radius: clamp(8px, 2vw, 12px)
+    background-color: var(--bg-secondary)
+    color: var(--text-primary)
+    font-size: clamp(0.95rem, 2.3vw, 1.1rem)
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1)
+
+    &::placeholder
+      color: var(--text-tertiary)
+
+    &:focus
+      outline: none
+      border-color: var(--gold-primary)
+      box-shadow: 0 0 0 3px var(--gold-hover)
+
+.category-dropdown
+  position: relative
+  min-width: clamp(180px, 45vw, 220px)
+
+  .category-select
+    width: 100%
+    padding: clamp(0.875rem, 2vw, 1rem) clamp(2.5rem, 6vw, 3rem) clamp(0.875rem, 2vw, 1rem) clamp(1rem, 2.5vw, 1.5rem)
+    border: 2px solid var(--border-primary)
+    border-radius: clamp(8px, 2vw, 12px)
+    background-color: var(--bg-secondary)
+    color: var(--text-primary)
+    font-size: clamp(0.95rem, 2.3vw, 1.1rem)
+    cursor: pointer
+    appearance: none
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1)
+
+    &:focus
+      outline: none
+      border-color: var(--gold-primary)
+      box-shadow: 0 0 0 3px var(--gold-hover)
+
+    option
+      background-color: var(--bg-secondary)
+      color: var(--text-primary)
+
+  i
+    position: absolute
+    right: clamp(1rem, 2.5vw, 1.5rem)
+    top: 50%
+    transform: translateY(-50%)
+    color: var(--text-tertiary)
+    pointer-events: none
+    font-size: clamp(0.875rem, 2vw, 1rem)
+
+.sellers-button
+  display: flex
+  align-items: center
+  gap: clamp(0.5rem, 1.2vw, 0.75rem)
+  padding: clamp(0.875rem, 2vw, 1rem) clamp(1.5rem, 4vw, 2rem)
+  border: 2px solid var(--gold-primary)
+  border-radius: clamp(8px, 2vw, 12px)
+  background-color: var(--bg-secondary)
+  color: var(--gold-primary)
+  font-size: clamp(0.95rem, 2.3vw, 1.1rem)
+  font-weight: 600
+  cursor: pointer
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1)
+  white-space: nowrap
+
+  i
+    font-size: clamp(1rem, 2.5vw, 1.15rem)
+
+  &:hover
+    background-color: var(--gold-primary)
+    color: var(--text-quaternary)
+    transform: translateY(-2px)
+    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3)
+
+  &:active
+    transform: translateY(0)
+
+.filters-toggle
+  display: none
+  align-items: center
+  gap: clamp(0.5rem, 1.2vw, 0.75rem)
+  padding: clamp(0.875rem, 2vw, 1rem) clamp(1.5rem, 4vw, 2rem)
+  border: 2px solid var(--gold-primary)
+  border-radius: clamp(8px, 2vw, 12px)
+  background-color: var(--bg-secondary)
+  color: var(--gold-primary)
+  font-size: clamp(0.95rem, 2.3vw, 1.1rem)
+  font-weight: 600
+  cursor: pointer
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1)
+
+  i
+    font-size: clamp(1rem, 2.5vw, 1.15rem)
+
+  &:hover
+    background-color: var(--gold-primary)
+    color: var(--text-quaternary)
+
+  @media (max-width: 1024px)
+    display: flex
+
+// Main Content
+.main-content
+  display: flex
+  gap: clamp(2rem, 5vw, 3rem)
+  align-items: flex-start
+
+// Filters Sidebar
+.filters-sidebar
+  width: 260px
+  background-color: var(--bg-secondary)
+  border: 2px solid var(--border-primary)
+  border-radius: 16px
+  padding: 1.5rem
+  position: sticky
+  top: 100px
+  max-height: calc(100vh - 120px)
+  overflow-y: auto
+  box-shadow: 0 4px 16px var(--shadow-color)
+
+  @media (max-width: 1024px)
+    position: fixed
+    top: 0
+    right: 0
+    height: 100vh
+    width: 320px
+    max-width: 85vw
+    z-index: 1000
+    transform: translateX(100%)
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)
+    overflow-y: auto
+    box-shadow: -4px 0 24px var(--shadow-color)
+    border-radius: 0
+    padding: 1.5rem
+    max-height: 100vh
+    top: 0
+
+    &.open
+      transform: translateX(0)
+
+  .sidebar-header
+    display: flex
+    justify-content: space-between
+    align-items: center
+    margin-bottom: 1.5rem
+    padding-bottom: 1rem
+    border-bottom: 2px solid var(--border-primary)
+
+    h2
+      color: var(--gold-primary)
+      font-size: 1.25rem
+      font-weight: 700
+      margin: 0
+      letter-spacing: -0.3px
+
+    .close-filters
+      display: none
+      align-items: center
+      justify-content: center
+      width: 36px
+      height: 36px
+      border: 2px solid var(--border-primary)
+      border-radius: 50%
+      background-color: transparent
+      color: var(--text-primary)
+      cursor: pointer
+      transition: all 0.3s ease
+
+      i
+        font-size: 1rem
+
+      &:hover
+        border-color: var(--gold-primary)
+        color: var(--gold-primary)
+        background-color: var(--gold-hover)
+
+      @media (max-width: 1024px)
+        display: flex
+
+  .filters-content
+    display: flex
+    flex-direction: column
+    gap: 1.5rem
+
+.filter-section
+  display: flex
+  flex-direction: column
+  gap: 0.75rem
+
+.filter-label
+  color: var(--text-primary)
+  font-size: 0.95rem
+  font-weight: 600
+  margin-bottom: 0.25rem
+
+.price-range-inputs
+  display: flex
+  align-items: center
+  gap: 0.75rem
+
+  .price-input
+    flex: 1
+    padding: 0.75rem 1rem
+    border: 2px solid var(--border-primary)
+    border-radius: 8px
+    background-color: var(--bg-primary)
+    color: var(--text-primary)
+    font-size: 0.95rem
+    transition: all 0.3s ease
+    width: 100%
+    box-sizing: border-box
+
+    &:focus
+      outline: none
+      border-color: var(--gold-primary)
+      box-shadow: 0 0 0 3px var(--gold-hover)
+
+    &::placeholder
+      color: var(--text-tertiary)
+
+  .price-separator
+    color: var(--text-tertiary)
+    font-size: 1rem
+    font-weight: 500
+
+.sort-select
+  width: 100%
+  padding: 0.75rem 1rem
+  border: 2px solid var(--border-primary)
+  border-radius: 8px
+  background-color: var(--bg-primary)
+  color: var(--text-primary)
+  font-size: 0.95rem
+  cursor: pointer
+  transition: all 0.3s ease
+  appearance: none
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23d4af37' d='M6 9L1 4h10z'/%3E%3C/svg%3E")
+  background-repeat: no-repeat
+  background-position: right 0.75rem center
+  padding-right: 2.5rem
+
+  &:focus
+    outline: none
+    border-color: var(--gold-primary)
+    box-shadow: 0 0 0 3px var(--gold-hover)
+
+  option
+    background-color: var(--bg-primary)
+    color: var(--text-primary)
+    padding: 0.5rem
+
+.filter-actions
+  margin-top: 0.5rem
+  padding-top: 1rem
+  border-top: 2px solid var(--border-primary)
+
+.clear-filters-btn
+  width: 100%
+  padding: 0.75rem 1rem
+  border: 2px solid var(--border-primary)
+  border-radius: 8px
+  background-color: transparent
+  color: var(--text-primary)
+  font-size: 0.95rem
+  font-weight: 600
+  cursor: pointer
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1)
+
+  &:hover
+    border-color: var(--gold-primary)
+    color: var(--gold-primary)
+    background-color: var(--gold-hover)
+
+  &:active
+    transform: scale(0.98)
+
+// Products Section
+.products-section
+  flex: 1
+  min-width: 0
+
+.products-grid
+  display: grid
+  grid-template-columns: repeat(auto-fill, minmax(clamp(280px, 70vw, 320px), 1fr))
+  gap: clamp(1.5rem, 4vw, 2rem)
+
+  @media (max-width: 768px)
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr))
+    gap: clamp(1rem, 2.5vw, 1.5rem)
+
+.product-card
+  background-color: var(--bg-secondary)
+  border: 2px solid var(--border-primary)
+  border-radius: clamp(12px, 3vw, 16px)
+  overflow: hidden
+  cursor: pointer
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1)
+  display: flex
+  flex-direction: column
+
+  &:hover
+    border-color: var(--gold-primary)
+    transform: translateY(-4px)
+    box-shadow: 0 8px 24px var(--shadow-color)
+
+    .product-overlay
+      opacity: 1
+
+.product-image
+  position: relative
+  width: 100%
+  aspect-ratio: 4 / 3
+  overflow: hidden
+  background-color: var(--bg-primary)
+
+  img
+    width: 100%
+    height: 100%
+    object-fit: cover
+    transition: transform 0.5s ease
+
+  .product-overlay
+    position: absolute
+    top: 0
+    left: 0
+    width: 100%
+    height: 100%
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent)
+    display: flex
+    align-items: flex-end
+    justify-content: center
+    padding: clamp(1rem, 2.5vw, 1.5rem)
+    opacity: 0
+    transition: opacity 0.3s ease
+
+  &:hover img
+    transform: scale(1.05)
+
+.view-details-btn
+  padding: clamp(0.625rem, 1.5vw, 0.75rem) clamp(1.25rem, 3vw, 1.5rem)
+  border: 2px solid var(--gold-primary)
+  border-radius: clamp(6px, 1.5vw, 8px)
+  background-color: var(--gold-primary)
+  color: var(--text-quaternary)
+  font-size: clamp(0.875rem, 2vw, 1rem)
+  font-weight: 600
+  cursor: pointer
+  transition: all 0.3s ease
+
+  &:hover
+    background-color: var(--gold-secondary)
+    border-color: var(--gold-secondary)
+
+.product-info
+  padding: clamp(1rem, 2.5vw, 1.5rem)
+  display: flex
+  flex-direction: column
+  gap: clamp(0.75rem, 2vw, 1rem)
+
+.seller-info
+  display: flex
+  align-items: center
+  gap: clamp(0.75rem, 2vw, 1rem)
+
+  .seller-avatar
+    width: clamp(32px, 8vw, 40px)
+    height: clamp(32px, 8vw, 40px)
+    border-radius: 50%
+    object-fit: cover
+    border: 2px solid var(--border-primary)
+    flex-shrink: 0
+
+  .seller-avatar-placeholder
+    width: clamp(32px, 8vw, 40px)
+    height: clamp(32px, 8vw, 40px)
+    border-radius: 50%
+    background-color: var(--bg-primary)
+    border: 2px solid var(--border-primary)
+    display: flex
+    align-items: center
+    justify-content: center
+    color: var(--text-tertiary)
+    font-size: clamp(0.875rem, 2vw, 1rem)
+    flex-shrink: 0
+
+  .seller-details
+    display: flex
+    flex-direction: column
+    gap: clamp(0.25rem, 0.6vw, 0.5rem)
+    flex: 1
+    min-width: 0
+
+  .seller-name
+    color: var(--text-primary)
+    font-size: clamp(0.9rem, 2.2vw, 1rem)
+    font-weight: 500
+    white-space: nowrap
+    overflow: hidden
+    text-overflow: ellipsis
+
+  .seller-likes
+    display: flex
+    align-items: center
+    gap: clamp(0.25rem, 0.6vw, 0.5rem)
+    color: #e74c3c
+    font-size: clamp(0.75rem, 1.8vw, 0.875rem)
+    font-weight: 600
+
+    i
+      font-size: clamp(0.7rem, 1.7vw, 0.8rem)
+      color: #e74c3c
+
+.price-info
+  display: flex
+  flex-direction: column
+  gap: clamp(0.25rem, 0.6vw, 0.5rem)
+
+  .price-label
+    color: var(--text-tertiary)
+    font-size: clamp(0.8rem, 2vw, 0.9rem)
+
+  .price-value
+    color: var(--gold-primary)
+    font-size: clamp(1.1rem, 2.8vw, 1.3rem)
+    font-weight: 700
+
+.category-badge
+  display: inline-block
+  padding: clamp(0.375rem, 1vw, 0.5rem) clamp(0.75rem, 2vw, 1rem)
+  background-color: var(--gold-hover)
+  color: var(--gold-primary)
+
+.timer-info
+  display: flex
+  align-items: center
+  gap: clamp(0.5rem, 1.2vw, 0.75rem)
+  padding: clamp(0.5rem, 1.2vw, 0.75rem)
+  background-color: var(--bg-primary)
+  border: 2px solid var(--gold-primary)
+  border-radius: clamp(6px, 1.5vw, 8px)
+  margin-top: clamp(0.25rem, 0.6vw, 0.5rem)
+
+  i
+    color: var(--gold-primary)
+    font-size: clamp(0.9rem, 2.2vw, 1rem)
+
+  .timer-value
+    color: var(--gold-primary)
+    font-weight: 700
+    font-size: clamp(0.9rem, 2.2vw, 1rem)
+  border-radius: clamp(6px, 1.5vw, 8px)
+  font-size: clamp(0.75rem, 1.8vw, 0.875rem)
+  font-weight: 600
+  align-self: flex-start
+
+// Loading and Empty States
+.loading-state,
+.empty-state
+  display: flex
+  flex-direction: column
+  align-items: center
+  justify-content: center
+  padding: clamp(4rem, 10vw, 6rem) clamp(2rem, 5vw, 3rem)
+  text-align: center
+
+  i
+    font-size: clamp(3rem, 7.5vw, 4rem)
+    color: var(--text-tertiary)
+    margin-bottom: clamp(1rem, 2.5vw, 1.5rem)
+
+  p
+    color: var(--text-tertiary)
+    font-size: clamp(1rem, 2.5vw, 1.15rem)
+    margin: 0
+
+.spinner
+  width: clamp(48px, 12vw, 64px)
+  height: clamp(48px, 12vw, 64px)
+  border: 4px solid var(--border-primary)
+  border-top-color: var(--gold-primary)
+  border-radius: 50%
+  animation: spin 0.8s linear infinite
+  margin-bottom: clamp(1rem, 2.5vw, 1.5rem)
+
+@keyframes spin
+  to
+    transform: rotate(360deg)
+
+// Sellers Modal
+.sellers-modal-overlay
+  position: fixed
+  top: 0
+  left: 0
+  width: 100%
+  height: 100%
+  background-color: rgba(0, 0, 0, 0.7)
+  backdrop-filter: blur(4px)
+  z-index: 2000
+  display: flex
+  align-items: center
+  justify-content: center
+  padding: clamp(1rem, 2.5vw, 2rem)
+  animation: fadeIn 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards
+
+.sellers-modal-container
+  background-color: var(--bg-secondary)
+  border: 2px solid var(--gold-primary)
+  border-radius: clamp(12px, 3vw, 16px)
+  width: 100%
+  max-width: 800px
+  max-height: 90vh
+  display: flex
+  flex-direction: column
+  box-shadow: 0 8px 32px var(--shadow-color)
+  animation: slideUp 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards
+
+.sellers-modal-header
+  display: flex
+  align-items: center
+  justify-content: space-between
+  padding: clamp(1.25rem, 3vw, 1.5rem)
+  border-bottom: 2px solid var(--border-primary)
+
+  h2
+    color: var(--gold-primary, #d4af37)
+    font-size: clamp(1.25rem, 3vw, 1.5rem)
+    font-weight: 700
+    margin: 0
+    // Fallback for visibility
+    text-shadow: none
+
+  .close-btn
+    width: clamp(36px, 9vw, 40px)
+    height: clamp(36px, 9vw, 40px)
+    border: 2px solid var(--border-primary)
+    border-radius: 50%
+    background-color: transparent
+    color: var(--text-primary, #ffffff)
+    cursor: pointer
+    display: flex
+    align-items: center
+    justify-content: center
+    transition: all 0.3s ease
+
+    i
+      font-size: clamp(1rem, 2.5vw, 1.15rem)
+
+    &:hover
+      border-color: var(--gold-primary)
+      color: var(--gold-primary)
+      background-color: var(--gold-hover)
+
+.sellers-modal-content
+  padding: clamp(1rem, 2.5vw, 1.5rem)
+  overflow-y: auto
+  flex: 1
+
+.sellers-list
+  display: grid
+  grid-template-columns: repeat(auto-fill, minmax(clamp(280px, 70vw, 320px), 1fr))
+  gap: clamp(1rem, 2.5vw, 1.5rem)
+
+  @media (max-width: 768px)
+    grid-template-columns: 1fr
+
+.seller-card
+  background-color: var(--bg-primary)
+  border: 2px solid var(--border-primary)
+  border-radius: clamp(12px, 3vw, 16px)
+  padding: clamp(1rem, 2.5vw, 1.5rem)
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1)
+
+  &:hover
+    border-color: var(--gold-primary)
+    transform: translateY(-4px)
+    box-shadow: 0 8px 24px var(--shadow-color)
+
+.seller-card-header
+  display: flex
+  align-items: center
+  gap: clamp(0.75rem, 2vw, 1rem)
+  margin-bottom: clamp(1rem, 2.5vw, 1.5rem)
+  padding-bottom: clamp(1rem, 2.5vw, 1.5rem)
+  border-bottom: 2px solid var(--border-primary)
+
+.seller-like-btn
+  width: clamp(36px, 9vw, 44px)
+  height: clamp(36px, 9vw, 44px)
+  border-radius: 50%
+  background-color: var(--bg-secondary)
+  border: 2px solid var(--border-primary)
+  color: var(--text-tertiary)
+  font-size: clamp(1rem, 2.5vw, 1.25rem)
+  cursor: pointer
+  transition: all 0.3s ease
+  display: flex
+  align-items: center
+  justify-content: center
+  flex-shrink: 0
+
+  &:hover:not(:disabled)
+    border-color: var(--gold-primary)
+    color: var(--gold-primary)
+    transform: scale(1.1)
+
+  &.liked
+    background-color: rgba(239, 68, 68, 0.15)
+    border-color: #ef4444
+    color: #ef4444
+
+    &:hover:not(:disabled)
+      background-color: rgba(239, 68, 68, 0.25)
+
+  &.loading
+    cursor: not-allowed
+    opacity: 0.7
+
+  &:disabled
+    cursor: not-allowed
+    opacity: 0.6
+
+  i.far
+    font-weight: 400
+
+.seller-card-avatar
+  width: clamp(48px, 12vw, 56px)
+  height: clamp(48px, 12vw, 56px)
+  border-radius: 50%
+  object-fit: cover
+  border: 2px solid var(--gold-primary)
+
+.seller-card-avatar-placeholder
+  width: clamp(48px, 12vw, 56px)
+  height: clamp(48px, 12vw, 56px)
+  border-radius: 50%
+  background-color: var(--bg-secondary)
+  border: 2px solid var(--gold-primary)
+  display: flex
+  align-items: center
+  justify-content: center
+  color: var(--text-tertiary)
+  font-size: clamp(1.25rem, 3vw, 1.5rem)
+
+.seller-card-info
+  flex: 1
+  min-width: 0
+
+.seller-card-name
+  color: var(--text-primary)
+  font-size: clamp(1rem, 2.5vw, 1.15rem)
+  font-weight: 700
+  margin: 0 0 clamp(0.25rem, 0.6vw, 0.5rem) 0
+  white-space: nowrap
+  overflow: hidden
+  text-overflow: ellipsis
+
+.seller-card-nickname
+  color: var(--text-tertiary)
+  font-size: clamp(0.875rem, 2vw, 1rem)
+  margin: 0
+
+.seller-card-stats
+  display: flex
+  flex-direction: column
+  gap: clamp(0.75rem, 2vw, 1rem)
+
+.stat-item
+  display: flex
+  align-items: center
+  gap: clamp(0.5rem, 1.2vw, 0.75rem)
+  color: var(--text-primary)
+  font-size: clamp(0.9rem, 2.2vw, 1rem)
+
+  i
+    color: var(--gold-primary)
+    font-size: clamp(1rem, 2.5vw, 1.15rem)
+    width: clamp(20px, 5vw, 24px)
+
+  .stat-label
+    color: var(--text-tertiary)
+    font-weight: 500
+
+  .stat-value
+    color: var(--gold-primary)
+    font-weight: 700
+    margin-left: auto
+
+  .stat-subtext
+    color: var(--text-tertiary)
+    font-size: clamp(0.8rem, 2vw, 0.9rem)
+
+@keyframes fadeIn
+  from
+    opacity: 0
+  to
+    opacity: 1
+
+@keyframes slideUp
+  from
+    opacity: 0
+    transform: translateY(20px)
+  to
+    opacity: 1
+    transform: translateY(0)
+
+// Backdrop for mobile filters
+@media (max-width: 1024px)
+  .filters-sidebar.open::before
+    content: ''
+    position: fixed
+    top: 0
+    left: 0
+    width: 100vw
+    height: 100vh
+    background-color: var(--backdrop-color)
+    z-index: -1
+

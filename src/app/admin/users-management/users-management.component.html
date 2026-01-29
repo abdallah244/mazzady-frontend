@@ -1,0 +1,287 @@
+<div class="users-management">
+  <div class="users-header">
+    <button class="back-btn" (click)="goBack()">
+      <i class="fas fa-arrow-left"></i>
+      <span>{{ isArabic() ? 'العودة' : 'Back' }}</span>
+    </button>
+    <h1 class="users-title">
+      <i class="fas fa-users"></i>
+      <span>{{ isArabic() ? 'إدارة المستخدمين' : 'Users Management' }}</span>
+    </h1>
+  </div>
+
+  <div class="users-content">
+    @if (isLoading()) {
+      <div class="loading-container">
+        <i class="fas fa-spinner fa-spin"></i>
+        <p>{{ isArabic() ? 'جاري التحميل...' : 'Loading...' }}</p>
+      </div>
+    } @else if (error()) {
+      <div class="error-container">
+        <i class="fas fa-exclamation-circle"></i>
+        <p>{{ error() }}</p>
+      </div>
+    } @else {
+      <!-- Refresh Indicator -->
+      @if (isRefreshing()) {
+        <div class="refresh-indicator">
+          <i class="fas fa-sync-alt fa-spin"></i>
+          <span>{{ isArabic() ? 'جاري التحديث...' : 'Refreshing...' }}</span>
+        </div>
+      }
+
+      <!-- Statistics Cards -->
+      <div class="stats-cards" [class.refreshing]="isRefreshing()">
+        @if (isRefreshing() && stats() === null) {
+          <!-- Skeleton Loading for Stats -->
+          @for (i of [1, 2, 3, 4]; track i) {
+            <div class="stat-card skeleton">
+              <div class="stat-icon skeleton-shimmer"></div>
+              <div class="stat-info">
+                <div class="skeleton-shimmer skeleton-text-large"></div>
+                <div class="skeleton-shimmer skeleton-text-small"></div>
+              </div>
+            </div>
+          }
+        } @else {
+          <div class="stat-card">
+            <div class="stat-icon">
+              <i class="fas fa-users"></i>
+            </div>
+            <div class="stat-info">
+              <h3>{{ getTotalUsers() }}</h3>
+              <p>{{ isArabic() ? 'إجمالي المستخدمين' : 'Total Users' }}</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div
+              class="stat-icon"
+              style="background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%)"
+            >
+              <i class="fas fa-circle"></i>
+            </div>
+            <div class="stat-info">
+              <h3>{{ getOnlineUsers() }}</h3>
+              <p>{{ isArabic() ? 'المستخدمين الأونلاين' : 'Online Users' }}</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div
+              class="stat-icon"
+              style="background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%)"
+            >
+              <i class="fas fa-circle"></i>
+            </div>
+            <div class="stat-info">
+              <h3>{{ getOfflineUsers() }}</h3>
+              <p>{{ isArabic() ? 'المستخدمين الأوفلاين' : 'Offline Users' }}</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">
+              <i class="fas fa-chart-line"></i>
+            </div>
+            <div class="stat-info">
+              <h3>{{ getTotalVisits() }}</h3>
+              <p>{{ isArabic() ? 'إجمالي الزيارات' : 'Total Visits' }}</p>
+            </div>
+          </div>
+        }
+      </div>
+
+      <!-- Chart Section -->
+      <div class="chart-section" [class.refreshing]="isRefreshing()">
+        <div class="chart-header">
+          <h2 class="section-title">
+            <i class="fas fa-chart-area"></i>
+            <span>{{
+              isArabic() ? 'نسبة زيارة المستخدمين في الشهر' : 'User Visits This Month'
+            }}</span>
+          </h2>
+          <button
+            class="refresh-chart-btn"
+            (click)="refreshChart()"
+            [disabled]="isRefreshingChart()"
+            [attr.aria-label]="refreshChartText()"
+          >
+            <i class="fas fa-sync-alt" [class.fa-spin]="isRefreshingChart()"></i>
+            <span>{{ isRefreshingChart() ? refreshingChartText() : refreshChartText() }}</span>
+          </button>
+        </div>
+        @if (isRefreshing() && users().length === 0 && !isLoading()) {
+          <div class="chart-container skeleton">
+            <div class="skeleton-shimmer skeleton-chart"></div>
+          </div>
+        } @else {
+          <div class="chart-container">
+            <canvas #chartCanvas></canvas>
+          </div>
+        }
+      </div>
+
+      <!-- Users Table -->
+      <div class="users-table-section" [class.refreshing]="isRefreshing()">
+        <h2 class="section-title">
+          <i class="fas fa-table"></i>
+          <span>{{ isArabic() ? 'قائمة المستخدمين' : 'Users List' }}</span>
+        </h2>
+        <div class="table-container">
+          @if (isRefreshing() && users().length === 0 && !isLoading()) {
+            <!-- Skeleton Loading for Table -->
+            <div class="table-skeleton">
+              @for (i of [1, 2, 3, 4, 5]; track i) {
+                <div class="skeleton-row">
+                  <div class="skeleton-shimmer skeleton-cell"></div>
+                  <div class="skeleton-shimmer skeleton-cell"></div>
+                  <div class="skeleton-shimmer skeleton-cell"></div>
+                  <div class="skeleton-shimmer skeleton-cell"></div>
+                  <div class="skeleton-shimmer skeleton-cell"></div>
+                  <div class="skeleton-shimmer skeleton-cell"></div>
+                  <div class="skeleton-shimmer skeleton-cell"></div>
+                  <div class="skeleton-shimmer skeleton-cell"></div>
+                </div>
+              }
+            </div>
+          } @else {
+            <table class="users-table">
+              <thead>
+                <tr>
+                  <th>{{ isArabic() ? 'الصورة' : 'Photo' }}</th>
+                  <th>{{ isArabic() ? 'الاسم' : 'Name' }}</th>
+                  <th>{{ isArabic() ? 'البريد الإلكتروني' : 'Email' }}</th>
+                  <th>{{ isArabic() ? 'النيك نيم' : 'Nickname' }}</th>
+                  <th>{{ isArabic() ? 'رقم الهاتف' : 'Phone' }}</th>
+                  <th>{{ isArabic() ? 'الرقم القومي' : 'National ID' }}</th>
+                  <th>{{ isArabic() ? 'صور البطاقة' : 'ID Images' }}</th>
+                  <th>{{ isArabic() ? 'الزيارات هذا الشهر' : 'Visits This Month' }}</th>
+                  <th>{{ isArabic() ? 'الحالة' : 'Status' }}</th>
+                  <th>{{ isArabic() ? 'تاريخ التسجيل' : 'Registration Date' }}</th>
+                  <th>{{ isArabic() ? 'الإجراءات' : 'Actions' }}</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (user of users(); track user.id) {
+                  <tr>
+                    <td>
+                      <div class="user-avatar">
+                        @if (user.profileImageUrl) {
+                          <img
+                            [src]="user.profileImageUrl | assetUrl"
+                            [alt]="user.firstName + ' ' + user.lastName"
+                          />
+                        } @else {
+                          <div class="avatar-placeholder">
+                            <i class="fas fa-user"></i>
+                          </div>
+                        }
+                      </div>
+                    </td>
+                    <td>{{ user.firstName }} {{ user.middleName }} {{ user.lastName }}</td>
+                    <td>{{ user.email }}</td>
+                    <td>{{ user.nickname }}</td>
+                    <td>{{ user.phone }}</td>
+                    <td>{{ user.nationalId }}</td>
+                    <td>
+                      @if (hasNationalIdImages(user)) {
+                        <button
+                          class="view-id-btn"
+                          (click)="openNationalIdModal(user)"
+                          [attr.aria-label]="isArabic() ? 'عرض صور البطاقة' : 'View ID images'"
+                        >
+                          <i class="fas fa-eye"></i>
+                          <span>{{ isArabic() ? 'عرض' : 'View' }}</span>
+                        </button>
+                      } @else {
+                        <span class="no-id-images">{{ isArabic() ? 'لا يوجد' : 'N/A' }}</span>
+                      }
+                    </td>
+                    <td>
+                      <span class="visits-badge">{{ user.visitsThisMonth || 0 }}</span>
+                    </td>
+                    <td>
+                      <span
+                        class="status-badge"
+                        [class.online]="user.isOnline"
+                        [class.offline]="!user.isOnline"
+                      >
+                        <i class="fas fa-circle"></i>
+                        {{
+                          user.isOnline
+                            ? isArabic()
+                              ? 'أونلاين'
+                              : 'Online'
+                            : isArabic()
+                              ? 'أوفلاين'
+                              : 'Offline'
+                        }}
+                      </span>
+                    </td>
+                    <td>{{ formatDate(user.createdAt) }}</td>
+                    <td>
+                      <button
+                        class="delete-btn"
+                        (click)="deleteUser(user.id)"
+                        [attr.aria-label]="isArabic() ? 'حذف المستخدم' : 'Delete user'"
+                      >
+                        <i class="fas fa-trash"></i>
+                        <span>{{ isArabic() ? 'حذف' : 'Delete' }}</span>
+                      </button>
+                    </td>
+                  </tr>
+                } @empty {
+                  <tr>
+                    <td colspan="11" class="empty-state">
+                      {{ isArabic() ? 'لا يوجد مستخدمين' : 'No users found' }}
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          }
+        </div>
+      </div>
+    }
+  </div>
+</div>
+
+<!-- National ID Images Modal -->
+@if (showNationalIdModal() && selectedUser()) {
+  <div class="nid-modal-backdrop" (click)="closeNationalIdModal()">
+    <div class="nid-modal" (click)="$event.stopPropagation()">
+      <div class="nid-modal-header">
+        <div class="nid-modal-title">
+          <i class="fas fa-id-card"></i>
+          <span>{{ isArabic() ? 'صور البطاقة' : 'National ID Images' }}</span>
+        </div>
+        <button
+          type="button"
+          class="nid-modal-close"
+          (click)="closeNationalIdModal()"
+          [attr.aria-label]="isArabic() ? 'إغلاق' : 'Close'"
+        >
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="nid-modal-user">
+        <span class="nid-user-name"
+          >{{ selectedUser()!.firstName }} {{ selectedUser()!.lastName }}</span
+        >
+        <span class="nid-user-id">{{ selectedUser()!.nationalId }}</span>
+      </div>
+      <div class="nid-modal-body">
+        @if (getNationalIdImageUrl(selectedUser()!, 'front')) {
+          <div class="nid-modal-card">
+            <p class="nid-modal-label">{{ isArabic() ? 'الوجه' : 'Front' }}</p>
+            <img [src]="getNationalIdImageUrl(selectedUser()!, 'front')!" alt="National ID front" />
+          </div>
+        }
+        @if (getNationalIdImageUrl(selectedUser()!, 'back')) {
+          <div class="nid-modal-card">
+            <p class="nid-modal-label">{{ isArabic() ? 'الظهر' : 'Back' }}</p>
+            <img [src]="getNationalIdImageUrl(selectedUser()!, 'back')!" alt="National ID back" />
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+}

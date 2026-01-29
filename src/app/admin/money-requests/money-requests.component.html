@@ -1,0 +1,158 @@
+<div class="money-requests-page">
+  <div class="page-header">
+    <button class="back-btn" (click)="goBack()">
+      <i class="fas fa-arrow-left"></i>
+      <span>{{ back() }}</span>
+    </button>
+    <h1 class="page-title">
+      <i class="fas fa-money-bill-wave"></i>
+      <span>{{ title() }}</span>
+    </h1>
+  </div>
+
+  @if (isLoading()) {
+    <div class="loading-container">
+      <div class="spinner"></div>
+      <p>{{ isArabic() ? 'جاري التحميل...' : 'Loading...' }}</p>
+    </div>
+  } @else if (requests().length === 0) {
+    <div class="empty-state">
+      <i class="fas fa-inbox"></i>
+      <p>{{ noRequests() }}</p>
+    </div>
+  } @else {
+    <div class="requests-container">
+      @for (request of requests(); track request._id) {
+        <div
+          class="request-card"
+          [class.pending]="request.status === 'pending'"
+          [class.approved]="request.status === 'approved'"
+          [class.rejected]="request.status === 'rejected'"
+        >
+          <div class="request-header">
+            <div class="request-user-section">
+              @if (request.userId.profileImageUrl) {
+                <img
+                  [src]="request.userId.profileImageUrl | assetUrl"
+                  [alt]="request.userId.email"
+                  class="request-user-avatar"
+                />
+              } @else {
+                <div class="request-user-avatar-placeholder">
+                  <i class="fas fa-user"></i>
+                </div>
+              }
+              <div class="request-user-info">
+                <div class="user-name">
+                  @if (request.userId.firstName && request.userId.lastName) {
+                    {{ request.userId.firstName }} {{ request.userId.middleName || '' }}
+                    {{ request.userId.lastName }}
+                  } @else {
+                    {{ request.userId.email || 'N/A' }}
+                  }
+                </div>
+                <div class="user-email">
+                  <i class="fas fa-envelope"></i>
+                  <span>{{ request.userId.email || 'N/A' }}</span>
+                </div>
+              </div>
+            </div>
+            <div class="request-status">
+              <span class="status-badge" [class]="getStatusClass(request.status)">
+                {{ getStatusText(request.status) }}
+              </span>
+            </div>
+          </div>
+
+          <div class="request-info-section">
+            <div class="info-item">
+              <i class="fas fa-dollar-sign"></i>
+              <span
+                ><strong>{{ amount() }}:</strong> {{ request.amount | number: '1.2-2' }}</span
+              >
+            </div>
+            <div class="info-item">
+              <i class="fas fa-phone"></i>
+              <span
+                ><strong>{{ phoneNumber() }}:</strong> {{ request.phoneNumber }}</span
+              >
+            </div>
+            <div class="info-item">
+              <i class="fas fa-calendar"></i>
+              <span
+                ><strong>{{ createdAt() }}:</strong> {{ request.createdAt | date: 'short' }}</span
+              >
+            </div>
+          </div>
+
+          <div class="request-body">
+            <div class="deposit-image-section">
+              <label>{{ depositImage() }}</label>
+              <div class="image-container">
+                <img
+                  [src]="request.depositImageUrl | assetUrl"
+                  alt="Deposit Image"
+                  (click)="viewImage(request)"
+                />
+                <button class="view-image-btn" (click)="viewImage(request)">
+                  <i class="fas fa-expand"></i>
+                  <span>{{ isArabic() ? 'عرض الصورة' : 'View Image' }}</span>
+                </button>
+              </div>
+            </div>
+
+            @if (request.status === 'pending') {
+              <div class="review-section">
+                <label>{{ reviewNoteLabel() }} ({{ isArabic() ? 'اختياري' : 'Optional' }})</label>
+                <textarea
+                  [value]="reviewNoteInput"
+                  (input)="reviewNoteInput = $any($event.target).value"
+                  placeholder="{{ isArabic() ? 'ملاحظات المراجعة...' : 'Review notes...' }}"
+                ></textarea>
+              </div>
+
+              <div class="request-actions">
+                <button class="btn-approve" (click)="approveRequest(request)">
+                  <i class="fas fa-check"></i>
+                  <span>{{ approve() }}</span>
+                </button>
+                <button class="btn-reject" (click)="rejectRequest(request)">
+                  <i class="fas fa-times"></i>
+                  <span>{{ reject() }}</span>
+                </button>
+              </div>
+            }
+
+            @if (request.reviewNote) {
+              <div class="review-note">
+                <strong>{{ isArabic() ? 'ملاحظة المراجعة:' : 'Review Note:' }}</strong>
+                <p>{{ request.reviewNote }}</p>
+              </div>
+            }
+
+            @if (request.status === 'approved' || request.status === 'rejected') {
+              <div class="request-actions-delete">
+                <button class="btn-delete" (click)="deleteRequest(request)">
+                  <i class="fas fa-trash"></i>
+                  <span>{{ delete() }}</span>
+                </button>
+              </div>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Image Modal -->
+  @if (showImageModal() && selectedRequest()) {
+    <div class="image-modal-overlay" (click)="closeImageModal()">
+      <div class="image-modal-content" (click)="$event.stopPropagation()">
+        <button class="modal-close" (click)="closeImageModal()">
+          <i class="fas fa-times"></i>
+        </button>
+        <img [src]="selectedRequest()!.depositImageUrl | assetUrl" alt="Deposit Image" />
+      </div>
+    </div>
+  }
+</div>

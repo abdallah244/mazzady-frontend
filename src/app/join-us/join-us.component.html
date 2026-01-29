@@ -1,0 +1,221 @@
+<div class="join-us-page">
+  <div class="page-header">
+    <button class="back-btn" (click)="onCancel()">
+      <i class="fas fa-arrow-left"></i>
+      <span>{{ isArabic() ? 'العودة' : 'Back' }}</span>
+    </button>
+    <h1 class="page-title">
+      <i class="fas fa-user-plus"></i>
+      <span>{{ title() }}</span>
+    </h1>
+  </div>
+
+  <div class="join-us-container">
+    @if (showSuccessMessage()) {
+      <div class="success-message">
+        <i class="fas fa-check-circle"></i>
+        <span>{{ successMessage() }}</span>
+      </div>
+    }
+
+    @if (errorMessage()) {
+      <div class="error-message">
+        <i class="fas fa-exclamation-circle"></i>
+        <span>{{ errorMessage() }}</span>
+      </div>
+    }
+
+    <form [formGroup]="joinForm" (ngSubmit)="onSubmit()" class="join-form">
+      <!-- Category -->
+      <div class="form-group">
+        <label for="category">
+          {{ categoryLabel() }} <span class="required">*</span>
+        </label>
+        <select
+          id="category"
+          formControlName="category"
+          [class.invalid]="joinForm.get('category')?.invalid && joinForm.get('category')?.touched"
+        >
+          <option value="">{{ isArabic() ? 'اختر الوظيفة' : 'Select Job Position' }}</option>
+          @for (category of categories; track category.value) {
+            <option [value]="category.value">{{ getCategoryLabel(category.label) }}</option>
+          }
+        </select>
+        @if (joinForm.get('category')?.invalid && joinForm.get('category')?.touched) {
+          <span class="error-text">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span>{{ required() }}</span>
+          </span>
+        }
+      </div>
+
+      <!-- Backup Email -->
+      <div class="form-group">
+        <label for="backupEmail">
+          {{ backupEmailLabel() }} <span class="required">*</span>
+        </label>
+        <input
+          type="email"
+          id="backupEmail"
+          formControlName="backupEmail"
+          [placeholder]="isArabic() ? 'أدخل البريد الإلكتروني الاحتياطي' : 'Enter backup email'"
+          [class.invalid]="joinForm.get('backupEmail')?.invalid && joinForm.get('backupEmail')?.touched"
+        />
+        @if (joinForm.get('backupEmail')?.invalid && joinForm.get('backupEmail')?.touched) {
+          <span class="error-text">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span>{{ joinForm.get('backupEmail')?.errors?.['email'] ? invalidEmail() : required() }}</span>
+          </span>
+        }
+      </div>
+
+      <!-- WhatsApp Phone -->
+      <div class="form-group">
+        <label for="whatsappPhone">
+          {{ whatsappPhoneLabel() }} <span class="required">*</span>
+        </label>
+        <input
+          type="tel"
+          id="whatsappPhone"
+          formControlName="whatsappPhone"
+          [placeholder]="isArabic() ? 'أدخل رقم الواتساب' : 'Enter WhatsApp number'"
+          [class.invalid]="joinForm.get('whatsappPhone')?.invalid && joinForm.get('whatsappPhone')?.touched"
+        />
+        @if (joinForm.get('whatsappPhone')?.invalid && joinForm.get('whatsappPhone')?.touched) {
+          <span class="error-text">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span>{{ required() }}</span>
+          </span>
+        }
+      </div>
+
+      <!-- LinkedIn URL -->
+      <div class="form-group">
+        <label for="linkedinUrl">
+          {{ linkedinUrlLabel() }}
+        </label>
+        <input
+          type="url"
+          id="linkedinUrl"
+          formControlName="linkedinUrl"
+          [placeholder]="isArabic() ? 'https://linkedin.com/in/your-profile' : 'https://linkedin.com/in/your-profile'"
+          [class.invalid]="joinForm.get('linkedinUrl')?.invalid && joinForm.get('linkedinUrl')?.touched"
+        />
+        @if (joinForm.get('linkedinUrl')?.invalid && joinForm.get('linkedinUrl')?.touched) {
+          <span class="error-text">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span>{{ invalidUrl() }}</span>
+          </span>
+        }
+      </div>
+
+      <!-- GitHub URL -->
+      <div class="form-group">
+        <label for="githubUrl">
+          {{ githubUrlLabel() }}
+        </label>
+        <input
+          type="url"
+          id="githubUrl"
+          formControlName="githubUrl"
+          [placeholder]="isArabic() ? 'https://github.com/your-username' : 'https://github.com/your-username'"
+          [class.invalid]="joinForm.get('githubUrl')?.invalid && joinForm.get('githubUrl')?.touched"
+        />
+        @if (joinForm.get('githubUrl')?.invalid && joinForm.get('githubUrl')?.touched) {
+          <span class="error-text">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span>{{ invalidUrl() }}</span>
+          </span>
+        }
+      </div>
+
+      <!-- Facebook URL -->
+      <div class="form-group">
+        <label for="facebookUrl">
+          {{ facebookUrlLabel() }}
+        </label>
+        <input
+          type="url"
+          id="facebookUrl"
+          formControlName="facebookUrl"
+          [placeholder]="isArabic() ? 'https://facebook.com/your-profile' : 'https://facebook.com/your-profile'"
+          [class.invalid]="joinForm.get('facebookUrl')?.invalid && joinForm.get('facebookUrl')?.touched"
+        />
+        @if (joinForm.get('facebookUrl')?.invalid && joinForm.get('facebookUrl')?.touched) {
+          <span class="error-text">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span>{{ invalidUrl() }}</span>
+          </span>
+        }
+      </div>
+
+      <!-- CV File -->
+      <div class="form-group">
+        <label for="cvFile">
+          {{ cvFileLabel() }} <span class="required">*</span>
+        </label>
+        <div class="file-input-wrapper">
+          <input
+            type="file"
+            id="cvFile"
+            accept=".pdf"
+            (change)="onCvFileSelected($event)"
+            class="file-input"
+          />
+          <label for="cvFile" class="file-label">
+            <i class="fas fa-file-pdf"></i>
+            <span>{{ selectFile() }}</span>
+          </label>
+          @if (cvFileName()) {
+            <div class="file-selected">
+              <i class="fas fa-file-pdf"></i>
+              <span>{{ cvFileName() }}</span>
+              <button type="button" class="remove-file-btn" (click)="removeCvFile()">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+          }
+        </div>
+        @if (!selectedCvFile() && joinForm.get('cvFile')?.touched) {
+          <span class="error-text">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span>{{ required() }}</span>
+          </span>
+        }
+      </div>
+
+      <!-- Experience -->
+      <div class="form-group">
+        <label for="experience">
+          {{ experienceLabel() }} <span class="required">*</span>
+        </label>
+        <textarea
+          id="experience"
+          formControlName="experience"
+          rows="8"
+          [placeholder]="isArabic() ? 'اكتب خبراتك ومهاراتك بالتفصيل...' : 'Write your experience and skills in detail...'"
+          [class.invalid]="joinForm.get('experience')?.invalid && joinForm.get('experience')?.touched"
+        ></textarea>
+        @if (joinForm.get('experience')?.invalid && joinForm.get('experience')?.touched) {
+          <span class="error-text">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span>{{ joinForm.get('experience')?.errors?.['minlength'] ? minLength() : required() }}</span>
+          </span>
+        }
+      </div>
+
+      <!-- Form Actions -->
+      <div class="form-actions">
+        <button type="button" class="btn-cancel" (click)="onCancel()">
+          <i class="fas fa-times"></i>
+          <span>{{ cancelButton() }}</span>
+        </button>
+        <button type="submit" class="btn-submit" [disabled]="isSubmitting() || joinForm.invalid || !selectedCvFile()">
+          <i class="fas fa-paper-plane"></i>
+          <span>{{ isSubmitting() ? (isArabic() ? 'جاري الإرسال...' : 'Submitting...') : submitButton() }}</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+

@@ -1,0 +1,49 @@
+<div class="notifications-page" [attr.data-theme]="currentTheme()">
+  <div class="container">
+    <header class="page-header">
+      <h1>{{ isArabic() ? 'الإشعارات' : 'Notifications' }}</h1>
+      @if (unreadCount() > 0) {
+        <button class="mark-all-read-btn" (click)="markAllAsRead()">
+          <i class="fas fa-check-double"></i>
+          <span>{{ isArabic() ? 'تحديد الكل كمقروء' : 'Mark all as read' }}</span>
+        </button>
+      }
+    </header>
+
+    @if (isLoading()) {
+      <div class="loading">
+        <i class="fas fa-spinner fa-spin"></i>
+      </div>
+    } @else if (notifications().length === 0) {
+      <div class="empty-state">
+        <i class="fas fa-bell-slash"></i>
+        <p>{{ isArabic() ? 'لا توجد إشعارات' : 'No notifications' }}</p>
+      </div>
+    } @else {
+      <div class="notifications-list">
+        @for (notification of notifications(); track notification._id) {
+          <div class="notification-item" [class.unread]="!notification.isRead" (click)="navigateToNotification(notification)">
+            <div class="notification-icon">
+              <i class="fas" [ngClass]="getNotificationIcon(notification.type)"></i>
+            </div>
+            <div class="notification-content">
+              <h3>{{ notification.title }}</h3>
+              <p>{{ notification.message }}</p>
+              <span class="notification-time">{{ notification.createdAt | date:'short' }}</span>
+            </div>
+            <div class="notification-actions">
+              @if (!notification.isRead) {
+                <button class="mark-read-btn" (click)="markAsRead(notification); $event.stopPropagation()">
+                  <i class="fas fa-check"></i>
+                </button>
+              }
+              <button class="delete-btn" (click)="deleteNotification(notification._id); $event.stopPropagation()">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </div>
+</div>

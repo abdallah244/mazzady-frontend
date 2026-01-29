@@ -1,0 +1,204 @@
+.app-wrapper
+  position: relative
+  min-height: 100vh
+
+.progress-bar-container
+  position: fixed
+  top: 0
+  left: 0
+  width: 100%
+  height: 3px
+  background-color: rgba(26, 26, 26, 0.9)
+  z-index: 9999
+  overflow: hidden
+  backdrop-filter: blur(4px)
+
+html.light-theme .progress-bar-container
+  background-color: rgba(245, 245, 245, 0.9)
+
+.progress-bar
+  height: 100%
+  background: linear-gradient(90deg, var(--accent-primary) 0%, var(--accent-secondary) 50%, var(--accent-primary) 100%)
+  background-size: 200% 100%
+  position: relative
+  transition: width 0.12s cubic-bezier(0.4, 0, 0.2, 1)
+  animation: progressShine 2s ease-in-out infinite
+  box-shadow: 0 0 8px var(--shadow-color), 0 0 16px var(--shadow-light), 0 0 24px var(--shadow-color)
+
+.progress-bar-shine
+  position: absolute
+  top: 0
+  left: 0
+  width: 100%
+  height: 100%
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent)
+  animation: shine 1.2s ease-in-out infinite
+
+@keyframes progressShine
+  0%
+    background-position: 0% 0%
+  50%
+    background-position: 100% 0%
+  100%
+    background-position: 0% 0%
+
+@keyframes shine
+  0%
+    transform: translateX(-100%)
+  100%
+    transform: translateX(100%)
+
+.app-shell
+  min-height: 100vh
+  width: 100%
+  display: block
+  position: relative
+  overflow-x: hidden
+
+  // Route container with smooth transitions
+  .route-container
+    position: relative
+    width: 100%
+    min-height: 100%
+    display: block
+    overflow: hidden
+
+  &.with-navbar
+    padding-top: 80px
+
+    @media (max-width: 768px)
+      padding-top: 70px
+
+// Tablet Responsive (768px - 1024px)
+@media (max-width: 1024px) and (min-width: 769px)
+  .progress-bar-container
+    height: 3px
+
+// Mobile Responsive (480px - 768px)
+@media (max-width: 768px)
+  .progress-bar-container
+    height: 3px
+
+  .progress-bar
+    box-shadow: 0 0 6px var(--shadow-color), 0 0 12px var(--shadow-light)
+
+// Small Mobile (< 480px)
+@media (max-width: 480px)
+  .progress-bar-container
+    height: 2px
+
+  .progress-bar
+    box-shadow: 0 0 4px var(--shadow-color), 0 0 8px var(--shadow-light)
+
+// Admin Chatbot Icon Button - Fixed position, always visible on screen
+.app-shell .admin-chatbot-icon
+  position: fixed
+  bottom: clamp(1rem, 3vw, 1.5rem)
+  right: clamp(1rem, 3vw, 1.5rem)
+  width: clamp(48px, 12vw, 56px)
+  height: clamp(48px, 12vw, 56px)
+  border-radius: 50%
+  background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%)
+  border: 2px solid var(--accent-primary)
+  color: var(--button-primary-text)
+  font-size: clamp(1.1rem, 2.8vw, 1.3rem)
+  cursor: pointer
+  display: flex
+  align-items: center
+  justify-content: center
+  box-shadow: 0 4px 16px var(--shadow-color), 0 0 0 2px var(--accent-hover)
+  transition: all 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94)
+  z-index: 1000
+  &:hover
+    transform: scale(1.1)
+    box-shadow: 0 6px 20px var(--shadow-light), 0 0 0 4px var(--accent-active)
+
+  &:active
+    transform: scale(0.95)
+    transition: transform 0.1s ease
+
+  @media (max-width: 768px)
+    width: clamp(44px, 11vw, 52px)
+    height: clamp(44px, 11vw, 52px)
+    font-size: clamp(1rem, 2.5vw, 1.2rem)
+    bottom: clamp(0.75rem, 2vw, 1rem)
+    right: clamp(0.75rem, 2vw, 1rem)
+
+  @media (max-width: 480px)
+    width: clamp(40px, 10vw, 48px)
+    height: clamp(40px, 10vw, 48px)
+    font-size: clamp(0.9rem, 2.3vw, 1.1rem)
+    bottom: clamp(0.5rem, 1.5vw, 0.75rem)
+    right: clamp(0.5rem, 1.5vw, 0.75rem)
+
+html[dir="rtl"] .app-shell .admin-chatbot-icon
+  right: auto
+  left: clamp(1rem, 3vw, 1.5rem)
+
+  @media (max-width: 768px)
+    left: clamp(0.75rem, 2vw, 1rem)
+
+  @media (max-width: 480px)
+    left: clamp(0.5rem, 1.5vw, 0.75rem)
+
+// Fast & Smooth Page Flip Animation - Optimized for Performance
+@keyframes pageFlipLTR
+  0%
+    opacity: 0
+    transform: rotateY(-25deg) translateX(20px) scale(0.98)
+    transform-origin: left center
+  100%
+    opacity: 1
+    transform: rotateY(0deg) translateX(0) scale(1)
+    transform-origin: left center
+
+@keyframes pageFlipRTL
+  0%
+    opacity: 0
+    transform: rotateY(25deg) translateX(-20px) scale(0.98)
+    transform-origin: right center
+  100%
+    opacity: 1
+    transform: rotateY(0deg) translateX(0) scale(1)
+    transform-origin: right center
+
+@keyframes pageFlipFade
+  0%
+    opacity: 0
+    transform: scale(0.98)
+  100%
+    opacity: 1
+    transform: scale(1)
+
+// Page exit animation
+@keyframes pageExitFlip
+  0%
+    opacity: 1
+    transform: perspective(2000px) rotateY(0deg) scale(1)
+  100%
+    opacity: 0
+    transform: perspective(2000px) rotateY(15deg) scale(0.95)
+
+// Page enter animations (applied dynamically via JavaScript) - Fast & Smooth
+.page-enter
+  opacity: 0 !important
+  animation: pageFlipFade 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards !important
+
+.page-enter-ltr
+  opacity: 0 !important
+  transform: rotateY(-25deg) translateX(20px) scale(0.98) !important
+  transform-origin: left center !important
+  animation: pageFlipLTR 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards !important
+
+.page-enter-rtl
+  opacity: 0 !important
+  transform: rotateY(25deg) translateX(-20px) scale(0.98) !important
+  transform-origin: right center !important
+  animation: pageFlipRTL 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards !important
+
+// Note: Route transition styles are in global styles/route-transitions.sass
+// This ensures they work for all route components
+
+// Route container optimized for performance
+.route-container
+  contain: layout style paint

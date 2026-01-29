@@ -1,0 +1,78 @@
+<div class="verification-container">
+  <div class="verification-box">
+    <div class="verification-header">
+      <h1 class="verification-title">Account Verification</h1>
+      <p class="verification-subtitle">A verification code has been sent to your email</p>
+    </div>
+
+    @if (error()) {
+      <div class="error-alert">
+        <i class="fas fa-exclamation-triangle"></i>
+        {{ error() }}
+      </div>
+    }
+
+    @if (success()) {
+      <div class="success-content">
+        <div class="success-icon">
+          <i class="fas fa-check"></i>
+        </div>
+        <h2 class="success-title">Account Created Successfully!</h2>
+        <p class="success-message">Redirecting to home page...</p>
+      </div>
+    } @else {
+      <form [formGroup]="verificationForm" (ngSubmit)="verifyCode()" class="verification-form">
+        <div class="form-group">
+          <label for="code">Verification Code (6 digits)</label>
+          <input
+            type="text"
+            id="code"
+            formControlName="code"
+            placeholder="123456"
+            maxlength="6"
+            (keypress)="onKeyPress($event)"
+            [class.error]="
+              verificationForm.get('code')?.invalid && verificationForm.get('code')?.touched
+            "
+            autocomplete="off"
+          />
+          @if (verificationForm.get('code')?.invalid && verificationForm.get('code')?.touched) {
+            <div class="error-message">Please enter a valid 6-digit verification code</div>
+          }
+        </div>
+
+        @if (verificationCodeSent()) {
+          <div class="verification-info">
+            <i class="fas fa-info-circle"></i>
+            <span>Code sent to: {{ email() }}</span>
+          </div>
+        }
+
+        <div class="form-actions">
+          <button
+            type="submit"
+            class="verify-button"
+            [disabled]="verificationForm.invalid"
+            appLoadingButton
+            [loading]="isLoading()"
+          >
+            <span>Verify</span>
+          </button>
+        </div>
+
+        <div class="resend-code-container">
+          <button
+            type="button"
+            class="resend-code-btn"
+            (click)="resendCode()"
+            appLoadingButton
+            [loading]="isLoading()"
+          >
+            <i class="fas fa-redo"></i>
+            Resend Code
+          </button>
+        </div>
+      </form>
+    }
+  </div>
+</div>
