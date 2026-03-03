@@ -1,4 +1,13 @@
-import { Component, signal, inject, OnInit, OnDestroy, computed, effect, NgZone } from '@angular/core';
+import {
+  Component,
+  signal,
+  inject,
+  OnInit,
+  OnDestroy,
+  computed,
+  effect,
+  NgZone,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
@@ -295,10 +304,7 @@ export class LoginComponent implements OnInit, OnDestroy {
       google.accounts.id.prompt((notification: any) => {
         if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
           // Fallback: show the One Tap popup as a button click
-          google.accounts.id.renderButton(
-            document.createElement('div'),
-            { type: 'standard' },
-          );
+          google.accounts.id.renderButton(document.createElement('div'), { type: 'standard' });
           // Use popup mode instead
           google.accounts.oauth2.initCodeClient({
             client_id: environment.googleClientId,
