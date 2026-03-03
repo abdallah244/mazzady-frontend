@@ -59,10 +59,11 @@
 
     <!-- Preconnect for external resources -->
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin />
-    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
-    <!-- API preconnect will be handled dynamically based on environment -->
+    <!-- API preconnect for faster first request -->
+    <link rel="preconnect" href="https://mazzady-backend-6e70bb7a3b34.herokuapp.com" crossorigin />
     <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com" />
-    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net" />
+    <link rel="dns-prefetch" href="https://mazzady-backend-6e70bb7a3b34.herokuapp.com" />
+    <meta name="theme-color" content="#161616" />
 
     <!-- Font Awesome CSS (Async Loading) -->
     <link
@@ -80,14 +81,6 @@
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
       />
     </noscript>
-
-    <!-- Chart.js CDN (Deferred - only load when needed) -->
-    <script
-      src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"
-      crossorigin="anonymous"
-      referrerpolicy="no-referrer"
-      defer
-    ></script>
   </head>
 
   <body>

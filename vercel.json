@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "https://mazzady-backend--abdallahhfares.replit.app/$1"
+      "destination": "https://mazzady-backend-6e70bb7a3b34.herokuapp.com/$1"
     }
   ]
 }

@@ -6,8 +6,8 @@ import {
 import {
   provideRouter,
   withPreloading,
-  PreloadAllModules,
   withViewTransitions,
+  PreloadAllModules,
 } from '@angular/router';
 import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
 
@@ -18,7 +18,11 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideZoneChangeDetection({ eventCoalescing: true, runCoalescing: true }),
-    provideRouter(routes, withPreloading(PreloadAllModules), withViewTransitions()),
+    provideRouter(
+      routes,
+      withPreloading(PreloadAllModules),
+      withViewTransitions(),
+    ),
     provideHttpClient(withFetch(), withInterceptors([authInterceptor])),
   ],
 };

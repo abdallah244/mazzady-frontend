@@ -14,8 +14,8 @@
   }
 
   <main class="app-shell" [class.with-navbar]="showNavbarAndFooter()">
-    <div class="route-container" #routeContainer [class.route-animating]="isAnimating()" [attr.data-lang]="currentLanguage()">
-      <router-outlet #outlet="outlet"></router-outlet>
+    <div class="route-container" [class.route-animating]="isAnimating()" [attr.data-lang]="currentLanguage()">
+      <router-outlet></router-outlet>
     </div>
 
     <!-- Chatbot for Admin Routes - Show in all Admin pages (moves with page scroll) -->

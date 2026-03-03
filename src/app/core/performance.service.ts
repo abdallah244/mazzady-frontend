@@ -45,7 +45,8 @@ export class PerformanceService {
     this.enableResourceHints();
     this.optimizeScrollPerformance();
     this.setupMemoryManagement();
-    this.enablePassiveEventListeners();
+    // Note: passive event listeners are NOT monkey-patched globally
+    // Use { passive: true } explicitly where needed instead
   }
 
   /**
@@ -100,34 +101,6 @@ export class PerformanceService {
         }
       }, 30000);
     }
-  }
-
-  /**
-   * Enable passive event listeners globally
-   */
-  private enablePassiveEventListeners(): void {
-    const originalAddEventListener = EventTarget.prototype.addEventListener;
-    const passiveEvents = ['touchstart', 'touchmove', 'wheel', 'scroll'];
-
-    EventTarget.prototype.addEventListener = function (
-      type: string,
-      listener: EventListenerOrEventListenerObject,
-      options?: boolean | AddEventListenerOptions,
-    ) {
-      let modifiedOptions = options;
-
-      if (passiveEvents.includes(type)) {
-        if (typeof options === 'boolean') {
-          modifiedOptions = { capture: options, passive: true };
-        } else if (typeof options === 'object') {
-          modifiedOptions = { ...options, passive: options.passive !== false };
-        } else {
-          modifiedOptions = { passive: true };
-        }
-      }
-
-      return originalAddEventListener.call(this, type, listener, modifiedOptions);
-    };
   }
 
   /**
