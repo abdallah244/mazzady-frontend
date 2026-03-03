@@ -1,4 +1,4 @@
-import { Component, signal, inject, computed, OnInit, OnDestroy } from '@angular/core';
+import { Component, signal, inject, computed, OnInit, OnDestroy, NgZone } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   FormBuilder,
@@ -14,6 +14,8 @@ import { LoadingButtonDirective } from '../../shared/loading-button.directive';
 import { TranslationService } from '../../core/translation.service';
 import { environment } from '../../../environments/environment';
 
+declare const google: any;
+
 type PasswordStrength = 'weak' | 'medium' | 'strong';
 
 @Component({
@@ -27,6 +29,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
   private authService = inject(AuthService);
   private router = inject(Router);
   private translationService = inject(TranslationService);
+  private ngZone = inject(NgZone);
   private subscriptions = new Subscription();
   private codeExpiryTimer: any = null;
   private resendCooldownTimer: any = null;
@@ -662,7 +665,44 @@ export class RegisterComponent implements OnInit, OnDestroy {
   }
 
   registerWithGoogle() {
-    window.location.href = `${environment.apiUrl}/auth/google`;
+    this.error.set(null);
+    this.isLoading.set(true);
+    try {
+      google.accounts.id.initialize({
+        client_id: environment.googleClientId,
+        callback: (response: any) => {
+          this.ngZone.run(() => {
+            this.handleGoogleCredential(response.credential);
+          });
+        },
+      });
+      google.accounts.id.prompt((notification: any) => {
+        if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
+          this.ngZone.run(() => {
+            this.isLoading.set(false);
+          });
+        }
+      });
+    } catch {
+      this.isLoading.set(false);
+      this.error.set('Google Sign-In is not available. Please try again.');
+    }
+  }
+
+  private handleGoogleCredential(credential: string) {
+    this.isLoading.set(true);
+    this.error.set(null);
+    const sub = this.authService.googleSignIn(credential).subscribe({
+      next: () => {
+        this.isLoading.set(false);
+        this.router.navigate(['/home']);
+      },
+      error: (err) => {
+        this.isLoading.set(false);
+        this.error.set(err.error?.message || 'Google sign-in failed');
+      },
+    });
+    this.subscriptions.add(sub);
   }
 
   registerWithFacebook() {

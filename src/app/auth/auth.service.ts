@@ -180,6 +180,17 @@ export class AuthService {
     });
   }
 
+  googleSignIn(credential: string): Observable<LoginResponse> {
+    return this.http
+      .post<LoginResponse>(`${this.apiUrl}/google-signin`, { credential })
+      .pipe(
+        tap((response) => {
+          this.setTokens(response.accessToken, response.refreshToken, true);
+          this.setUser(response.user, true);
+        }),
+      );
+  }
+
   setUser(user: User, rememberMe: boolean = false): void {
     this.currentUser.set(user);
     if (rememberMe) {

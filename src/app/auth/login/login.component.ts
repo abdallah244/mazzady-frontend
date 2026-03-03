@@ -1,4 +1,4 @@
-import { Component, signal, inject, OnInit, OnDestroy, computed, effect } from '@angular/core';
+import { Component, signal, inject, OnInit, OnDestroy, computed, effect, NgZone } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
@@ -7,6 +7,8 @@ import { AuthService } from '../auth.service';
 import { LoadingButtonDirective } from '../../shared/loading-button.directive';
 import { TranslationService } from '../../core/translation.service';
 import { environment } from '../../../environments/environment';
+
+declare const google: any;
 
 @Component({
   selector: 'app-login',
@@ -19,6 +21,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   private authService = inject(AuthService);
   private router = inject(Router);
   private translationService = inject(TranslationService);
+  private ngZone = inject(NgZone);
   private subscriptions = new Subscription();
   private redirectInterval: any = null;
 
@@ -277,7 +280,59 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   loginWithGoogle() {
-    window.location.href = `${environment.apiUrl}/auth/google`;
+    this.error.set(null);
+    this.isLoading.set(true);
+    try {
+      google.accounts.id.initialize({
+        client_id: environment.googleClientId,
+        callback: (response: any) => {
+          this.ngZone.run(() => {
+            this.handleGoogleCredential(response.credential);
+          });
+        },
+      });
+      google.accounts.id.prompt((notification: any) => {
+        if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
+          // Fallback: show the One Tap popup as a button click
+          google.accounts.id.renderButton(
+            document.createElement('div'),
+            { type: 'standard' },
+          );
+          // Use popup mode instead
+          google.accounts.oauth2.initCodeClient({
+            client_id: environment.googleClientId,
+            scope: 'email profile',
+            callback: () => {},
+          });
+          // If One Tap is blocked, try the redirect flow
+          this.ngZone.run(() => {
+            this.isLoading.set(false);
+            // Fallback to popup
+            google.accounts.id.prompt();
+          });
+        }
+      });
+    } catch {
+      this.isLoading.set(false);
+      this.error.set('Google Sign-In is not available. Please try again.');
+    }
+  }
+
+  private handleGoogleCredential(credential: string) {
+    this.isLoading.set(true);
+    this.error.set(null);
+    const sub = this.authService.googleSignIn(credential).subscribe({
+      next: () => {
+        this.isLoading.set(false);
+        this.currentStep.set(5); // Success step
+        this.startRedirectCountdown();
+      },
+      error: (err) => {
+        this.isLoading.set(false);
+        this.error.set(err.error?.message || 'Google sign-in failed');
+      },
+    });
+    this.subscriptions.add(sub);
   }
 
   loginWithFacebook() {
