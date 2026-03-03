@@ -136,7 +136,7 @@
 
           <!-- Phone -->
           <div class="form-group">
-            <label for="phone"> {{ phone() }} <span class="required">*</span> </label>
+            <label for="phone"> {{ phone() }} @if (!isOAuthUser()) { <span class="required">*</span> } </label>
             <input
               type="tel"
               id="phone"
@@ -156,50 +156,190 @@
           <!-- Email (Read-only) -->
           <div class="form-group readonly">
             <label for="email">{{ email() }}</label>
-            <input type="email" id="email" [value]="profileData()?.email" readonly disabled />
-            <span class="readonly-note">
-              <i class="fas fa-info-circle"></i>
-              <span>{{ isArabic() ? '(غير قابل للتعديل)' : '(Cannot be changed)' }}</span>
-            </span>
+            <div class="field-with-action">
+              <input type="email" id="email" [value]="profileData()?.email" readonly disabled />
+              @if (canVerifyEmail()) {
+                <button
+                  type="button"
+                  class="btn-verify-email"
+                  (click)="sendVerificationEmail()"
+                  [disabled]="isSendingVerification()"
+                >
+                  <i class="fas" [class.fa-shield-alt]="!isSendingVerification()" [class.fa-spinner]="isSendingVerification()" [class.fa-spin]="isSendingVerification()"></i>
+                  <span>{{ isArabic() ? 'تحقق' : 'Verify' }}</span>
+                </button>
+              }
+              @if (profileData()?.emailVerified) {
+                <span class="verified-badge">
+                  <i class="fas fa-check-circle"></i>
+                  <span>{{ isArabic() ? 'موثق' : 'Verified' }}</span>
+                </span>
+              }
+            </div>
+            @if (showEmailVerification()) {
+              <div class="verification-code-section">
+                <p class="verification-hint">{{ isArabic() ? 'تم إرسال كود التحقق إلى بريدك الإلكتروني' : 'A verification code has been sent to your email' }}</p>
+                <div class="verification-input-row">
+                  <input
+                    type="text"
+                    class="verification-code-input"
+                    [placeholder]="isArabic() ? 'أدخل الكود' : 'Enter code'"
+                    (input)="onVerificationCodeInput($event)"
+                    maxlength="6"
+                  />
+                  <button
+                    type="button"
+                    class="btn-confirm-code"
+                    (click)="confirmEmailVerification()"
+                    [disabled]="isConfirmingVerification()"
+                  >
+                    <i class="fas" [class.fa-check]="!isConfirmingVerification()" [class.fa-spinner]="isConfirmingVerification()" [class.fa-spin]="isConfirmingVerification()"></i>
+                    <span>{{ isArabic() ? 'تأكيد' : 'Confirm' }}</span>
+                  </button>
+                </div>
+              </div>
+            }
+            @if (!isOAuthUser()) {
+              <span class="readonly-note">
+                <i class="fas fa-info-circle"></i>
+                <span>{{ isArabic() ? '(غير قابل للتعديل)' : '(Cannot be changed)' }}</span>
+              </span>
+            }
           </div>
 
-          <!-- Nickname (Read-only) -->
-          <div class="form-group readonly">
+          <!-- Nickname -->
+          <div class="form-group" [class.readonly]="!canEditNickname()">
             <label for="nickname">{{ nickname() }}</label>
-            <input type="text" id="nickname" [value]="profileData()?.nickname" readonly disabled />
-            <span class="readonly-note">
-              <i class="fas fa-info-circle"></i>
-              <span>{{ isArabic() ? '(غير قابل للتعديل)' : '(Cannot be changed)' }}</span>
-            </span>
+            @if (canEditNickname()) {
+              <input
+                type="text"
+                id="nickname"
+                formControlName="nickname"
+                [placeholder]="isArabic() ? 'أدخل اسم مستعار' : 'Enter nickname'"
+              />
+              <span class="one-time-note">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span>{{ isArabic() ? '(يمكن تعديله مرة واحدة فقط)' : '(Can only be changed once)' }}</span>
+              </span>
+            } @else {
+              <input type="text" id="nickname" [value]="profileData()?.nickname" readonly disabled />
+              <span class="readonly-note">
+                <i class="fas fa-info-circle"></i>
+                <span>{{ isArabic() ? '(غير قابل للتعديل)' : '(Cannot be changed)' }}</span>
+              </span>
+            }
           </div>
 
-          <!-- National ID (Read-only) -->
-          <div class="form-group readonly">
+          <!-- National ID -->
+          <div class="form-group" [class.readonly]="!isOAuthUser() || !!profileData()?.nationalId">
             <label for="nationalId">{{ nationalId() }}</label>
-            <div class="id-field-row">
+            @if (isOAuthUser() && !profileData()?.nationalId) {
               <input
                 type="text"
                 id="nationalId"
-                [value]="profileData()?.nationalId"
-                readonly
-                disabled
+                formControlName="nationalId"
+                [placeholder]="isArabic() ? 'أدخل الرقم القومي (14 رقم)' : 'Enter national ID (14 digits)'"
+                maxlength="14"
               />
-              @if (hasNationalIdImages()) {
-                <button
-                  type="button"
-                  class="id-eye-btn"
-                  (click)="openNationalIdModal()"
-                  aria-label="View national ID images"
-                >
-                  <i class="fas fa-eye"></i>
-                </button>
-              }
-            </div>
-            <span class="readonly-note">
-              <i class="fas fa-info-circle"></i>
-              <span>{{ isArabic() ? '(غير قابل للتعديل)' : '(Cannot be changed)' }}</span>
-            </span>
+            } @else {
+              <div class="id-field-row">
+                <input
+                  type="text"
+                  id="nationalId"
+                  [value]="profileData()?.nationalId"
+                  readonly
+                  disabled
+                />
+                @if (hasNationalIdImages()) {
+                  <button
+                    type="button"
+                    class="id-eye-btn"
+                    (click)="openNationalIdModal()"
+                    aria-label="View national ID images"
+                  >
+                    <i class="fas fa-eye"></i>
+                  </button>
+                }
+              </div>
+              <span class="readonly-note">
+                <i class="fas fa-info-circle"></i>
+                <span>{{ isArabic() ? '(غير قابل للتعديل)' : '(Cannot be changed)' }}</span>
+              </span>
+            }
           </div>
+
+          <!-- National ID Images Upload (OAuth users only, one-time) -->
+          @if (canUploadNationalId()) {
+            <div class="form-group national-id-upload-section">
+              <label>
+                <i class="fas fa-id-card"></i>
+                <span>{{ isArabic() ? 'صور البطاقة (للتحقق)' : 'ID Photos (for verification)' }}</span>
+              </label>
+              <span class="one-time-note">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span>{{ isArabic() ? '(يمكن رفعها مرة واحدة فقط)' : '(Can only be uploaded once)' }}</span>
+              </span>
+              <div class="id-upload-grid">
+                <!-- Front -->
+                <div class="id-upload-card">
+                  <p class="id-upload-label">{{ isArabic() ? 'الوجه' : 'Front' }}</p>
+                  @if (nationalIdFrontPreview()) {
+                    <img [src]="nationalIdFrontPreview()!" alt="National ID Front" class="id-upload-preview" />
+                  } @else {
+                    <div class="id-upload-placeholder">
+                      <i class="fas fa-image"></i>
+                    </div>
+                  }
+                  <label for="nationalIdFront" class="btn-choose-file">
+                    <i class="fas fa-upload"></i>
+                    <span>{{ isArabic() ? 'اختر صورة' : 'Choose image' }}</span>
+                  </label>
+                  <input
+                    type="file"
+                    id="nationalIdFront"
+                    accept="image/*"
+                    (change)="onNationalIdFileSelected($event, 'front')"
+                    style="display: none"
+                  />
+                </div>
+                <!-- Back -->
+                <div class="id-upload-card">
+                  <p class="id-upload-label">{{ isArabic() ? 'الظهر' : 'Back' }}</p>
+                  @if (nationalIdBackPreview()) {
+                    <img [src]="nationalIdBackPreview()!" alt="National ID Back" class="id-upload-preview" />
+                  } @else {
+                    <div class="id-upload-placeholder">
+                      <i class="fas fa-image"></i>
+                    </div>
+                  }
+                  <label for="nationalIdBack" class="btn-choose-file">
+                    <i class="fas fa-upload"></i>
+                    <span>{{ isArabic() ? 'اختر صورة' : 'Choose image' }}</span>
+                  </label>
+                  <input
+                    type="file"
+                    id="nationalIdBack"
+                    accept="image/*"
+                    (change)="onNationalIdFileSelected($event, 'back')"
+                    style="display: none"
+                  />
+                </div>
+              </div>
+              <button
+                type="button"
+                class="btn-upload-id"
+                (click)="uploadNationalIdImages()"
+                [disabled]="isUploadingNationalId() || !nationalIdFrontFile || !nationalIdBackFile"
+              >
+                @if (isUploadingNationalId()) {
+                  <i class="fas fa-spinner fa-spin"></i>
+                } @else {
+                  <i class="fas fa-cloud-upload-alt"></i>
+                }
+                <span>{{ isArabic() ? 'رفع الصور' : 'Upload Images' }}</span>
+              </button>
+            </div>
+          }
 
           <!-- Wallet Balance (Read-only) -->
           <div class="form-group readonly">

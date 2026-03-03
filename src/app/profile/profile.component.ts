@@ -27,6 +27,10 @@ interface ProfileData {
   nationalIdFrontUrl?: string;
   nationalIdBackUrl?: string;
   walletBalance: number;
+  authProvider?: string;
+  isProfileComplete?: boolean;
+  nicknameChanged?: boolean;
+  emailVerified?: boolean;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -57,11 +61,44 @@ export class ProfileComponent implements OnInit {
     return !!(data?.nationalIdFrontUrl || data?.nationalIdBackUrl);
   });
 
+  // OAuth-specific signals
+  isOAuthUser = computed(() => {
+    const data = this.profileData();
+    return data?.authProvider === 'google' || data?.authProvider === 'facebook';
+  });
+  canEditNickname = computed(() => {
+    const data = this.profileData();
+    return this.isOAuthUser() && !data?.nicknameChanged;
+  });
+  canVerifyEmail = computed(() => {
+    const data = this.profileData();
+    return this.isOAuthUser() && !data?.emailVerified;
+  });
+  canUploadNationalId = computed(() => {
+    return this.isOAuthUser() && !this.hasNationalIdImages();
+  });
+
+  // National ID upload
+  nationalIdFrontFile: File | null = null;
+  nationalIdBackFile: File | null = null;
+  nationalIdFrontPreview = signal<string | null>(null);
+  nationalIdBackPreview = signal<string | null>(null);
+  isUploadingNationalId = signal(false);
+
+  // Email verification
+  showEmailVerification = signal(false);
+  verificationCodeSent = signal(false);
+  emailVerificationCode = signal('');
+  isSendingVerification = signal(false);
+  isConfirmingVerification = signal(false);
+
   profileForm: FormGroup = this.fb.group({
     firstName: ['', [Validators.required, Validators.minLength(2)]],
     middleName: ['', [Validators.required, Validators.minLength(2)]],
     lastName: ['', [Validators.required, Validators.minLength(2)]],
-    phone: ['', [Validators.required, Validators.pattern(/^01[0-2,5]{1}[0-9]{8}$/)]],
+    phone: ['', [Validators.pattern(/^01[0-2,5]{1}[0-9]{8}$/)]],
+    nickname: [''],
+    nationalId: [''],
   });
 
   // Translations
@@ -103,11 +140,22 @@ export class ProfileComponent implements OnInit {
     this.http.get<ProfileData>(`${environment.apiUrl}/auth/profile/${userId}`).subscribe({
       next: (data) => {
         this.profileData.set(data);
+
+        // Adjust phone validation: required only for local users
+        const isOAuth = data.authProvider === 'google' || data.authProvider === 'facebook';
+        const phoneValidators = isOAuth
+          ? [Validators.pattern(/^01[0-2,5]{1}[0-9]{8}$/)]
+          : [Validators.required, Validators.pattern(/^01[0-2,5]{1}[0-9]{8}$/)];
+        this.profileForm.get('phone')?.setValidators(phoneValidators);
+        this.profileForm.get('phone')?.updateValueAndValidity();
+
         this.profileForm.patchValue({
           firstName: data.firstName,
           middleName: data.middleName,
           lastName: data.lastName,
           phone: data.phone,
+          nickname: data.nickname || '',
+          nationalId: data.nationalId || '',
         });
         if (data.profileImageUrl) {
           this.avatarPreview.set(`${environment.apiUrl}${data.profileImageUrl}`);
@@ -185,7 +233,22 @@ export class ProfileComponent implements OnInit {
       return;
     }
 
-    const formData = this.profileForm.value;
+    const formData: any = {
+      firstName: this.profileForm.value.firstName,
+      middleName: this.profileForm.value.middleName,
+      lastName: this.profileForm.value.lastName,
+      phone: this.profileForm.value.phone,
+    };
+
+    // Include nickname if OAuth user can edit it
+    if (this.canEditNickname() && this.profileForm.value.nickname) {
+      formData.nickname = this.profileForm.value.nickname;
+    }
+
+    // Include nationalId if OAuth user can add it
+    if (this.isOAuthUser() && this.profileForm.value.nationalId && !this.profileData()?.nationalId) {
+      formData.nationalId = this.profileForm.value.nationalId;
+    }
 
     // First, update profile data
     this.http.put(`${environment.apiUrl}/auth/profile/${currentUser.id}`, formData).subscribe({
@@ -243,6 +306,8 @@ export class ProfileComponent implements OnInit {
         middleName: profileData.middleName,
         lastName: profileData.lastName,
         phone: profileData.phone,
+        nickname: profileData.nickname || '',
+        nationalId: profileData.nationalId || '',
       });
       this.removeAvatar();
     }
@@ -292,5 +357,154 @@ export class ProfileComponent implements OnInit {
     const data = this.profileData();
     const path = side === 'front' ? data?.nationalIdFrontUrl : data?.nationalIdBackUrl;
     return path ? `${environment.apiUrl}${path}` : null;
+  }
+
+  // National ID upload methods
+  onNationalIdFileSelected(event: Event, side: 'front' | 'back') {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files[0]) {
+      const file = input.files[0];
+
+      if (!file.type.startsWith('image/')) {
+        this.errorMessage.set(
+          this.isArabic() ? 'يجب اختيار صورة فقط' : 'Please select an image file',
+        );
+        return;
+      }
+
+      if (file.size > 2 * 1024 * 1024) {
+        this.errorMessage.set(
+          this.isArabic()
+            ? 'حجم الصورة يجب أن يكون أقل من 2MB'
+            : 'Image size must be less than 2MB',
+        );
+        return;
+      }
+
+      if (side === 'front') {
+        this.nationalIdFrontFile = file;
+      } else {
+        this.nationalIdBackFile = file;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        if (side === 'front') {
+          this.nationalIdFrontPreview.set(e.target?.result as string);
+        } else {
+          this.nationalIdBackPreview.set(e.target?.result as string);
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  uploadNationalIdImages() {
+    if (!this.nationalIdFrontFile || !this.nationalIdBackFile) {
+      this.errorMessage.set(
+        this.isArabic()
+          ? 'يرجى اختيار صورة الوجه والظهر للبطاقة'
+          : 'Please select both front and back images',
+      );
+      return;
+    }
+
+    const currentUser = this.authService.getCurrentUser();
+    if (!currentUser) return;
+
+    this.isUploadingNationalId.set(true);
+    this.errorMessage.set(null);
+
+    const formData = new FormData();
+    formData.append('nationalIdFront', this.nationalIdFrontFile);
+    formData.append('nationalIdBack', this.nationalIdBackFile);
+
+    this.http
+      .post(`${environment.apiUrl}/auth/profile/${currentUser.id}/national-id`, formData)
+      .subscribe({
+        next: (result: any) => {
+          this.profileData.set({ ...this.profileData()!, ...result });
+          this.nationalIdFrontFile = null;
+          this.nationalIdBackFile = null;
+          this.nationalIdFrontPreview.set(null);
+          this.nationalIdBackPreview.set(null);
+          this.isUploadingNationalId.set(false);
+          this.showSuccessMessage.set(true);
+          setTimeout(() => this.showSuccessMessage.set(false), 3000);
+        },
+        error: (error) => {
+          this.isUploadingNationalId.set(false);
+          this.errorMessage.set(
+            error.error?.message ||
+              (this.isArabic() ? 'حدث خطأ أثناء رفع الصور' : 'Error uploading images'),
+          );
+        },
+      });
+  }
+
+  // Email verification methods
+  sendVerificationEmail() {
+    const currentUser = this.authService.getCurrentUser();
+    if (!currentUser) return;
+
+    this.isSendingVerification.set(true);
+    this.errorMessage.set(null);
+
+    this.http
+      .post(`${environment.apiUrl}/auth/profile/${currentUser.id}/verify-email`, {})
+      .subscribe({
+        next: () => {
+          this.verificationCodeSent.set(true);
+          this.showEmailVerification.set(true);
+          this.isSendingVerification.set(false);
+        },
+        error: (error) => {
+          this.isSendingVerification.set(false);
+          this.errorMessage.set(
+            error.error?.message ||
+              (this.isArabic() ? 'حدث خطأ أثناء إرسال كود التحقق' : 'Error sending verification code'),
+          );
+        },
+      });
+  }
+
+  confirmEmailVerification() {
+    const currentUser = this.authService.getCurrentUser();
+    if (!currentUser) return;
+
+    const code = this.emailVerificationCode();
+    if (!code || code.length < 4) {
+      this.errorMessage.set(
+        this.isArabic() ? 'يرجى إدخال كود التحقق' : 'Please enter the verification code',
+      );
+      return;
+    }
+
+    this.isConfirmingVerification.set(true);
+    this.errorMessage.set(null);
+
+    this.http
+      .post(`${environment.apiUrl}/auth/profile/${currentUser.id}/confirm-email`, { code })
+      .subscribe({
+        next: (result: any) => {
+          this.profileData.set({ ...this.profileData()!, emailVerified: true });
+          this.showEmailVerification.set(false);
+          this.isConfirmingVerification.set(false);
+          this.showSuccessMessage.set(true);
+          setTimeout(() => this.showSuccessMessage.set(false), 3000);
+        },
+        error: (error) => {
+          this.isConfirmingVerification.set(false);
+          this.errorMessage.set(
+            error.error?.message ||
+              (this.isArabic() ? 'كود التحقق غير صحيح' : 'Invalid verification code'),
+          );
+        },
+      });
+  }
+
+  onVerificationCodeInput(event: Event) {
+    const input = event.target as HTMLInputElement;
+    this.emailVerificationCode.set(input.value);
   }
 }
