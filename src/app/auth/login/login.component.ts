@@ -9,6 +9,7 @@ import { TranslationService } from '../../core/translation.service';
 import { environment } from '../../../environments/environment';
 
 declare const google: any;
+declare const FB: any;
 
 @Component({
   selector: 'app-login',
@@ -336,7 +337,49 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   loginWithFacebook() {
-    window.location.href = `${environment.apiUrl}/auth/facebook`;
+    this.error.set(null);
+    this.isLoading.set(true);
+    try {
+      FB.init({
+        appId: environment.facebookAppId,
+        cookie: true,
+        xfbml: false,
+        version: 'v18.0',
+      });
+      FB.login(
+        (response: any) => {
+          this.ngZone.run(() => {
+            if (response.authResponse) {
+              this.handleFacebookToken(response.authResponse.accessToken);
+            } else {
+              this.isLoading.set(false);
+              this.error.set('Facebook login was cancelled.');
+            }
+          });
+        },
+        { scope: 'email,public_profile' },
+      );
+    } catch {
+      this.isLoading.set(false);
+      this.error.set('Facebook Sign-In is not available. Please try again.');
+    }
+  }
+
+  private handleFacebookToken(accessToken: string) {
+    this.isLoading.set(true);
+    this.error.set(null);
+    const sub = this.authService.facebookSignIn(accessToken).subscribe({
+      next: () => {
+        this.isLoading.set(false);
+        this.currentStep.set(5);
+        this.startRedirectCountdown();
+      },
+      error: (err) => {
+        this.isLoading.set(false);
+        this.error.set(err.error?.message || 'Facebook sign-in failed');
+      },
+    });
+    this.subscriptions.add(sub);
   }
 
   onSubmit() {

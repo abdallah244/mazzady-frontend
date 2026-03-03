@@ -191,6 +191,17 @@ export class AuthService {
       );
   }
 
+  facebookSignIn(accessToken: string): Observable<LoginResponse> {
+    return this.http
+      .post<LoginResponse>(`${this.apiUrl}/facebook-signin`, { accessToken })
+      .pipe(
+        tap((response) => {
+          this.setTokens(response.accessToken, response.refreshToken, true);
+          this.setUser(response.user, true);
+        }),
+      );
+  }
+
   setUser(user: User, rememberMe: boolean = false): void {
     this.currentUser.set(user);
     if (rememberMe) {
