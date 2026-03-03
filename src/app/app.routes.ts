@@ -112,6 +112,15 @@ export const routes: Routes = [
     loadComponent: () => import('./auto-bid/auto-bid.component').then(m => m.AutoBidComponent),
   },
   {
+    path: 'privacy',
+    loadComponent: () => import('./legal/privacy/privacy.component').then(m => m.PrivacyComponent),
+  },
+  {
+    path: 'data-deletion',
+    loadComponent: () =>
+      import('./legal/data-deletion/data-deletion.component').then(m => m.DataDeletionComponent),
+  },
+  {
     path: '',
     redirectTo: '/login',
     pathMatch: 'full',
