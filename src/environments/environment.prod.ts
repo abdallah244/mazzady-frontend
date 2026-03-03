@@ -2,7 +2,7 @@
 export const environment = {
   production: true,
   apiUrl: 'https://mazzady-backend-6e70bb7a3b34.herokuapp.com',
-  frontendUrl: 'https://mazzady.vercel.app',
+  frontendUrl: 'https://mazzady.works',
 
   // Google OAuth
   googleClientId: '334129382230-ngs2m2rhh5t2ripbgejpu3lq6j5hjvdn.apps.googleusercontent.com',
