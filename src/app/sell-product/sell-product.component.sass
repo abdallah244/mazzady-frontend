@@ -13,6 +13,74 @@
   gap: clamp(1rem, 2.5vw, 2rem)
   margin-bottom: clamp(1.5rem, 3.5vw, 2rem)
 
+.loading-profile
+  display: flex
+  justify-content: center
+  padding: 3rem
+
+  .spinner
+    width: 40px
+    height: 40px
+    border: 4px solid var(--bg-tertiary)
+    border-top-color: var(--gold-primary)
+    border-radius: 50%
+    animation: spin 1s linear infinite
+
+@keyframes spin
+  to
+    transform: rotate(360deg)
+
+.profile-incomplete-banner
+  background: var(--bg-secondary)
+  border: 2px solid var(--gold-primary)
+  border-radius: clamp(12px, 3vw, 16px)
+  padding: clamp(2rem, 5vw, 3rem)
+  display: flex
+  align-items: flex-start
+  gap: clamp(1.5rem, 4vw, 2rem)
+  box-shadow: 0 4px 16px var(--shadow-color)
+  border-top: 4px solid var(--gold-primary)
+
+  .banner-icon
+    font-size: clamp(2.5rem, 7vw, 3.5rem)
+    color: var(--gold-primary)
+    flex-shrink: 0
+    padding-top: 0.25rem
+
+  .banner-content
+    flex: 1
+
+    h2
+      margin: 0 0 0.75rem
+      font-size: clamp(1.2rem, 3vw, 1.5rem)
+      font-weight: 700
+      color: var(--text-primary)
+
+    p
+      margin: 0 0 1.5rem
+      font-size: clamp(0.95rem, 2.4vw, 1.1rem)
+      color: var(--text-secondary)
+      line-height: 1.6
+
+  .btn-go-profile
+    display: inline-flex
+    align-items: center
+    gap: 0.5rem
+    padding: 0.75rem 1.5rem
+    border: none
+    border-radius: 8px
+    background: linear-gradient(135deg, var(--gold-primary) 0%, var(--gold-secondary) 100%)
+    color: #ffffff
+    font-size: clamp(0.95rem, 2.4vw, 1.05rem)
+    font-weight: 600
+    cursor: pointer
+    transition: all 0.2s ease
+    box-shadow: 0 2px 8px rgba(212, 175, 55, 0.3)
+
+    &:hover
+      box-shadow: 0 4px 12px rgba(212, 175, 55, 0.5)
+      transform: translateY(-1px)
+
   .page-title
     display: flex
     align-items: center

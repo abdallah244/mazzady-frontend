@@ -1,4 +1,4 @@
-import { Component, inject, computed, signal } from '@angular/core';
+import { Component, inject, computed, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
@@ -15,7 +15,7 @@ import { environment } from '../../environments/environment';
   templateUrl: './sell-product.component.html',
   styleUrl: './sell-product.component.sass',
 })
-export class SellProductComponent {
+export class SellProductComponent implements OnInit {
   private translationService = inject(TranslationService);
   router = inject(Router);
   private fb = inject(FormBuilder);
@@ -26,6 +26,41 @@ export class SellProductComponent {
   isSubmitting = signal(false);
   showSuccessMessage = signal(false);
   errorMessage = signal<string | null>(null);
+
+  // Profile completeness check for OAuth users
+  profileIncomplete = signal(false);
+  isCheckingProfile = signal(true);
+
+  ngOnInit() {
+    this.checkProfileCompleteness();
+  }
+
+  private checkProfileCompleteness() {
+    const currentUser = this.authService.getCurrentUser();
+    if (!currentUser) {
+      this.isCheckingProfile.set(false);
+      return;
+    }
+
+    this.http.get<any>(`${environment.apiUrl}/auth/profile/${currentUser.id}`).subscribe({
+      next: (profile) => {
+        if (
+          (profile.authProvider === 'google' || profile.authProvider === 'facebook') &&
+          !profile.isProfileComplete
+        ) {
+          this.profileIncomplete.set(true);
+        }
+        this.isCheckingProfile.set(false);
+      },
+      error: () => {
+        this.isCheckingProfile.set(false);
+      },
+    });
+  }
+
+  goToProfile() {
+    this.router.navigate(['/profile']);
+  }
 
   mainImage = signal<File | null>(null);
   mainImagePreview = signal<string | null>(null);

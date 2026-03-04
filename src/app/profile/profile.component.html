@@ -136,7 +136,12 @@
 
           <!-- Phone -->
           <div class="form-group">
-            <label for="phone"> {{ phone() }} @if (!isOAuthUser()) { <span class="required">*</span> } </label>
+            <label for="phone">
+              {{ phone() }}
+              @if (!isOAuthUser()) {
+                <span class="required">*</span>
+              }
+            </label>
             <input
               type="tel"
               id="phone"
@@ -165,7 +170,12 @@
                   (click)="sendVerificationEmail()"
                   [disabled]="isSendingVerification()"
                 >
-                  <i class="fas" [class.fa-shield-alt]="!isSendingVerification()" [class.fa-spinner]="isSendingVerification()" [class.fa-spin]="isSendingVerification()"></i>
+                  <i
+                    class="fas"
+                    [class.fa-shield-alt]="!isSendingVerification()"
+                    [class.fa-spinner]="isSendingVerification()"
+                    [class.fa-spin]="isSendingVerification()"
+                  ></i>
                   <span>{{ isArabic() ? 'تحقق' : 'Verify' }}</span>
                 </button>
               }
@@ -178,7 +188,13 @@
             </div>
             @if (showEmailVerification()) {
               <div class="verification-code-section">
-                <p class="verification-hint">{{ isArabic() ? 'تم إرسال كود التحقق إلى بريدك الإلكتروني' : 'A verification code has been sent to your email' }}</p>
+                <p class="verification-hint">
+                  {{
+                    isArabic()
+                      ? 'تم إرسال كود التحقق إلى بريدك الإلكتروني'
+                      : 'A verification code has been sent to your email'
+                  }}
+                </p>
                 <div class="verification-input-row">
                   <input
                     type="text"
@@ -193,7 +209,12 @@
                     (click)="confirmEmailVerification()"
                     [disabled]="isConfirmingVerification()"
                   >
-                    <i class="fas" [class.fa-check]="!isConfirmingVerification()" [class.fa-spinner]="isConfirmingVerification()" [class.fa-spin]="isConfirmingVerification()"></i>
+                    <i
+                      class="fas"
+                      [class.fa-check]="!isConfirmingVerification()"
+                      [class.fa-spinner]="isConfirmingVerification()"
+                      [class.fa-spin]="isConfirmingVerification()"
+                    ></i>
                     <span>{{ isArabic() ? 'تأكيد' : 'Confirm' }}</span>
                   </button>
                 </div>
@@ -219,10 +240,18 @@
               />
               <span class="one-time-note">
                 <i class="fas fa-exclamation-triangle"></i>
-                <span>{{ isArabic() ? '(يمكن تعديله مرة واحدة فقط)' : '(Can only be changed once)' }}</span>
+                <span>{{
+                  isArabic() ? '(يمكن تعديله مرة واحدة فقط)' : '(Can only be changed once)'
+                }}</span>
               </span>
             } @else {
-              <input type="text" id="nickname" [value]="profileData()?.nickname" readonly disabled />
+              <input
+                type="text"
+                id="nickname"
+                [value]="profileData()?.nickname"
+                readonly
+                disabled
+              />
               <span class="readonly-note">
                 <i class="fas fa-info-circle"></i>
                 <span>{{ isArabic() ? '(غير قابل للتعديل)' : '(Cannot be changed)' }}</span>
@@ -238,7 +267,9 @@
                 type="text"
                 id="nationalId"
                 formControlName="nationalId"
-                [placeholder]="isArabic() ? 'أدخل الرقم القومي (14 رقم)' : 'Enter national ID (14 digits)'"
+                [placeholder]="
+                  isArabic() ? 'أدخل الرقم القومي (14 رقم)' : 'Enter national ID (14 digits)'
+                "
                 maxlength="14"
               />
             } @else {
@@ -273,18 +304,26 @@
             <div class="form-group national-id-upload-section">
               <label>
                 <i class="fas fa-id-card"></i>
-                <span>{{ isArabic() ? 'صور البطاقة (للتحقق)' : 'ID Photos (for verification)' }}</span>
+                <span>{{
+                  isArabic() ? 'صور البطاقة (للتحقق)' : 'ID Photos (for verification)'
+                }}</span>
               </label>
               <span class="one-time-note">
                 <i class="fas fa-exclamation-triangle"></i>
-                <span>{{ isArabic() ? '(يمكن رفعها مرة واحدة فقط)' : '(Can only be uploaded once)' }}</span>
+                <span>{{
+                  isArabic() ? '(يمكن رفعها مرة واحدة فقط)' : '(Can only be uploaded once)'
+                }}</span>
               </span>
               <div class="id-upload-grid">
                 <!-- Front -->
                 <div class="id-upload-card">
                   <p class="id-upload-label">{{ isArabic() ? 'الوجه' : 'Front' }}</p>
                   @if (nationalIdFrontPreview()) {
-                    <img [src]="nationalIdFrontPreview()!" alt="National ID Front" class="id-upload-preview" />
+                    <img
+                      [src]="nationalIdFrontPreview()!"
+                      alt="National ID Front"
+                      class="id-upload-preview"
+                    />
                   } @else {
                     <div class="id-upload-placeholder">
                       <i class="fas fa-image"></i>
@@ -306,7 +345,11 @@
                 <div class="id-upload-card">
                   <p class="id-upload-label">{{ isArabic() ? 'الظهر' : 'Back' }}</p>
                   @if (nationalIdBackPreview()) {
-                    <img [src]="nationalIdBackPreview()!" alt="National ID Back" class="id-upload-preview" />
+                    <img
+                      [src]="nationalIdBackPreview()!"
+                      alt="National ID Back"
+                      class="id-upload-preview"
+                    />
                   } @else {
                     <div class="id-upload-placeholder">
                       <i class="fas fa-image"></i>

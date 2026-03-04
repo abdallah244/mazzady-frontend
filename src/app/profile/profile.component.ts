@@ -246,7 +246,11 @@ export class ProfileComponent implements OnInit {
     }
 
     // Include nationalId if OAuth user can add it
-    if (this.isOAuthUser() && this.profileForm.value.nationalId && !this.profileData()?.nationalId) {
+    if (
+      this.isOAuthUser() &&
+      this.profileForm.value.nationalId &&
+      !this.profileData()?.nationalId
+    ) {
       formData.nationalId = this.profileForm.value.nationalId;
     }
 
@@ -462,7 +466,9 @@ export class ProfileComponent implements OnInit {
           this.isSendingVerification.set(false);
           this.errorMessage.set(
             error.error?.message ||
-              (this.isArabic() ? 'حدث خطأ أثناء إرسال كود التحقق' : 'Error sending verification code'),
+              (this.isArabic()
+                ? 'حدث خطأ أثناء إرسال كود التحقق'
+                : 'Error sending verification code'),
           );
         },
       });

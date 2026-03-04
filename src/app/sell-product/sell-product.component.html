@@ -7,6 +7,26 @@
       </h1>
     </div>
 
+    @if (isCheckingProfile()) {
+      <div class="loading-profile">
+        <div class="spinner"></div>
+      </div>
+    } @else if (profileIncomplete()) {
+      <div class="profile-incomplete-banner">
+        <div class="banner-icon">
+          <i class="fas fa-exclamation-triangle"></i>
+        </div>
+        <div class="banner-content">
+          <h2>{{ isArabic() ? 'يجب إكمال بيانات التحقق أولاً' : 'Profile Verification Required' }}</h2>
+          <p>{{ isArabic() ? 'لإنشاء مزاد، يجب أولاً إكمال بيانات التحقق في صفحة الملف الشخصي: إضافة رقم الهاتف، الرقم القومي، وصور البطاقة.' : 'To create an auction, you must first complete your profile verification: add phone number, national ID, and ID photos.' }}</p>
+          <button type="button" class="btn-go-profile" (click)="goToProfile()">
+            <i class="fas fa-user-edit"></i>
+            <span>{{ isArabic() ? 'اذهب للملف الشخصي' : 'Go to Profile' }}</span>
+          </button>
+        </div>
+      </div>
+    } @else {
+
     @if (showSuccessMessage()) {
       <div class="success-message">
         <i class="fas fa-check-circle"></i>
@@ -265,5 +285,7 @@
         </button>
       </div>
     </form>
+
+    }
   </div>
 </div>
