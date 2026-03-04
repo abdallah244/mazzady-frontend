@@ -84,6 +84,8 @@ export class App implements OnInit, OnDestroy {
     });
   }
 
+  private isFirstNavigation = true;
+
   ngOnInit() {
     // Set initial route
     this.currentRoute.set(this.router.url);
@@ -91,15 +93,22 @@ export class App implements OnInit, OnDestroy {
     // Listen to router events for loading indicator
     const routerSub = this.router.events.subscribe((event) => {
       if (event instanceof NavigationStart) {
-        this.isAnimating.set(true);
+        // Skip animation on first navigation (initial page load) for better Speed Index
+        if (!this.isFirstNavigation) {
+          this.isAnimating.set(true);
+        }
         this.loadingService.simulateProgress();
       } else if (event instanceof NavigationEnd) {
         this.loadingService.stopLoading();
         this.currentRoute.set(event.urlAfterRedirects);
-        // Let View Transitions API handle the animation (configured via withViewTransitions())
-        setTimeout(() => {
+        if (this.isFirstNavigation) {
+          this.isFirstNavigation = false;
           this.isAnimating.set(false);
-        }, 300);
+        } else {
+          setTimeout(() => {
+            this.isAnimating.set(false);
+          }, 300);
+        }
       } else if (event instanceof NavigationCancel || event instanceof NavigationError) {
         this.loadingService.stopLoading();
         this.isAnimating.set(false);

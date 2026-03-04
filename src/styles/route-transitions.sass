@@ -1,54 +1,46 @@
 // Professional Route Transitions - Page Flip Animation
-// Applied globally to ensure all route components animate
+// Applied only during route navigation, NOT on initial page load (for Speed Index & CLS)
 
 // Fast & Smooth Page Flip Animations - Optimized for Performance
 @keyframes pageFlipLTR
   0%
     opacity: 0
-    transform: rotateY(-25deg) translateX(20px) scale(0.98)
-    transform-origin: left center
+    transform: translateX(20px)
   100%
     opacity: 1
-    transform: rotateY(0deg) translateX(0) scale(1)
-    transform-origin: left center
+    transform: translateX(0)
 
 @keyframes pageFlipRTL
   0%
     opacity: 0
-    transform: rotateY(25deg) translateX(-20px) scale(0.98)
-    transform-origin: right center
+    transform: translateX(-20px)
   100%
     opacity: 1
-    transform: rotateY(0deg) translateX(0) scale(1)
-    transform-origin: right center
+    transform: translateX(0)
 
 @keyframes pageFlipFade
   0%
     opacity: 0
-    transform: scale(0.98)
   100%
     opacity: 1
-    transform: scale(1)
 
-// Global styles for route components - Fast & Smooth
+// Base route content - NO animation on initial load (critical for Speed Index)
 .route-container router-outlet ~ *,
 .route-container > *:not(router-outlet)
   display: block !important
   width: 100%
   min-height: 100%
-  animation: pageFlipFade 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards
 
-// Language-specific animations when route is animating - Fast & Smooth
+// Apply animation ONLY during active route navigation
+.route-container.route-animating router-outlet ~ *,
+.route-container.route-animating > *:not(router-outlet)
+  animation: pageFlipFade 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards
+
+// Language-specific animations when route is animating
 .route-container.route-animating[data-lang="en"] router-outlet ~ *,
 .route-container.route-animating[data-lang="en"] > *:not(router-outlet)
-  opacity: 0 !important
-  transform: rotateY(-25deg) translateX(20px) scale(0.98) !important
-  transform-origin: left center !important
-  animation: pageFlipLTR 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards !important
+  animation: pageFlipLTR 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards !important
 
 .route-container.route-animating[data-lang="ar"] router-outlet ~ *,
 .route-container.route-animating[data-lang="ar"] > *:not(router-outlet)
-  opacity: 0 !important
-  transform: rotateY(25deg) translateX(-20px) scale(0.98) !important
-  transform-origin: right center !important
-  animation: pageFlipRTL 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards !important
+  animation: pageFlipRTL 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards !important

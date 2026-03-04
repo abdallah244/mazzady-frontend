@@ -218,18 +218,14 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   loadImages() {
-    // Load Hero images with short timeout for faster fallback
+    // Load Hero images with very short timeout for faster fallback
     const timeout = setTimeout(() => {
-      // Fallback if request takes too long
+      // Fast fallback if request takes too long
       if (this.heroLoading()) {
-        this.heroImages.set([
-          'https://via.placeholder.com/1920x1080/1a1a1a/d4af37?text=Mazzady+1',
-          'https://via.placeholder.com/1920x1080/1a1a1a/d4af37?text=Mazzady+2',
-          'https://via.placeholder.com/1920x1080/1a1a1a/d4af37?text=Mazzady+3',
-        ]);
+        this.heroImages.set([]);
         this.heroLoading.set(false);
       }
-    }, 800);
+    }, 200);
 
     this.http
       .get<{ success: boolean; images: any[] }>(`${environment.apiUrl}/home/images/hero`)
@@ -249,12 +245,8 @@ export class HomeComponent implements OnInit, OnDestroy {
               document.head.appendChild(link);
             }
           } else {
-            // Fallback to placeholder images if no images found
-            this.heroImages.set([
-              'https://via.placeholder.com/1920x1080/1a1a1a/d4af37?text=Mazzady+1',
-              'https://via.placeholder.com/1920x1080/1a1a1a/d4af37?text=Mazzady+2',
-              'https://via.placeholder.com/1920x1080/1a1a1a/d4af37?text=Mazzady+3',
-            ]);
+            // No images from API - show gradient hero
+            this.heroImages.set([]);
           }
           this.heroLoading.set(false);
         },

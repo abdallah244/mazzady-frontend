@@ -4,14 +4,17 @@ import { adminGuard } from './admin/admin.guard';
 export const routes: Routes = [
   {
     path: 'home',
+    title: 'Mazzady - Online Auction Platform',
     loadComponent: () => import('./home/home.component').then((m) => m.HomeComponent),
   },
   {
     path: 'login',
+    title: 'Login - Mazzady',
     loadComponent: () => import('./auth/login/login.component').then((m) => m.LoginComponent),
   },
   {
     path: 'register',
+    title: 'Register - Mazzady',
     loadComponent: () =>
       import('./auth/register/register.component').then((m) => m.RegisterComponent),
   },
@@ -104,6 +107,7 @@ export const routes: Routes = [
   },
   {
     path: 'profile',
+    title: 'My Profile - Mazzady',
     loadComponent: () => import('./profile/profile.component').then((m) => m.ProfileComponent),
   },
   {
@@ -124,6 +128,7 @@ export const routes: Routes = [
   },
   {
     path: 'auctions',
+    title: 'Auctions - Mazzady',
     loadComponent: () => import('./auctions/auctions.component').then((m) => m.AuctionsComponent),
   },
   {
@@ -153,6 +158,7 @@ export const routes: Routes = [
   },
   {
     path: 'privacy',
+    title: 'Privacy Policy - Mazzady',
     loadComponent: () =>
       import('./legal/privacy/privacy.component').then((m) => m.PrivacyComponent),
   },

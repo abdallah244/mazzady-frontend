@@ -3,7 +3,11 @@
   <section class="hero-section">
     @if (heroLoading()) {
       <div class="hero-skeleton">
-        <div class="skeleton-hero-placeholder"></div>
+        <div class="hero-gradient-bg"></div>
+        <div class="hero-content">
+          <h1 class="hero-title">{{ heroTitle() }}</h1>
+          <p class="hero-subtitle">{{ heroSubtitle() }}</p>
+        </div>
       </div>
     } @else {
       <div class="hero-carousel">
@@ -13,7 +17,7 @@
             @if ($index === 0) {
               <img
                 [src]="image"
-                alt="Mazzady Hero Image"
+                alt="Mazzady - Online Auction Platform Hero"
                 class="hero-bg-img"
                 fetchpriority="high"
                 loading="eager"
@@ -24,7 +28,7 @@
             } @else {
               <img
                 [src]="image"
-                alt="Mazzady Hero Image"
+                alt="Mazzady Auction Hero Image {{ $index + 1 }}"
                 class="hero-bg-img"
                 loading="lazy"
                 decoding="async"
@@ -32,6 +36,16 @@
                 height="1080"
               />
             }
+            <div class="hero-overlay"></div>
+            <div class="hero-content">
+              <h1 class="hero-title">{{ heroTitle() }}</h1>
+              <p class="hero-subtitle">{{ heroSubtitle() }}</p>
+            </div>
+          </div>
+        }
+        @if (heroImages().length === 0) {
+          <div class="hero-slide active">
+            <div class="hero-gradient-bg"></div>
             <div class="hero-overlay"></div>
             <div class="hero-content">
               <h1 class="hero-title">{{ heroTitle() }}</h1>
@@ -137,7 +151,7 @@
               @if (howItWorksImages().length > 0) {
                 <img
                   [src]="howItWorksImages()[0]"
-                  alt="Step 1"
+                  alt="How to use Mazzady - Step 1: Browse and bid on auction items"
                   loading="lazy"
                   decoding="async"
                   width="600"
@@ -146,7 +160,7 @@
               } @else {
                 <img
                   src="https://via.placeholder.com/600x400/1a1a1a/d4af37?text=Step+1"
-                  alt="Step 1"
+                  alt="How to use Mazzady - Step 1: Browse and bid on auction items"
                   loading="lazy"
                   decoding="async"
                   width="600"
@@ -164,7 +178,7 @@
               @if (howItWorksImages().length > 1) {
                 <img
                   [src]="howItWorksImages()[1]"
-                  alt="Step 2"
+                  alt="How to use Mazzady - Step 2: Win and complete your purchase"
                   loading="lazy"
                   decoding="async"
                   width="600"
@@ -173,7 +187,7 @@
               } @else {
                 <img
                   src="https://via.placeholder.com/600x400/1a1a1a/d4af37?text=Step+2"
-                  alt="Step 2"
+                  alt="How to use Mazzady - Step 2: Win and complete your purchase"
                   loading="lazy"
                   decoding="async"
                   width="600"

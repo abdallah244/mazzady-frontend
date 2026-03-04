@@ -142,59 +142,38 @@ html[dir="rtl"] .app-shell .admin-chatbot-icon
     left: clamp(0.5rem, 1.5vw, 0.75rem)
 
 // Fast & Smooth Page Flip Animation - Optimized for Performance
+// Animations only applied during navigation, not initial load
 @keyframes pageFlipLTR
   0%
     opacity: 0
-    transform: rotateY(-25deg) translateX(20px) scale(0.98)
-    transform-origin: left center
+    transform: translateX(20px)
   100%
     opacity: 1
-    transform: rotateY(0deg) translateX(0) scale(1)
-    transform-origin: left center
+    transform: translateX(0)
 
 @keyframes pageFlipRTL
   0%
     opacity: 0
-    transform: rotateY(25deg) translateX(-20px) scale(0.98)
-    transform-origin: right center
+    transform: translateX(-20px)
   100%
     opacity: 1
-    transform: rotateY(0deg) translateX(0) scale(1)
-    transform-origin: right center
+    transform: translateX(0)
 
 @keyframes pageFlipFade
   0%
     opacity: 0
-    transform: scale(0.98)
   100%
     opacity: 1
-    transform: scale(1)
 
-// Page exit animation
-@keyframes pageExitFlip
-  0%
-    opacity: 1
-    transform: perspective(2000px) rotateY(0deg) scale(1)
-  100%
-    opacity: 0
-    transform: perspective(2000px) rotateY(15deg) scale(0.95)
-
-// Page enter animations (applied dynamically via JavaScript) - Fast & Smooth
+// Page enter animations (applied during navigation only)
 .page-enter
-  opacity: 0 !important
-  animation: pageFlipFade 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards !important
+  animation: pageFlipFade 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards !important
 
 .page-enter-ltr
-  opacity: 0 !important
-  transform: rotateY(-25deg) translateX(20px) scale(0.98) !important
-  transform-origin: left center !important
-  animation: pageFlipLTR 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards !important
+  animation: pageFlipLTR 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards !important
 
 .page-enter-rtl
-  opacity: 0 !important
-  transform: rotateY(25deg) translateX(-20px) scale(0.98) !important
-  transform-origin: right center !important
-  animation: pageFlipRTL 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards !important
+  animation: pageFlipRTL 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards !important
 
 // Note: Route transition styles are in global styles/route-transitions.sass
 // This ensures they work for all route components

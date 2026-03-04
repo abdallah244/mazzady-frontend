@@ -16,6 +16,7 @@ import { AuthService } from '../auth.service';
 import { LoadingButtonDirective } from '../../shared/loading-button.directive';
 import { TranslationService } from '../../core/translation.service';
 import { environment } from '../../../environments/environment';
+import { loadGoogleSdk, loadFacebookSdk } from '../../core/social-auth-loader';
 
 declare const google: any;
 declare const FB: any;
@@ -289,10 +290,11 @@ export class LoginComponent implements OnInit, OnDestroy {
     }
   }
 
-  loginWithGoogle() {
+  async loginWithGoogle() {
     this.error.set(null);
     this.isLoading.set(true);
     try {
+      await loadGoogleSdk();
       google.accounts.id.initialize({
         client_id: environment.googleClientId,
         callback: (response: any) => {
@@ -342,10 +344,11 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.subscriptions.add(sub);
   }
 
-  loginWithFacebook() {
+  async loginWithFacebook() {
     this.error.set(null);
     this.isLoading.set(true);
     try {
+      await loadFacebookSdk();
       FB.init({
         appId: environment.facebookAppId,
         cookie: true,

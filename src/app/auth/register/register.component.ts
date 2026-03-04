@@ -13,6 +13,7 @@ import { AuthService } from '../auth.service';
 import { LoadingButtonDirective } from '../../shared/loading-button.directive';
 import { TranslationService } from '../../core/translation.service';
 import { environment } from '../../../environments/environment';
+import { loadGoogleSdk, loadFacebookSdk } from '../../core/social-auth-loader';
 
 declare const google: any;
 declare const FB: any;
@@ -665,10 +666,11 @@ export class RegisterComponent implements OnInit, OnDestroy {
     this.router.navigate(['/login']);
   }
 
-  registerWithGoogle() {
+  async registerWithGoogle() {
     this.error.set(null);
     this.isLoading.set(true);
     try {
+      await loadGoogleSdk();
       google.accounts.id.initialize({
         client_id: environment.googleClientId,
         callback: (response: any) => {
@@ -706,10 +708,11 @@ export class RegisterComponent implements OnInit, OnDestroy {
     this.subscriptions.add(sub);
   }
 
-  registerWithFacebook() {
+  async registerWithFacebook() {
     this.error.set(null);
     this.isLoading.set(true);
     try {
+      await loadFacebookSdk();
       FB.init({
         appId: environment.facebookAppId,
         cookie: true,

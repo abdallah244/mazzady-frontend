@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" dir="ltr">
   <head>
     <meta charset="utf-8" />
     <title>Mazzady - E-commerce Platform</title>
@@ -8,7 +8,18 @@
       name="viewport"
       content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes"
     />
-    <meta name="description" content="Mazzady - Professional E-commerce Platform with Auctions" />
+    <meta name="description" content="Mazzady - Professional E-commerce Auction Platform. Buy and sell through live online auctions with secure bidding." />
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large" />
+    <link rel="canonical" href="https://mazzady.works/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Mazzady - E-commerce Auction Platform" />
+    <meta property="og:description" content="Buy and sell through live online auctions with secure bidding on Mazzady." />
+    <meta property="og:url" content="https://mazzady.works/" />
+    <meta property="og:site_name" content="Mazzady" />
+    <meta property="og:locale" content="en_US" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Mazzady - E-commerce Auction Platform" />
+    <meta name="twitter:description" content="Buy and sell through live online auctions with secure bidding on Mazzady." />
     <link rel="icon" type="image/x-icon" href="lo.png" />
 
     <!-- Critical CSS for faster FCP -->
@@ -26,6 +37,7 @@
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
         background: #161616;
         color: #fff;
+        overflow-x: hidden;
       }
       .app-loading {
         position: fixed;
@@ -55,6 +67,29 @@
           transform: rotate(360deg);
         }
       }
+      /* Reserve space for Font Awesome icons to prevent CLS */
+      .fas,.fab,.far,.fa-solid,.fa-regular,.fa-brands,.fa {
+        display: inline-block;
+        width: 1em;
+        height: 1em;
+        line-height: 1;
+        text-align: center;
+        vertical-align: -0.125em;
+      }
+      /* Enforce font-display: swap on Font Awesome */
+      @font-face {
+        font-family: 'Font Awesome 6 Free';
+        font-display: swap;
+      }
+      @font-face {
+        font-family: 'Font Awesome 6 Brands';
+        font-display: swap;
+      }
+      /* Prevent image CLS */
+      img {
+        max-width: 100%;
+        height: auto;
+      }
     </style>
 
     <!-- Preconnect for external resources -->
@@ -65,16 +100,20 @@
     <link rel="dns-prefetch" href="https://mazzady-backend-6e70bb7a3b34.herokuapp.com" />
     <meta name="theme-color" content="#161616" />
 
-    <!-- Google Identity Services -->
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <!-- Google & Facebook SDKs loaded on-demand in auth components for better performance -->
 
-    <!-- Facebook SDK -->
-    <script
-      async
-      defer
-      crossorigin="anonymous"
-      src="https://connect.facebook.net/en_US/sdk.js"
-    ></script>
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Mazzady",
+        "description": "Professional E-commerce Auction Platform with live bidding",
+        "url": "https://mazzady.works/",
+        "applicationCategory": "ShoppingApplication",
+        "operatingSystem": "Web"
+      }
+    </script>
 
     <!-- Font Awesome CSS (Async Loading) -->
     <link
