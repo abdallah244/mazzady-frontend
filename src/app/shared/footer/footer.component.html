@@ -4,7 +4,11 @@
     <div class="footer-section">
       <h3 class="footer-title">{{ about() }}</h3>
       <p class="footer-text">
-        {{ isArabic() ? 'Mazzady هي منصة المزادات الإلكترونية الرائدة التي تجمع بين البائعين والمشترين في مكان واحد.' : 'Mazzady is the leading online auction platform that brings together sellers and buyers in one place.' }}
+        {{
+          isArabic()
+            ? 'Mazzady هي منصة المزادات الإلكترونية الرائدة التي تجمع بين البائعين والمشترين في مكان واحد.'
+            : 'Mazzady is the leading online auction platform that brings together sellers and buyers in one place.'
+        }}
       </p>
     </div>
 
@@ -12,11 +16,21 @@
     <div class="footer-section">
       <h3 class="footer-title">{{ quickLinks() }}</h3>
       <ul class="footer-links">
-        <li><a routerLink="/home">{{ home() }}</a></li>
-        <li><a routerLink="/auctions">{{ auctions() }}</a></li>
-        <li><a routerLink="/join-us">{{ joinUs() }}</a></li>
-        <li><a routerLink="/customer-service">{{ customerService() }}</a></li>
-        <li><a routerLink="/sell-product">{{ sellProduct() }}</a></li>
+        <li>
+          <a routerLink="/home">{{ home() }}</a>
+        </li>
+        <li>
+          <a routerLink="/auctions">{{ auctions() }}</a>
+        </li>
+        <li>
+          <a routerLink="/join-us">{{ joinUs() }}</a>
+        </li>
+        <li>
+          <a routerLink="/customer-service">{{ customerService() }}</a>
+        </li>
+        <li>
+          <a routerLink="/sell-product">{{ sellProduct() }}</a>
+        </li>
       </ul>
     </div>
 
@@ -24,9 +38,19 @@
     <div class="footer-section">
       <h3 class="footer-title">{{ legal() }}</h3>
       <ul class="footer-links">
-        <li><a routerLink="/privacy" class="footer-link-btn">{{ privacyPolicy() }}</a></li>
-        <li><button type="button" class="footer-link-btn" (click)="onReturnPolicy()">{{ returnPolicy() }}</button></li>
-        <li><button type="button" class="footer-link-btn" (click)="onSitePolicy()">{{ sitePolicy() }}</button></li>
+        <li>
+          <a routerLink="/privacy" class="footer-link-btn">{{ privacyPolicy() }}</a>
+        </li>
+        <li>
+          <button type="button" class="footer-link-btn" (click)="onReturnPolicy()">
+            {{ returnPolicy() }}
+          </button>
+        </li>
+        <li>
+          <button type="button" class="footer-link-btn" (click)="onSitePolicy()">
+            {{ sitePolicy() }}
+          </button>
+        </li>
       </ul>
     </div>
 
@@ -46,16 +70,40 @@
       <div class="footer-social">
         <h4 class="footer-subtitle">{{ followUs() }}</h4>
         <div class="social-links">
-          <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="Facebook">
+          <a
+            href="https://facebook.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="social-link"
+            aria-label="Facebook"
+          >
             <i class="fab fa-facebook-f"></i>
           </a>
-          <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="Twitter">
+          <a
+            href="https://twitter.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="social-link"
+            aria-label="Twitter"
+          >
             <i class="fab fa-twitter"></i>
           </a>
-          <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="Instagram">
+          <a
+            href="https://instagram.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="social-link"
+            aria-label="Instagram"
+          >
             <i class="fab fa-instagram"></i>
           </a>
-          <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="LinkedIn">
+          <a
+            href="https://linkedin.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="social-link"
+            aria-label="LinkedIn"
+          >
             <i class="fab fa-linkedin-in"></i>
           </a>
         </div>
@@ -66,7 +114,10 @@
   <!-- Copyright -->
   <div class="footer-bottom">
     <p class="footer-copyright">
-      <button type="button" class="footer-copyright-btn" (click)="onCopyright()">{{ copyright() }}</button> - {{ allRightsReserved() }}
+      <button type="button" class="footer-copyright-btn" (click)="onCopyright()">
+        {{ copyright() }}
+      </button>
+      - {{ allRightsReserved() }}
     </p>
   </div>
 
@@ -79,7 +130,11 @@
             <i class="fas fa-shield-alt"></i>
             <span>{{ privacyPolicy() }}</span>
           </h2>
-          <button class="modal-close" (click)="closePrivacyPolicyModal()" [attr.aria-label]="close()">
+          <button
+            class="modal-close"
+            (click)="closePrivacyPolicyModal()"
+            [attr.aria-label]="close()"
+          >
             <i class="fas fa-times"></i>
           </button>
         </div>
@@ -99,7 +154,11 @@
             <i class="fas fa-undo"></i>
             <span>{{ returnPolicy() }}</span>
           </h2>
-          <button class="modal-close" (click)="closeReturnPolicyModal()" [attr.aria-label]="close()">
+          <button
+            class="modal-close"
+            (click)="closeReturnPolicyModal()"
+            [attr.aria-label]="close()"
+          >
             <i class="fas fa-times"></i>
           </button>
         </div>
@@ -150,4 +209,3 @@
     </div>
   }
 </footer>
-

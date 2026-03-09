@@ -3,11 +3,7 @@ import {
   provideBrowserGlobalErrorListeners,
   provideZoneChangeDetection,
 } from '@angular/core';
-import {
-  provideRouter,
-  withPreloading,
-  withViewTransitions,
-} from '@angular/router';
+import { provideRouter, withPreloading, withViewTransitions } from '@angular/router';
 import { NetworkIdlePreloadStrategy } from './core/network-idle-preload.strategy';
 import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
 

@@ -15,8 +15,9 @@ import { TranslationService } from '../../core/translation.service';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { AssetUrlPipe } from '../../shared/pipes/asset-url.pipe';
+import { Chart, registerables } from 'chart.js';
 
-declare var Chart: any;
+Chart.register(...registerables);
 
 export interface User {
   id: string;
@@ -51,7 +52,7 @@ export interface UsersStats {
 })
 export class UsersManagementComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('chartCanvas', { static: false }) chartCanvas!: ElementRef<HTMLCanvasElement>;
-  private chartInstance: any = null;
+  private chartInstance: Chart | null = null;
   private translationService = inject(TranslationService);
   private router = inject(Router);
   private http = inject(HttpClient);
@@ -161,8 +162,9 @@ export class UsersManagementComponent implements OnInit, AfterViewInit, OnDestro
     this.chartLabels = users.map((user) => user.nickname);
     this.chartData = users.map((user) => user.visitsThisMonth || 0);
 
-    if (this.chartCanvas && typeof Chart !== 'undefined') {
+    if (this.chartCanvas) {
       const ctx = this.chartCanvas.nativeElement.getContext('2d');
+      if (!ctx) return;
 
       if (this.chartInstance) {
         this.chartInstance.destroy();
