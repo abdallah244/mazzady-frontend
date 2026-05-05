@@ -113,7 +113,7 @@
               <div class="product-card" (click)="onProductClick(product)">
                 <!-- Product Image -->
                 <div class="product-image">
-                  <img [src]="getImageUrl(product)" [alt]="'Product ' + product._id" />
+                  <img [src]="product.mainImageUrl | assetUrl" [alt]="'Product ' + product._id" />
                   <div class="product-overlay">
                     <button class="view-details-btn">{{ viewDetails() }}</button>
                   </div>
