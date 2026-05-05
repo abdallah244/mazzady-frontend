@@ -342,7 +342,7 @@ export class AuctionsComponent implements OnInit, OnDestroy {
             startingPrice: p.startingPrice,
             currentBid: p.highestBid || null,
             category: p.category || 'other',
-            status: (p.status === 'active' ? 'approved' : 'rejected') as
+            status: p.status as
               | 'pending'
               | 'approved'
               | 'rejected'
