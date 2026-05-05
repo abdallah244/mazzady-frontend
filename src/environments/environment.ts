@@ -1,7 +1,7 @@
 // Development environment configuration
 export const environment = {
   production: false,
-  apiUrl: 'https://backend-qym2ohgng-abdallahs-projects-d8c16d27.vercel.app',
+  apiUrl: '/api',
   frontendUrl: 'http://localhost:4200',
 
   // Google OAuth

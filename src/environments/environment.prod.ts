@@ -1,7 +1,7 @@
 // Production environment configuration
 export const environment = {
   production: true,
-  apiUrl: 'https://backend-qym2ohgng-abdallahs-projects-d8c16d27.vercel.app',
+  apiUrl: '/api',
   frontendUrl: 'https://mazzady.works',
 
   // Google OAuth
