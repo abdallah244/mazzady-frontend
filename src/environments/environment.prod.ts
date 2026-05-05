@@ -1,7 +1,7 @@
 // Production environment configuration
 export const environment = {
   production: true,
-  apiUrl: 'https://backend-abdallahs-projects-d8c16d27.vercel.app',
+  apiUrl: 'https://backend-4xdmsbj3k-abdallahs-projects-d8c16d27.vercel.app',
   frontendUrl: 'https://mazzady.works',
 
   // Google OAuth
@@ -11,7 +11,7 @@ export const environment = {
   facebookAppId: '946975937863038',
 
   // WebSocket configuration
-  wsUrl: 'wss://backend-abdallahs-projects-d8c16d27.vercel.app',
+  wsUrl: 'wss://backend-4xdmsbj3k-abdallahs-projects-d8c16d27.vercel.app',
 
   // Feature flags
   enableDebugMode: false,
