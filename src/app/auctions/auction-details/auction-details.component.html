@@ -20,7 +20,7 @@
         <div class="images-section">
           <div class="main-image">
             <img
-              [src]="getImageUrl(activeImage() || auction()!.mainImageUrl)"
+              [src]="(activeImage() || auction()!.mainImageUrl) | assetUrl"
               [alt]="auction()!.productName"
             />
           </div>
@@ -31,7 +31,7 @@
               [class.active]="activeImage() === auction()!.mainImageUrl"
               (click)="setActiveImage(auction()!.mainImageUrl)"
             >
-              <img [src]="getImageUrl(auction()!.mainImageUrl)" [alt]="auction()!.productName" />
+              <img [src]="auction()!.mainImageUrl | assetUrl" [alt]="auction()!.productName" />
             </div>
 
             @if (auction()!.additionalImagesUrl && auction()!.additionalImagesUrl.length > 0) {
@@ -41,7 +41,7 @@
                   [class.active]="activeImage() === image"
                   (click)="setActiveImage(image)"
                 >
-                  <img [src]="getImageUrl(image)" [alt]="'Image ' + ($index + 2)" />
+                  <img [src]="image | assetUrl" [alt]="'Image ' + ($index + 2)" />
                 </div>
               }
             }
