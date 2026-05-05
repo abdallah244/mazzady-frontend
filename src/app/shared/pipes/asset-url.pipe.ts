@@ -13,13 +13,20 @@ export class AssetUrlPipe implements PipeTransform {
   transform(path: string | null | undefined): string | null {
     if (!path) return null;
 
-    // If it's already a full URL, return as is
-    if (path.startsWith('http://') || path.startsWith('https://')) {
-      return path;
+    let processedPath = path;
+
+    // Proactively fix legacy hardcoded localhost URLs if they exist in the DB
+    if (processedPath.includes('localhost:3000')) {
+      processedPath = processedPath.replace(/https?:\/\/localhost:3000/g, '');
+    }
+
+    // If it's already a full external URL, return as is
+    if (processedPath.startsWith('http://') || processedPath.startsWith('https://')) {
+      return processedPath;
     }
 
     // Ensure path starts with /
-    const normalizedPath = path.startsWith('/') ? path : `/${path}`;
+    const normalizedPath = processedPath.startsWith('/') ? processedPath : `/${processedPath}`;
     return `${environment.apiUrl}${normalizedPath}`;
   }
 }
