@@ -20,7 +20,7 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "https://backend-mzzady.vercel.app/:path*"
+      "destination": "https://mazzady-backend.onrender.com/:path*"
     },
     {
       "source": "/:path*",

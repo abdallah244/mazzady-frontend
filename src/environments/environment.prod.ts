@@ -11,7 +11,7 @@ export const environment = {
   facebookAppId: '946975937863038',
 
   // WebSocket configuration
-  wsUrl: 'wss://backend-mzzady.vercel.app',
+  wsUrl: 'wss://mazzady-backend.onrender.com',
 
   // Feature flags
   enableDebugMode: false,
