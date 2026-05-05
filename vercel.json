@@ -20,7 +20,7 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "https://backend-qym2ohgng-abdallahs-projects-d8c16d27.vercel.app/:path*"
+      "destination": "https://backend-mzzady.vercel.app/:path*"
     },
     {
       "source": "/:path*",
