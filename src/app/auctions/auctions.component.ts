@@ -380,20 +380,25 @@ export class AuctionsComponent implements OnInit, OnDestroy {
   }
 
   getImageUrl(product: AuctionProduct): string {
-    if (product.mainImageUrl) {
-      if (product.mainImageUrl.startsWith('http')) {
-        return product.mainImageUrl;
-      }
-      
-      // If it's a relative path starting with /uploads, just prepend API URL
-      if (product.mainImageUrl.startsWith('/uploads')) {
-        return `${environment.apiUrl}${product.mainImageUrl}`;
-      }
-      
-      // If it's just a filename, it's likely in /uploads/auctions
-      return `${environment.apiUrl}/uploads/auctions/${product.mainImageUrl}`;
+    const url = product.mainImageUrl;
+    if (!url) {
+      return 'https://via.placeholder.com/400x300/1a1a1a/d4af37?text=No+Image';
     }
-    return 'https://via.placeholder.com/400x300/1a1a1a/d4af37?text=No+Image';
+
+    if (url.startsWith('http')) {
+      return url;
+    }
+
+    // Ensure path starts with /
+    const normalizedPath = url.startsWith('/') ? url : `/${url}`;
+    
+    // If it's a direct path (like /images/xxx or /uploads/xxx), just prepend API URL
+    if (url.startsWith('/images') || url.startsWith('/uploads')) {
+      return `${environment.apiUrl}${normalizedPath}`;
+    }
+
+    // Fallback for legacy filenames (rare now as we use /images or /uploads paths)
+    return `${environment.apiUrl}/uploads/auctions${normalizedPath}`;
   }
 
   formatPrice(price: number): string {
