@@ -158,7 +158,7 @@ export class ProfileComponent implements OnInit {
           nationalId: data.nationalId || '',
         });
         if (data.profileImageUrl) {
-          this.avatarPreview.set(`${environment.apiUrl}${data.profileImageUrl}`);
+          this.avatarPreview.set(this.getAssetUrl(data.profileImageUrl));
         }
         this.isLoading.set(false);
       },
@@ -211,7 +211,7 @@ export class ProfileComponent implements OnInit {
     this.selectedAvatar = null;
     const profileData = this.profileData();
     if (profileData?.profileImageUrl) {
-      this.avatarPreview.set(`${environment.apiUrl}${profileData.profileImageUrl}`);
+      this.avatarPreview.set(this.getAssetUrl(profileData.profileImageUrl));
     } else {
       this.avatarPreview.set(null);
     }
@@ -360,7 +360,16 @@ export class ProfileComponent implements OnInit {
   getNationalIdImageUrl(side: 'front' | 'back'): string | null {
     const data = this.profileData();
     const path = side === 'front' ? data?.nationalIdFrontUrl : data?.nationalIdBackUrl;
-    return path ? `${environment.apiUrl}${path}` : null;
+    return path ? this.getAssetUrl(path) : null;
+  }
+
+  getAssetUrl(path: string | null | undefined): string | null {
+    if (!path) return null;
+    if (path.startsWith('http://') || path.startsWith('https://')) {
+      return path;
+    }
+    const normalizedPath = path.startsWith('/') ? path : `/${path}`;
+    return `${environment.apiUrl}${normalizedPath}`;
   }
 
   // National ID upload methods

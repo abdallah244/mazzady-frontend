@@ -17,6 +17,7 @@ import { SellerService } from '../../core/seller.service';
 import { LoadingButtonDirective } from '../../shared/loading-button.directive';
 import { environment } from '../../../environments/environment';
 import { AssetUrlPipe } from '../../shared/pipes/asset-url.pipe';
+import { SocketService } from '../../core/socket.service';
 
 interface AuctionDetails {
   _id: string;
@@ -75,6 +76,7 @@ export class AuctionDetailsComponent implements OnInit, OnDestroy {
   private authService = inject(AuthService);
   private cdr = inject(ChangeDetectorRef);
   private sellerService = inject(SellerService);
+  private socketService = inject(SocketService);
 
   isArabic = computed(() => this.translationService.isArabic());
   currentUser = computed(() => this.authService.currentUser());
@@ -95,6 +97,7 @@ export class AuctionDetailsComponent implements OnInit, OnDestroy {
     if (auctionId) {
       this.loadAuctionDetails(auctionId);
       this.loadBids(auctionId);
+      this.setupSocket(auctionId);
     }
 
     // Update timer every second
@@ -103,9 +106,45 @@ export class AuctionDetailsComponent implements OnInit, OnDestroy {
     }, 1000);
   }
 
+  setupSocket(auctionId: string) {
+    this.socketService.joinAuction(auctionId);
+    
+    this.socketService.onNewBid((data: any) => {
+      if (data.auctionId === auctionId) {
+        // Update auction signal with new highest bid and new end date (if extended)
+        this.auction.update(curr => {
+          if (!curr) return null;
+          return {
+            ...curr,
+            highestBid: data.amount,
+            endDate: data.endDate || curr.endDate
+          };
+        });
+        
+        // Reload bids list to show the new bid
+        this.loadBids(auctionId);
+        this.cdr.detectChanges();
+      }
+    });
+
+    this.socketService.onAuctionEnded((data: any) => {
+      if (data.auctionId === auctionId) {
+        this.auction.update(curr => {
+          if (!curr) return null;
+          return { ...curr, status: 'ended' };
+        });
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
   ngOnDestroy() {
     if (this.timerInterval) {
       clearInterval(this.timerInterval);
+    }
+    const auctionId = this.route.snapshot.paramMap.get('id');
+    if (auctionId) {
+      this.socketService.leaveAuction(auctionId);
     }
   }
 
@@ -287,10 +326,9 @@ export class AuctionDetailsComponent implements OnInit, OnDestroy {
       .subscribe({
         next: () => {
           this.bidAmount = '';
-          this.loadAuctionDetails(auction._id);
-          this.loadBids(auction._id);
+          // No need to manually reload, socket will handle it
           this.isPlacingBid.set(false);
-          alert(this.isArabic() ? 'تم تقديم المزايدة بنجاح' : 'Bid placed successfully');
+          // alert is optional now since it's real-time, but keeping it for confirmation
         },
         error: (error) => {
           console.error('Error placing bid:', error);

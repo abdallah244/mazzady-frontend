@@ -68,6 +68,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   // Hero Images - يتم جلبها من قاعدة البيانات
   heroImages = signal<string[]>([]);
   howItWorksImages = signal<string[]>([]);
+  aboutImages = signal<string[]>([]);
   featuredAuctions = signal<any[]>([]);
 
   // Statistics
@@ -218,14 +219,13 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   loadImages() {
-    // Load Hero images with very short timeout for faster fallback
+    // Load Hero images with reasonable timeout for Heroku cold starts
     const timeout = setTimeout(() => {
-      // Fast fallback if request takes too long
       if (this.heroLoading()) {
         this.heroImages.set([]);
         this.heroLoading.set(false);
       }
-    }, 200);
+    }, 8000);
 
     this.http
       .get<{ success: boolean; images: any[] }>(`${environment.apiUrl}/home/images/hero`)
@@ -233,8 +233,8 @@ export class HomeComponent implements OnInit, OnDestroy {
         next: (response) => {
           clearTimeout(timeout);
           if (response.success && response.images.length > 0) {
-            const imageUrls = response.images.map((img) => `${environment.apiUrl}${img.url}`);
-            this.heroImages.set(imageUrls);
+            const imageUrls = response.images.map((img) => this.getAssetUrl(img.url));
+            this.heroImages.set(imageUrls as string[]);
             // Preload the first hero image for faster LCP
             if (imageUrls[0]) {
               const link = document.createElement('link');
@@ -272,12 +272,30 @@ export class HomeComponent implements OnInit, OnDestroy {
         next: (response) => {
           if (response.success && response.images.length > 0) {
             this.howItWorksImages.set(
-              response.images.map((img) => `${environment.apiUrl}${img.url}`),
+              response.images.map((img) => this.getAssetUrl(img.url)) as string[],
             );
           }
         },
         error: () => {
           // Silently handle error
+        },
+      });
+  }
+
+  getAssetUrl(url: string): string {
+    return url.startsWith('http') ? url : `${environment.apiUrl}${url}`;
+  }
+
+  loadAboutImages() {
+    this.http
+      .get<{ success: boolean; images: any[] }>(`${environment.apiUrl}/home/images/about`)
+      .subscribe({
+        next: (response) => {
+          if (response.success && response.images.length > 0) {
+            this.aboutImages.set(
+              response.images.map((img) => this.getAssetUrl(img.url)),
+            );
+          }
         },
       });
   }
