@@ -21,6 +21,7 @@ import { AssetUrlPipe } from '../shared/pipes/asset-url.pipe';
 
 interface AuctionProduct {
   _id: string;
+  productName: string;
   userId: {
     _id: string;
     firstName: string;
@@ -37,7 +38,7 @@ interface AuctionProduct {
   status: 'pending' | 'approved' | 'rejected' | 'active' | 'ended';
   createdAt: string;
   endDate?: string;
-  sellerLikesCount?: number; // عدد القلوب للبائع
+  sellerLikesCount?: number;
 }
 
 interface Seller {
@@ -334,6 +335,7 @@ export class AuctionsComponent implements OnInit, OnDestroy {
           const products = response.auctions || [];
           const transformed: AuctionProduct[] = products.map((p: any) => ({
             _id: p._id,
+            productName: p.productName,
             userId: p.sellerId,
             mainImageUrl: p.mainImageUrl,
             additionalImagesUrl: p.additionalImagesUrl || [],
@@ -379,9 +381,17 @@ export class AuctionsComponent implements OnInit, OnDestroy {
 
   getImageUrl(product: AuctionProduct): string {
     if (product.mainImageUrl) {
-      return product.mainImageUrl.startsWith('http')
-        ? product.mainImageUrl
-        : `${environment.apiUrl}${product.mainImageUrl}`;
+      if (product.mainImageUrl.startsWith('http')) {
+        return product.mainImageUrl;
+      }
+      
+      // If it's a relative path starting with /uploads, just prepend API URL
+      if (product.mainImageUrl.startsWith('/uploads')) {
+        return `${environment.apiUrl}${product.mainImageUrl}`;
+      }
+      
+      // If it's just a filename, it's likely in /uploads/auctions
+      return `${environment.apiUrl}/uploads/auctions/${product.mainImageUrl}`;
     }
     return 'https://via.placeholder.com/400x300/1a1a1a/d4af37?text=No+Image';
   }
