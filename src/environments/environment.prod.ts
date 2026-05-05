@@ -1,7 +1,7 @@
 // Production environment configuration
 export const environment = {
   production: true,
-  apiUrl: '/api',
+  apiUrl: 'https://mazzady-backend.onrender.com',
   frontendUrl: 'https://mazzady.works',
 
   // Google OAuth
