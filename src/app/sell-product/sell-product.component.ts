@@ -30,9 +30,24 @@ export class SellProductComponent implements OnInit {
   // Profile completeness check for OAuth users
   profileIncomplete = signal(false);
   isCheckingProfile = signal(true);
+  additionalImagesPreview = signal<string[]>([]);
+
+  minDateTime: string = '';
+
+  getMinDateTime() {
+    const now = new Date();
+    now.setMinutes(now.getMinutes() + 5); // Minimum 5 minutes from now
+    const year = now.getFullYear();
+    const month = (now.getMonth() + 1).toString().padStart(2, '0');
+    const day = now.getDate().toString().padStart(2, '0');
+    const hours = now.getHours().toString().padStart(2, '0');
+    const minutes = now.getMinutes().toString().padStart(2, '0');
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
+  }
 
   ngOnInit() {
     this.checkProfileCompleteness();
+    this.minDateTime = this.getMinDateTime();
   }
 
   private checkProfileCompleteness() {
@@ -71,7 +86,7 @@ export class SellProductComponent implements OnInit {
     productName: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(200)]],
     startingPrice: ['', [Validators.required, Validators.min(0.01)]],
     minBidIncrement: ['1', [Validators.required, Validators.min(1)]],
-    durationInMinutes: [1440, [Validators.required, Validators.min(1)]], // Default: 1 day (1440 min)
+    endTime: ['', [Validators.required]],
   });
 
   // Translations
@@ -203,6 +218,25 @@ export class SellProductComponent implements OnInit {
       return;
     }
 
+    const endTimeVal = this.sellForm.get('endTime')?.value;
+    if (!endTimeVal) {
+      this.errorMessage.set(this.isArabic() ? 'يجب اختيار تاريخ انتهاء المزاد' : 'Auction end time is required');
+      return;
+    }
+
+    const endTime = new Date(endTimeVal);
+    const now = new Date();
+    const durationInSeconds = Math.floor((endTime.getTime() - now.getTime()) / 1000);
+
+    if (durationInSeconds < 300) { // Min 5 minutes
+      this.errorMessage.set(
+        this.isArabic() 
+          ? 'يجب أن يكون وقت الانتهاء بعد 5 دقائق على الأقل من الآن' 
+          : 'End time must be at least 5 minutes from now'
+      );
+      return;
+    }
+
     this.isSubmitting.set(true);
     this.errorMessage.set(null);
 
@@ -211,8 +245,7 @@ export class SellProductComponent implements OnInit {
     formData.append('productName', this.sellForm.get('productName')?.value || '');
     formData.append('startingPrice', this.sellForm.get('startingPrice')?.value || '');
     formData.append('minBidIncrement', this.sellForm.get('minBidIncrement')?.value || '1');
-    const durationMinutes = Number(this.sellForm.get('durationInMinutes')?.value) || 1440;
-    formData.append('durationInSeconds', (durationMinutes * 60).toString());
+    formData.append('durationInSeconds', durationInSeconds.toString());
 
     if (this.mainImage()) {
       formData.append('images', this.mainImage()!);
@@ -229,7 +262,7 @@ export class SellProductComponent implements OnInit {
         this.sellForm.reset();
         this.sellForm.patchValue({
           minBidIncrement: '1',
-          durationInMinutes: 1440,
+          endTime: '',
         }); // Reset to defaults
         this.removeMainImage();
         this.additionalImages.set([]);

@@ -251,43 +251,34 @@
           }}</small>
         </div>
 
-        <!-- Auction Duration -->
+        <!-- Auction End Time -->
         <div class="form-group">
-          <label class="form-label" for="durationInMinutes">
-            <i class="fas fa-clock"></i>
+          <label class="form-label" for="endTime">
+            <i class="fas fa-calendar-alt"></i>
             <span
-              >{{ isArabic() ? 'مدة المزاد (بالدقائق)' : 'Auction Duration (Minutes)' }}
+              >{{ isArabic() ? 'وقت انتهاء المزاد' : 'Auction End Time' }}
               <span class="required">*</span></span
             >
           </label>
           <input
-            type="number"
-            id="durationInMinutes"
-            formControlName="durationInMinutes"
+            type="datetime-local"
+            id="endTime"
+            formControlName="endTime"
             class="form-input"
             [class.invalid]="
-              sellForm.get('durationInMinutes')?.invalid &&
-              sellForm.get('durationInMinutes')?.touched
+              sellForm.get('endTime')?.invalid &&
+              sellForm.get('endTime')?.touched
             "
-            min="1"
-            placeholder="{{ isArabic() ? 'أدخل عدد الدقائق' : 'Enter number of minutes' }}"
+            [min]="minDateTime"
           />
           @if (
-            sellForm.get('durationInMinutes')?.hasError('required') &&
-            sellForm.get('durationInMinutes')?.touched
+            sellForm.get('endTime')?.hasError('required') &&
+            sellForm.get('endTime')?.touched
           ) {
             <span class="error-text">{{ required() }}</span>
           }
-          @if (
-            sellForm.get('durationInMinutes')?.hasError('min') &&
-            sellForm.get('durationInMinutes')?.touched
-          ) {
-            <span class="error-text">{{
-              isArabic() ? 'يجب أن تكون المدة دقيقة واحدة على الأقل' : 'Duration must be at least 1 minute'
-            }}</span>
-          }
           <small class="form-hint">{{
-            isArabic() ? 'أدخل عدد الدقائق التي سيستمر فيها المزاد (مثلاً: 60 لساعة، 1440 ليوم)' : 'Enter the number of minutes the auction will last (e.g., 60 for 1 hour, 1440 for 1 day)'
+            isArabic() ? 'اختر التاريخ والوقت الذي تريد أن ينتهي فيه المزاد' : 'Select the date and time you want the auction to end'
           }}</small>
         </div>
 
