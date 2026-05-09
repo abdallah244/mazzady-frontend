@@ -515,32 +515,23 @@ export class RegisterComponent implements OnInit, OnDestroy, AfterViewInit {
     this.initGoogleSignIn();
   }
 
+  private googleCodeClient: any;
+
   async initGoogleSignIn() {
     try {
       await loadGoogleSdk();
-      google.accounts.id.initialize({
+      this.googleCodeClient = google.accounts.oauth2.initCodeClient({
         client_id: environment.googleClientId,
+        scope: 'email profile openid',
         ux_mode: 'popup',
         callback: (response: any) => {
           this.ngZone.run(() => {
-            this.handleGoogleCredential(response.credential);
+            if (response.code) {
+              this.handleGoogleCode(response.code);
+            }
           });
         },
       });
-
-      // Render the official Google button
-      google.accounts.id.renderButton(
-        document.getElementById('google-login-button'),
-        {
-          type: 'standard',
-          theme: 'filled_black',
-          size: 'large',
-          text: 'signin_with',
-          shape: 'rectangular',
-          logo_alignment: 'left',
-          width: 250
-        }
-      );
     } catch (error) {
       console.error('Error initializing Google Sign-In:', error);
     }
@@ -701,10 +692,18 @@ export class RegisterComponent implements OnInit, OnDestroy, AfterViewInit {
     this.router.navigate(['/login']);
   }
 
-  private handleGoogleCredential(credential: string) {
+  registerWithGoogle() {
+    if (this.googleCodeClient) {
+      this.googleCodeClient.requestCode();
+    } else {
+      this.error.set('Google Sign-In is not initialized. Please refresh.');
+    }
+  }
+
+  private handleGoogleCode(code: string) {
     this.isLoading.set(true);
     this.error.set(null);
-    const sub = this.authService.googleSignIn(credential).subscribe({
+    const sub = this.authService.googleCodeSignIn(code).subscribe({
       next: () => {
         this.isLoading.set(false);
         this.router.navigate(['/home']);

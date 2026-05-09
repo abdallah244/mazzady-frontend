@@ -110,33 +110,27 @@ export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
     this.initGoogleSignIn();
   }
 
+  private googleCodeClient: any;
+
   async initGoogleSignIn() {
     try {
       await loadGoogleSdk();
-      google.accounts.id.initialize({
+      this.googleCodeClient = google.accounts.oauth2.initCodeClient({
         client_id: environment.googleClientId,
+        scope: 'email profile openid',
         ux_mode: 'popup',
         callback: (response: any) => {
           this.ngZone.run(() => {
-            this.handleGoogleCredential(response.credential);
+            if (response.code) {
+              this.handleGoogleCode(response.code);
+            }
           });
         },
       });
-
-      // Render the official Google button
-      // This button opens a centered popup when clicked
-      google.accounts.id.renderButton(
-        document.getElementById('google-login-button'),
-        {
-          type: 'standard',
-          theme: 'filled_black',
-          size: 'large',
-          text: 'signin_with',
-          shape: 'rectangular',
-          logo_alignment: 'left',
-          width: 250
-        }
-      );
+    } catch (error) {
+      console.error('Error initializing Google Sign-In:', error);
+    }
+  }
 
       // We do NOT call google.accounts.id.prompt() here 
       // because the user wants to avoid the side prompt (One Tap).
@@ -329,10 +323,18 @@ export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  private handleGoogleCredential(credential: string) {
+  loginWithGoogle() {
+    if (this.googleCodeClient) {
+      this.googleCodeClient.requestCode();
+    } else {
+      this.error.set('Google Sign-In is not initialized. Please refresh.');
+    }
+  }
+
+  private handleGoogleCode(code: string) {
     this.isLoading.set(true);
     this.error.set(null);
-    const sub = this.authService.googleSignIn(credential).subscribe({
+    const sub = this.authService.googleCodeSignIn(code).subscribe({
       next: () => {
         this.isLoading.set(false);
         this.currentStep.set(5); // Success step

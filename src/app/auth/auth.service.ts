@@ -204,6 +204,15 @@ export class AuthService {
     );
   }
 
+  googleCodeSignIn(code: string): Observable<LoginResponse> {
+    return this.http.post<LoginResponse>(`${this.apiUrl}/google-code-signin`, { code }).pipe(
+      tap((response) => {
+        this.setTokens(response.accessToken, response.refreshToken, true);
+        this.setUser(response.user, true);
+      }),
+    );
+  }
+
   facebookSignIn(accessToken: string): Observable<LoginResponse> {
     return this.http.post<LoginResponse>(`${this.apiUrl}/facebook-signin`, { accessToken }).pipe(
       tap((response) => {

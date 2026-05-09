@@ -684,9 +684,10 @@
           <span>Or continue with</span>
         </div>
         <div class="oauth-buttons">
-          <div class="google-btn-container">
-            <div id="google-login-button"></div>
-          </div>
+          <button type="button" class="oauth-btn google-btn" (click)="registerWithGoogle()">
+            <i class="fab fa-google oauth-icon"></i>
+            <span>Google</span>
+          </button>
           <button type="button" class="oauth-btn facebook-btn" (click)="registerWithFacebook()">
             <i class="fab fa-facebook-f oauth-icon"></i>
             <span>Facebook</span>
