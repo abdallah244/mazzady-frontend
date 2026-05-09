@@ -132,13 +132,6 @@ export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-      // We do NOT call google.accounts.id.prompt() here 
-      // because the user wants to avoid the side prompt (One Tap).
-    } catch (error) {
-      console.error('Error initializing Google Sign-In:', error);
-    }
-  }
-
   ngOnDestroy() {
     this.subscriptions.unsubscribe();
     if (this.redirectInterval) {
