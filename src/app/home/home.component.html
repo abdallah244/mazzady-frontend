@@ -129,6 +129,56 @@
     </div>
   </section>
 
+  <!-- Featured Auctions Section -->
+  <section class="featured-auctions-section" appScrollLoad (scrollLoad)="onFeaturedVisible()">
+    <div class="container">
+      <h2 class="section-title">{{ featuredAuctionsTitle() }}</h2>
+      @if (featuredLoading()) {
+        <div class="featured-auctions-grid">
+          @for (i of [1, 2, 3]; track i) {
+            <app-skeleton type="card"></app-skeleton>
+          }
+        </div>
+      } @else if (featuredAuctions().length === 0) {
+        <div class="auctions-placeholder">
+          <p class="placeholder-text">
+            {{
+              isArabic() ? 'سيتم عرض المزادات هنا قريباً' : 'Auctions will be displayed here soon'
+            }}
+          </p>
+        </div>
+      } @else {
+        <div class="featured-auctions-grid">
+          @for (auction of featuredAuctions(); track auction._id) {
+            <div class="featured-auction-card" [routerLink]="['/auctions']">
+              <div class="auction-image">
+                <img
+                  [src]="auction.mainImageUrl | assetUrl"
+                  [alt]="auction.productName"
+                  loading="lazy"
+                  decoding="async"
+                  width="400"
+                  height="300"
+                />
+              </div>
+              <div class="auction-info">
+                <h3>{{ auction.productName }}</h3>
+                <div class="auction-price">
+                  <span class="price-label">{{
+                    isArabic() ? 'السعر الحالي:' : 'Current Price:'
+                  }}</span>
+                  <span class="price-value">{{
+                    formatPrice(auction.highestBid || auction.startingPrice)
+                  }}</span>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  </section>
+
   <!-- How It Works Section -->
   <section class="how-it-works-section" appScrollLoad (scrollLoad)="onHowItWorksVisible()">
     <div class="container">
@@ -240,55 +290,7 @@
     </div>
   </section>
 
-  <!-- Featured Auctions Section -->
-  <section class="featured-auctions-section" appScrollLoad (scrollLoad)="onFeaturedVisible()">
-    <div class="container">
-      <h2 class="section-title">{{ featuredAuctionsTitle() }}</h2>
-      @if (featuredLoading()) {
-        <div class="featured-auctions-grid">
-          @for (i of [1, 2, 3]; track i) {
-            <app-skeleton type="card"></app-skeleton>
-          }
-        </div>
-      } @else if (featuredAuctions().length === 0) {
-        <div class="auctions-placeholder">
-          <p class="placeholder-text">
-            {{
-              isArabic() ? 'سيتم عرض المزادات هنا قريباً' : 'Auctions will be displayed here soon'
-            }}
-          </p>
-        </div>
-      } @else {
-        <div class="featured-auctions-grid">
-          @for (auction of featuredAuctions(); track auction._id) {
-            <div class="featured-auction-card" [routerLink]="['/auctions']">
-              <div class="auction-image">
-                <img
-                  [src]="auction.mainImageUrl | assetUrl"
-                  [alt]="auction.productName"
-                  loading="lazy"
-                  decoding="async"
-                  width="400"
-                  height="300"
-                />
-              </div>
-              <div class="auction-info">
-                <h3>{{ auction.productName }}</h3>
-                <div class="auction-price">
-                  <span class="price-label">{{
-                    isArabic() ? 'السعر الحالي:' : 'Current Price:'
-                  }}</span>
-                  <span class="price-value">{{
-                    formatPrice(auction.highestBid || auction.startingPrice)
-                  }}</span>
-                </div>
-              </div>
-            </div>
-          }
-        </div>
-      }
-    </div>
-  </section>
+
 
   <!-- Contact Section -->
   <section class="contact-section" appScrollLoad (scrollLoad)="onContactVisible()">
