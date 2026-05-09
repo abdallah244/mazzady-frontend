@@ -71,7 +71,7 @@ export class SellProductComponent implements OnInit {
     productName: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(200)]],
     startingPrice: ['', [Validators.required, Validators.min(0.01)]],
     minBidIncrement: ['1', [Validators.required, Validators.min(1)]],
-    durationInSeconds: [86400, [Validators.required, Validators.min(1)]], // Default: 1 day
+    durationInMinutes: [1440, [Validators.required, Validators.min(1)]], // Default: 1 day (1440 min)
   });
 
   // Translations
@@ -95,17 +95,6 @@ export class SellProductComponent implements OnInit {
   required = computed(() => this.translationService.t('profile.required'));
   invalidPrice = computed(() => this.translationService.t('sellProduct.invalidPrice'));
   maxImages = computed(() => this.translationService.t('sellProduct.maxImages'));
-
-  getDurationOptions() {
-    return [
-      { label: '1 ثانية', value: 1, en: '1 Second' },
-      { label: '1 دقيقة', value: 60, en: '1 Minute' },
-      { label: '1 ساعة', value: 3600, en: '1 Hour' },
-      { label: '1 يوم', value: 86400, en: '1 Day' },
-      { label: '3 أيام', value: 259200, en: '3 Days' },
-      { label: '7 أيام', value: 604800, en: '7 Days' },
-    ];
-  }
 
   onMainImageSelected(event: Event) {
     const input = event.target as HTMLInputElement;
@@ -222,10 +211,8 @@ export class SellProductComponent implements OnInit {
     formData.append('productName', this.sellForm.get('productName')?.value || '');
     formData.append('startingPrice', this.sellForm.get('startingPrice')?.value || '');
     formData.append('minBidIncrement', this.sellForm.get('minBidIncrement')?.value || '1');
-    formData.append(
-      'durationInSeconds',
-      this.sellForm.get('durationInSeconds')?.value?.toString() || '86400',
-    );
+    const durationMinutes = Number(this.sellForm.get('durationInMinutes')?.value) || 1440;
+    formData.append('durationInSeconds', (durationMinutes * 60).toString());
 
     if (this.mainImage()) {
       formData.append('images', this.mainImage()!);
@@ -242,7 +229,7 @@ export class SellProductComponent implements OnInit {
         this.sellForm.reset();
         this.sellForm.patchValue({
           minBidIncrement: '1',
-          durationInSeconds: 86400,
+          durationInMinutes: 1440,
         }); // Reset to defaults
         this.removeMainImage();
         this.additionalImages.set([]);
