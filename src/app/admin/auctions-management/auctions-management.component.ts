@@ -57,6 +57,7 @@ interface User {
 
 @Component({
   selector: 'app-auctions-management',
+  standalone: true,
   imports: [CommonModule, FormsModule, AssetUrlPipe],
   templateUrl: './auctions-management.component.html',
   styleUrl: './auctions-management.component.sass',
@@ -82,7 +83,7 @@ export class AuctionsManagementComponent implements OnInit, OnDestroy {
 
   // Edit form data
   editMinBidIncrement = '';
-  editDurationInSeconds = 86400;
+  editEndTime = '';
   editProductName = '';
   editCategory = 'other';
   editIsFeatured = false;
@@ -92,11 +93,13 @@ export class AuctionsManagementComponent implements OnInit, OnDestroy {
   sellerId = '';
   startingPrice = '';
   minBidIncrement = '1';
-  durationInSeconds = 86400; // 1 day default
+  endTime = '';
   isFeatured = false;
   category = 'other';
   mainImage: File | null = null;
   additionalImages: File[] = [];
+
+  minDateTime: string = '';
 
   // Categories list (excluding 'all')
   categories = [
@@ -120,9 +123,21 @@ export class AuctionsManagementComponent implements OnInit, OnDestroy {
 
   private timerInterval: any;
 
+  getMinDateTime() {
+    const now = new Date();
+    now.setMinutes(now.getMinutes() + 5);
+    const year = now.getFullYear();
+    const month = (now.getMonth() + 1).toString().padStart(2, '0');
+    const day = now.getDate().toString().padStart(2, '0');
+    const hours = now.getHours().toString().padStart(2, '0');
+    const minutes = now.getMinutes().toString().padStart(2, '0');
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
+  }
+
   ngOnInit() {
     this.loadAuctions();
     this.loadUsers();
+    this.minDateTime = this.getMinDateTime();
     // Update timers every second
     this.timerInterval = setInterval(() => {
       this.cdr.detectChanges();
@@ -240,7 +255,7 @@ export class AuctionsManagementComponent implements OnInit, OnDestroy {
     this.sellerId = '';
     this.startingPrice = '';
     this.minBidIncrement = '1';
-    this.durationInSeconds = 86400;
+    this.endTime = '';
     this.isFeatured = false;
     this.category = 'other';
     this.mainImage = null;
@@ -270,20 +285,18 @@ export class AuctionsManagementComponent implements OnInit, OnDestroy {
     }
   }
 
-  getDurationOptions() {
-    return [
-      { label: '1 ثانية', value: 1, en: '1 Second' },
-      { label: '1 دقيقة', value: 60, en: '1 Minute' },
-      { label: '1 ساعة', value: 3600, en: '1 Hour' },
-      { label: '1 يوم', value: 86400, en: '1 Day' },
-      { label: '3 أيام', value: 259200, en: '3 Days' },
-      { label: '7 أيام', value: 604800, en: '7 Days' },
-    ];
-  }
-
   submitAuction() {
-    if (!this.productName || !this.sellerId || !this.startingPrice || !this.mainImage) {
+    if (!this.productName || !this.sellerId || !this.startingPrice || !this.mainImage || !this.endTime) {
       alert(this.isArabic() ? 'يرجى ملء جميع الحقول المطلوبة' : 'Please fill all required fields');
+      return;
+    }
+
+    const end = new Date(this.endTime);
+    const now = new Date();
+    const durationInSeconds = Math.floor((end.getTime() - now.getTime()) / 1000);
+
+    if (durationInSeconds < 300) {
+      alert(this.isArabic() ? 'يجب أن يكون تاريخ الانتهاء بعد 5 دقائق على الأقل' : 'End time must be at least 5 minutes from now');
       return;
     }
 
@@ -292,7 +305,7 @@ export class AuctionsManagementComponent implements OnInit, OnDestroy {
     formData.append('sellerId', this.sellerId);
     formData.append('startingPrice', this.startingPrice);
     formData.append('minBidIncrement', this.minBidIncrement);
-    formData.append('durationInSeconds', this.durationInSeconds.toString());
+    formData.append('durationInSeconds', durationInSeconds.toString());
     formData.append('isFeatured', this.isFeatured.toString());
     formData.append('category', this.category);
 
@@ -417,10 +430,19 @@ export class AuctionsManagementComponent implements OnInit, OnDestroy {
 
     this.selectedAuction.set(auction);
     this.editMinBidIncrement = auction.minBidIncrement.toString();
-    this.editDurationInSeconds = auction.durationInSeconds;
     this.editProductName = auction.productName;
     this.editCategory = auction.category || 'other';
     this.editIsFeatured = auction.isFeatured || false;
+    
+    // Format endDate for datetime-local
+    const end = new Date(auction.endDate);
+    const year = end.getFullYear();
+    const month = (end.getMonth() + 1).toString().padStart(2, '0');
+    const day = end.getDate().toString().padStart(2, '0');
+    const hours = end.getHours().toString().padStart(2, '0');
+    const minutes = end.getMinutes().toString().padStart(2, '0');
+    this.editEndTime = `${year}-${month}-${day}T${hours}:${minutes}`;
+
     this.showEditModal.set(true);
   }
 
@@ -428,7 +450,7 @@ export class AuctionsManagementComponent implements OnInit, OnDestroy {
     this.showEditModal.set(false);
     this.selectedAuction.set(null);
     this.editMinBidIncrement = '';
-    this.editDurationInSeconds = 86400;
+    this.editEndTime = '';
     this.editProductName = '';
     this.editCategory = 'other';
     this.editIsFeatured = false;
@@ -453,6 +475,20 @@ export class AuctionsManagementComponent implements OnInit, OnDestroy {
       return;
     }
 
+    if (!this.editEndTime) {
+      alert(this.isArabic() ? 'يجب اختيار تاريخ انتهاء المزاد' : 'End time is required');
+      return;
+    }
+
+    const end = new Date(this.editEndTime);
+    const now = new Date();
+    const durationInSeconds = Math.floor((end.getTime() - now.getTime()) / 1000);
+
+    if (durationInSeconds < 300) {
+      alert(this.isArabic() ? 'يجب أن يكون تاريخ الانتهاء بعد 5 دقائق على الأقل' : 'End time must be at least 5 minutes from now');
+      return;
+    }
+
     const headers: { [key: string]: string } = {};
     if (sessionStorage.getItem('adminAuthenticated') === 'true') {
       headers['x-admin-authenticated'] = 'true';
@@ -463,7 +499,7 @@ export class AuctionsManagementComponent implements OnInit, OnDestroy {
         `${environment.apiUrl}/auctions/${auction._id}/settings`,
         {
           minBidIncrement,
-          durationInSeconds: this.editDurationInSeconds,
+          durationInSeconds,
           productName: this.editProductName.trim(),
           category: this.editCategory,
           isFeatured: this.editIsFeatured,
