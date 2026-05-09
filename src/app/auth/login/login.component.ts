@@ -5,8 +5,8 @@ import {
   OnInit,
   OnDestroy,
   computed,
-  effect,
   NgZone,
+  AfterViewInit,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -27,7 +27,7 @@ declare const FB: any;
   templateUrl: './login.component.html',
   styleUrl: './login.component.sass',
 })
-export class LoginComponent implements OnInit, OnDestroy {
+export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
   private router = inject(Router);
@@ -103,6 +103,45 @@ export class LoginComponent implements OnInit, OnDestroy {
         }
       });
       this.subscriptions.add(emailSub);
+    }
+  }
+
+  ngAfterViewInit() {
+    this.initGoogleSignIn();
+  }
+
+  async initGoogleSignIn() {
+    try {
+      await loadGoogleSdk();
+      google.accounts.id.initialize({
+        client_id: environment.googleClientId,
+        ux_mode: 'popup',
+        callback: (response: any) => {
+          this.ngZone.run(() => {
+            this.handleGoogleCredential(response.credential);
+          });
+        },
+      });
+
+      // Render the official Google button
+      // This button opens a centered popup when clicked
+      google.accounts.id.renderButton(
+        document.getElementById('google-login-button'),
+        {
+          type: 'standard',
+          theme: 'outline',
+          size: 'large',
+          text: 'continue_with',
+          shape: 'rectangular',
+          logo_alignment: 'left',
+          width: 250 // Matches the other buttons' width
+        }
+      );
+
+      // We do NOT call google.accounts.id.prompt() here 
+      // because the user wants to avoid the side prompt (One Tap).
+    } catch (error) {
+      console.error('Error initializing Google Sign-In:', error);
     }
   }
 
@@ -287,43 +326,6 @@ export class LoginComponent implements OnInit, OnDestroy {
       } else {
         this.onSubmit();
       }
-    }
-  }
-
-  async loginWithGoogle() {
-    this.error.set(null);
-    this.isLoading.set(true);
-    try {
-      await loadGoogleSdk();
-      google.accounts.id.initialize({
-        client_id: environment.googleClientId,
-        callback: (response: any) => {
-          this.ngZone.run(() => {
-            this.handleGoogleCredential(response.credential);
-          });
-        },
-      });
-      google.accounts.id.prompt((notification: any) => {
-        if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
-          // Fallback: show the One Tap popup as a button click
-          google.accounts.id.renderButton(document.createElement('div'), { type: 'standard' });
-          // Use popup mode instead
-          google.accounts.oauth2.initCodeClient({
-            client_id: environment.googleClientId,
-            scope: 'email profile',
-            callback: () => {},
-          });
-          // If One Tap is blocked, try the redirect flow
-          this.ngZone.run(() => {
-            this.isLoading.set(false);
-            // Fallback to popup
-            google.accounts.id.prompt();
-          });
-        }
-      });
-    } catch {
-      this.isLoading.set(false);
-      this.error.set('Google Sign-In is not available. Please try again.');
     }
   }
 

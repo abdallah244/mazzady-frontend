@@ -1,4 +1,4 @@
-import { Component, signal, inject, computed, OnInit, OnDestroy, NgZone } from '@angular/core';
+import { Component, signal, inject, computed, OnInit, OnDestroy, NgZone, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   FormBuilder,
@@ -26,7 +26,7 @@ type PasswordStrength = 'weak' | 'medium' | 'strong';
   templateUrl: './register.component.html',
   styleUrl: './register.component.sass',
 })
-export class RegisterComponent implements OnInit, OnDestroy {
+export class RegisterComponent implements OnInit, OnDestroy, AfterViewInit {
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
   private router = inject(Router);
@@ -511,6 +511,41 @@ export class RegisterComponent implements OnInit, OnDestroy {
     }
   }
 
+  ngAfterViewInit() {
+    this.initGoogleSignIn();
+  }
+
+  async initGoogleSignIn() {
+    try {
+      await loadGoogleSdk();
+      google.accounts.id.initialize({
+        client_id: environment.googleClientId,
+        ux_mode: 'popup',
+        callback: (response: any) => {
+          this.ngZone.run(() => {
+            this.handleGoogleCredential(response.credential);
+          });
+        },
+      });
+
+      // Render the official Google button
+      google.accounts.id.renderButton(
+        document.getElementById('google-login-button'),
+        {
+          type: 'standard',
+          theme: 'outline',
+          size: 'large',
+          text: 'continue_with',
+          shape: 'rectangular',
+          logo_alignment: 'left',
+          width: 250
+        }
+      );
+    } catch (error) {
+      console.error('Error initializing Google Sign-In:', error);
+    }
+  }
+
   ngOnDestroy() {
     this.subscriptions.unsubscribe();
     if (this.codeExpiryTimer) {
@@ -664,32 +699,6 @@ export class RegisterComponent implements OnInit, OnDestroy {
 
   goToLogin() {
     this.router.navigate(['/login']);
-  }
-
-  async registerWithGoogle() {
-    this.error.set(null);
-    this.isLoading.set(true);
-    try {
-      await loadGoogleSdk();
-      google.accounts.id.initialize({
-        client_id: environment.googleClientId,
-        callback: (response: any) => {
-          this.ngZone.run(() => {
-            this.handleGoogleCredential(response.credential);
-          });
-        },
-      });
-      google.accounts.id.prompt((notification: any) => {
-        if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
-          this.ngZone.run(() => {
-            this.isLoading.set(false);
-          });
-        }
-      });
-    } catch {
-      this.isLoading.set(false);
-      this.error.set('Google Sign-In is not available. Please try again.');
-    }
   }
 
   private handleGoogleCredential(credential: string) {
