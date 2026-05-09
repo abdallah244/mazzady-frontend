@@ -129,12 +129,12 @@ export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
         document.getElementById('google-login-button'),
         {
           type: 'standard',
-          theme: 'outline',
+          theme: 'filled_black',
           size: 'large',
-          text: 'continue_with',
+          text: 'signin_with',
           shape: 'rectangular',
           logo_alignment: 'left',
-          width: 250 // Matches the other buttons' width
+          width: 250
         }
       );
 
