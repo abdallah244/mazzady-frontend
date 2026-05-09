@@ -30,7 +30,6 @@ export class SellProductComponent implements OnInit {
   // Profile completeness check for OAuth users
   profileIncomplete = signal(false);
   isCheckingProfile = signal(true);
-  additionalImagesPreview = signal<string[]>([]);
 
   minDateTime: string = '';
 
