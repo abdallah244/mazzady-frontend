@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { adminGuard } from './admin/admin.guard';
+import { authGuard } from './auth/auth.guard';
 
 export const routes: Routes = [
   {
@@ -109,6 +110,7 @@ export const routes: Routes = [
     path: 'profile',
     title: 'My Profile - Mazzady',
     loadComponent: () => import('./profile/profile.component').then((m) => m.ProfileComponent),
+    canActivate: [authGuard],
   },
   {
     path: 'customer-service',
@@ -125,6 +127,7 @@ export const routes: Routes = [
     path: 'sell-product',
     loadComponent: () =>
       import('./sell-product/sell-product.component').then((m) => m.SellProductComponent),
+    canActivate: [authGuard],
   },
   {
     path: 'auctions',
@@ -141,20 +144,24 @@ export const routes: Routes = [
   {
     path: 'cart',
     loadComponent: () => import('./cart/cart.component').then((m) => m.CartComponent),
+    canActivate: [authGuard],
   },
   {
     path: 'notifications',
     loadComponent: () =>
       import('./notifications/notifications.component').then((m) => m.NotificationsComponent),
+    canActivate: [authGuard],
   },
   {
     path: 'watchlist',
     loadComponent: () =>
       import('./watchlist/watchlist.component').then((m) => m.WatchlistComponent),
+    canActivate: [authGuard],
   },
   {
     path: 'auto-bid',
     loadComponent: () => import('./auto-bid/auto-bid.component').then((m) => m.AutoBidComponent),
+    canActivate: [authGuard],
   },
   {
     path: 'privacy',
@@ -169,7 +176,11 @@ export const routes: Routes = [
   },
   {
     path: '',
-    redirectTo: '/login',
+    redirectTo: '/home',
     pathMatch: 'full',
   },
+  {
+    path: '**',
+    redirectTo: '/home',
+  }
 ];
