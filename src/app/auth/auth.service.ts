@@ -69,6 +69,21 @@ export class AuthService {
       );
   }
 
+  adminLogin(email: string, password: string): Observable<{ token: string; message: string }> {
+    return this.http
+      .post<{ token: string; message: string }>(`${environment.apiUrl}/admin/login`, {
+        email,
+        password,
+      })
+      .pipe(
+        tap((response) => {
+          // Store admin token and set authenticated flag
+          sessionStorage.setItem('adminToken', response.token);
+          sessionStorage.setItem('adminAuthenticated', 'true');
+        }),
+      );
+  }
+
   // Get access token for API requests
   getAccessToken(): string | null {
     return (

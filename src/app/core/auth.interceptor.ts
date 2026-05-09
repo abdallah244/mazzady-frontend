@@ -36,7 +36,15 @@ export const authInterceptor: HttpInterceptorFn = (
   }
 
   // Add JWT token to request
-  const token = authService.getAccessToken();
+  let token = authService.getAccessToken();
+
+  // If it's an admin request and we have an adminToken, use it
+  if (req.url.includes('/admin/') && !req.url.includes('/admin/login')) {
+    const adminToken = sessionStorage.getItem('adminToken');
+    if (adminToken) {
+      token = adminToken;
+    }
+  }
 
   if (token) {
     const authReq = req.clone({
