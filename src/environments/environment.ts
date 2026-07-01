@@ -1,7 +1,7 @@
 // Development environment configuration
 export const environment = {
   production: false,
-  apiUrl: 'http://localhost:3000',
+  apiUrl: 'http://localhost:3001',
   frontendUrl: 'http://localhost:4200',
 
   // Google OAuth
@@ -11,7 +11,7 @@ export const environment = {
   facebookAppId: '946975937863038',
 
   // WebSocket configuration
-  wsUrl: 'ws://localhost:3000',
+  wsUrl: 'ws://localhost:3001',
 
   // Feature flags
   enableDebugMode: true,

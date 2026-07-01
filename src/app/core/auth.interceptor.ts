@@ -38,12 +38,14 @@ export const authInterceptor: HttpInterceptorFn = (
   // Add JWT token to request
   let token = authService.getAccessToken();
 
-  // If it's an admin request and we have an adminToken, use it
-  if (req.url.includes('/admin/') && !req.url.includes('/admin/login')) {
-    const adminToken = sessionStorage.getItem('adminToken');
-    if (adminToken) {
-      token = adminToken;
-    }
+  // If admin is authenticated, use adminToken for ALL requests
+  // Admin actions like delete/edit auctions hit /auctions/:id (not /admin/),
+  // but they still need the admin JWT for AdminGuard
+  const adminToken = sessionStorage.getItem('adminToken');
+  const isAdminAuthenticated = sessionStorage.getItem('adminAuthenticated') === 'true';
+
+  if (isAdminAuthenticated && adminToken && !req.url.includes('/admin/login')) {
+    token = adminToken;
   }
 
   if (token) {
